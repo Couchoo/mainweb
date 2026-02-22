@@ -6,6 +6,8 @@ import { Button } from '@/components/ui/button';
 import { Play, Gem, AlertCircle, Tv, Volume2, VolumeX } from 'lucide-react';
 import Link from 'next/link';
 import { useAnalytics } from '@/hooks/use-analytics';
+import { getTranslation, Locale } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
 
 interface VideoServer {
     id: number;
@@ -290,6 +292,11 @@ export function VideoPlayer({
     backdropUrl,
 }: VideoPlayerProps) {
     const { data: session } = useSession();
+    const pathname = usePathname();
+    const segment = pathname?.split('/')[1];
+    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
+    const t = (key: any) => getTranslation(key, locale);
+
     const [showVideo, setShowVideo] = useState(false);
     const [adStep, setAdStep] = useState(0);
     const [countdown, setCountdown] = useState(5);
@@ -397,7 +404,7 @@ export function VideoPlayer({
                             src={buildYouTubeEmbedUrl(url, playbackOffset, isCinemaMode)}
                             className="w-full h-full"
                             allowFullScreen
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                         />
                     ) : (
                         // 🌐 Generic embed
@@ -429,8 +436,8 @@ export function VideoPlayer({
                                     setTimeout(() => setShowVideo(true), 100);
                                 }}
                                 className={`px-6 py-2 rounded-xl font-display uppercase tracking-widest text-[11px] transition-all ${selectedServerIndex === index
-                                        ? 'bg-brand-cinemaGold text-brand-midnight shadow-lg'
-                                        : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 border border-brand-royalPurple/10'
+                                    ? 'bg-brand-cinemaGold text-brand-midnight shadow-lg'
+                                    : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 border border-brand-royalPurple/10'
                                     }`}
                             >
                                 {server.name}
@@ -451,9 +458,11 @@ export function VideoPlayer({
                 )}
                 <div className="text-center space-y-4 relative z-10">
                     <div className="text-8xl font-black text-brand-playRed animate-pulse drop-shadow-[0_0_30px_rgba(229,57,53,0.5)]">{countdown}</div>
-                    <p className="text-xl font-display uppercase tracking-widest text-white">Реклама {adStep} от 3</p>
+                    <p className="text-xl font-display uppercase tracking-widest text-white">
+                        {t('ad_text')?.replace('%d', adStep.toString()) || `Реклама ${adStep} от 3`}
+                    </p>
                     <Button asChild variant="outline" size="sm" className="rounded-2xl border-brand-royalPurple/30 text-brand-softLavender">
-                        <Link href="/vip">Премахни рекламите</Link>
+                        <Link href="/vip">{t('upgradeToVip') || "Премахни рекламите"}</Link>
                     </Button>
                 </div>
             </div>
@@ -471,7 +480,9 @@ export function VideoPlayer({
                     <div className="w-16 h-16 rounded-full bg-brand-royalPurple/20 flex items-center justify-center mx-auto">
                         <AlertCircle className="h-8 w-8 text-brand-softLavender opacity-40" />
                     </div>
-                    <p className="text-brand-softLavender/40 italic font-display uppercase tracking-widest text-sm">Няма наличен сървър</p>
+                    <p className="text-brand-softLavender/40 italic font-display uppercase tracking-widest text-sm">
+                        {t('no_server_available') || "Няма наличен сървър"}
+                    </p>
                 </div>
             </div>
         );
@@ -517,7 +528,7 @@ export function VideoPlayer({
 
                     <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
                         <p className="text-white font-display uppercase tracking-[0.4em] text-sm group-hover/play:text-brand-cinemaGold transition-colors">
-                            {session ? "ГЛЕДАЙ СЕГА" : "ВЛЕЗ И ГЛЕДАЙ"}
+                            {session ? (t('watch_now_player') || "ГЛЕДАЙ СЕГА") : (t('login_to_watch_player') || "ВЛЕЗ И ГЛЕДАЙ")}
                         </p>
                         <div className="h-[2px] w-0 bg-brand-cinemaGold mx-auto mt-2 transition-all duration-500 group-hover/play:w-20" />
                     </div>

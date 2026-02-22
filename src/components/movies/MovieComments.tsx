@@ -10,6 +10,9 @@ import { Star, Send, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 
+import { getTranslation, Locale } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
+
 interface Comment {
     id: number;
     content: string;
@@ -32,6 +35,11 @@ interface Comment {
 export function MovieComments({ movieId }: { movieId: number }) {
     const { data: session } = useSession();
     const { toast } = useToast();
+    const pathname = usePathname();
+    const segment = pathname?.split('/')[1];
+    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
+    const t = (key: any) => getTranslation(key, locale);
+
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
     const [rating, setRating] = useState(0);
@@ -55,7 +63,11 @@ export function MovieComments({ movieId }: { movieId: number }) {
         e.preventDefault();
         const content = parentId ? replyContent : newComment;
         if (!session) {
-            toast({ title: 'Влезте в профила си', description: 'Трябва да сте влезли, за да коментирате.', variant: 'destructive' });
+            toast({
+                title: t('login_required') || 'Влезте в профила си',
+                description: t('login_to_comment') || 'Трябва да сте влезли, за да коментирате.',
+                variant: 'destructive'
+            });
             return;
         }
         if (!content.trim()) return;
@@ -81,10 +93,19 @@ export function MovieComments({ movieId }: { movieId: number }) {
                     setRating(0);
                 }
                 fetchComments();
-                toast({ title: 'Благодарим!', description: parentId ? 'Вашият отговор беше добавен.' : 'Вашият коментар беше добавен.' });
+                toast({
+                    title: t('comment_added_thanks') || 'Благодарим!',
+                    description: parentId
+                        ? (t('reply_added_success') || 'Вашият отговор беше добавен.')
+                        : (t('comment_added_success') || 'Вашият коментар беше добавен.')
+                });
             }
         } catch (error) {
-            toast({ title: 'Грешка', description: 'Неуспешно изпращане', variant: 'destructive' });
+            toast({
+                title: t('error') || 'Грешка',
+                description: t('operation_failed') || 'Неуспешна операция.',
+                variant: 'destructive'
+            });
         } finally {
             setLoading(false);
         }
@@ -92,7 +113,10 @@ export function MovieComments({ movieId }: { movieId: number }) {
 
     async function handleLike(commentId: number) {
         if (!session) {
-            toast({ title: 'Влезте в профила си', description: 'Трябва да сте влезли, за да харесвате коментари.' });
+            toast({
+                title: t('login_required') || 'Влезте в профила си',
+                description: t('login_to_like_comment') || 'Трябва да сте влезли, за да харесвате коментари.'
+            });
             return;
         }
 
@@ -112,7 +136,9 @@ export function MovieComments({ movieId }: { movieId: number }) {
                 <div className="h-10 w-10 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
                     <MessageSquare className="h-6 w-6" />
                 </div>
-                <h2 className="text-2xl font-black uppercase italic tracking-tighter">Ревюта & Коментари</h2>
+                <h2 className="text-2xl font-black uppercase italic tracking-tighter">
+                    {t('reviews_comments') || 'Ревюта & Коментари'}
+                </h2>
             </div>
 
             {session ? (
@@ -126,7 +152,9 @@ export function MovieComments({ movieId }: { movieId: number }) {
                         </Avatar>
                         <div className="flex-1 space-y-4">
                             <div className="flex items-center gap-3">
-                                <span className="text-xs text-muted-foreground uppercase font-black tracking-widest">Оцени филма:</span>
+                                <span className="text-xs text-muted-foreground uppercase font-black tracking-widest">
+                                    {t('rate_movie') || 'Оцени филма:'}
+                                </span>
                                 <div className="flex gap-1">
                                     {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((star) => (
                                         <button
@@ -141,14 +169,14 @@ export function MovieComments({ movieId }: { movieId: number }) {
                                 </div>
                             </div>
                             <Textarea
-                                placeholder="Напишете вашето мнение тук..."
+                                placeholder={t('write_opinion') || "Напишете вашето мнение тук..."}
                                 value={newComment}
                                 onChange={(e) => setNewComment(e.target.value)}
                                 className="bg-background/50 border-secondary focus:border-primary transition-all min-h-[100px] rounded-xl resize-none"
                             />
                             <div className="flex justify-end">
                                 <Button disabled={loading || !newComment.trim()} className="gap-2 rounded-xl px-8 font-black uppercase italic shadow-lg shadow-primary/20">
-                                    {loading ? 'Изпращане...' : <><Send className="h-4 w-4" />Публикувай</>}
+                                    {loading ? (t('sending') || 'Изпращане...') : <><Send className="h-4 w-4" />{t('publish') || 'Публикувай'}</>}
                                 </Button>
                             </div>
                         </div>
@@ -156,7 +184,9 @@ export function MovieComments({ movieId }: { movieId: number }) {
                 </form>
             ) : (
                 <div className="bg-secondary/10 p-8 rounded-2xl border border-dashed border-secondary/50 text-center backdrop-blur-sm">
-                    <p className="text-muted-foreground italic font-medium">Трябва да влезете в профила си, за да оставите ревю.</p>
+                    <p className="text-muted-foreground italic font-medium">
+                        {t('login_to_review') || 'Трябва да влезете в профила си, за да оставите ревю.'}
+                    </p>
                 </div>
             )}
 
@@ -173,7 +203,7 @@ export function MovieComments({ movieId }: { movieId: number }) {
                             <div className="flex-1 space-y-3">
                                 <div className="flex items-center justify-between">
                                     <div className="flex items-center gap-3">
-                                        <span className="font-black text-white uppercase tracking-tight">{comment.user.name || 'Потребител'}</span>
+                                        <span className="font-black text-white uppercase tracking-tight">{comment.user.name || t('user') || 'Потребител'}</span>
                                         {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes(comment.user.role) && (
                                             <Badge className="bg-primary/20 text-primary border-primary/20 text-[9px] uppercase font-black px-1.5 py-0">
                                                 {comment.user.role}
@@ -186,7 +216,7 @@ export function MovieComments({ movieId }: { movieId: number }) {
                                         )}
                                     </div>
                                     <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-widest bg-secondary/20 px-2 py-1 rounded-lg">
-                                        {new Date(comment.createdAt).toLocaleDateString('bg-BG')}
+                                        {new Date(comment.createdAt).toLocaleDateString(locale === 'en' ? 'en-US' : 'bg-BG')}
                                     </span>
                                 </div>
                                 <p className="text-muted-foreground leading-relaxed text-sm font-medium">{comment.content}</p>
@@ -197,28 +227,28 @@ export function MovieComments({ movieId }: { movieId: number }) {
                                         className={`flex items-center gap-1.5 text-xs font-black uppercase tracking-tighter transition-all hover:scale-110 ${comment.likes?.length ? 'text-primary' : 'text-muted-foreground hover:text-white'}`}
                                     >
                                         <Star className={`h-4 w-4 ${comment.likes?.length ? 'fill-primary' : ''}`} />
-                                        {comment._count.likes} Харесвания
+                                        {comment._count.likes} {t('likes') || 'Харесвания'}
                                     </button>
                                     <button
                                         onClick={() => setReplyingTo(replyingTo === comment.id ? null : comment.id)}
                                         className="flex items-center gap-1.5 text-xs text-muted-foreground font-black uppercase tracking-tighter hover:text-white transition-colors"
                                     >
                                         <MessageSquare className="h-4 w-4" />
-                                        {replyingTo === comment.id ? 'Отказ' : 'Отговори'}
+                                        {replyingTo === comment.id ? (t('cancel') || 'Отказ') : (t('reply') || 'Отговори')}
                                     </button>
                                 </div>
 
                                 {replyingTo === comment.id && (
                                     <form onSubmit={(e) => handleSubmit(e, comment.id)} className="mt-4 animate-in slide-in-from-top-2 duration-300">
                                         <Textarea
-                                            placeholder="Напишете вашия отговор..."
+                                            placeholder={t('write_reply') || "Напишете вашия отговор..."}
                                             value={replyContent}
                                             onChange={(e) => setReplyContent(e.target.value)}
                                             className="bg-background/50 border-secondary focus:border-primary transition-all min-h-[80px] rounded-xl text-sm"
                                         />
                                         <div className="flex justify-end mt-2">
                                             <Button size="sm" disabled={loading || !replyContent.trim()} className="rounded-lg px-6">
-                                                {loading ? 'Изпращане...' : 'Публикувай отговор'}
+                                                {loading ? (t('sending') || 'Изпращане...') : (t('publish_reply') || 'Публикувай отговор')}
                                             </Button>
                                         </div>
                                     </form>
@@ -240,7 +270,7 @@ export function MovieComments({ movieId }: { movieId: number }) {
                                         <div className="flex-1 space-y-1">
                                             <div className="flex items-center justify-between">
                                                 <div className="flex items-center gap-2">
-                                                    <span className="font-bold text-white text-xs uppercase">{reply.user.name || 'Потребител'}</span>
+                                                    <span className="font-bold text-white text-xs uppercase">{reply.user.name || t('user') || 'Потребител'}</span>
                                                     {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes(reply.user.role) && (
                                                         <Badge className="bg-primary/10 text-primary border-primary/20 text-[8px] uppercase px-1 py-0">
                                                             {reply.user.role}
@@ -260,7 +290,9 @@ export function MovieComments({ movieId }: { movieId: number }) {
                 {comments.length === 0 && (
                     <div className="text-center py-20 bg-secondary/5 border border-dashed border-secondary rounded-3xl">
                         <MessageSquare className="h-10 w-10 text-muted-foreground/30 mx-auto mb-3" />
-                        <p className="text-muted-foreground italic text-lg font-medium">Все още няма коментари. Бъдете първият!</p>
+                        <p className="text-muted-foreground italic text-lg font-medium">
+                            {t('no_comments_yet') || 'Все още няма коментари. Бъдете първият!'}
+                        </p>
                     </div>
                 )}
             </div>
