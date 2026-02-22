@@ -101,53 +101,57 @@ export async function scrapeMovieData(url: string) {
     } else if (isIMDB) {
         const jsonLdScript = $('script[type="application/ld+json"]').first().html();
         if (jsonLdScript) {
-            const data = JSON.parse(jsonLdScript);
+            try {
+                const data = JSON.parse(jsonLdScript);
 
-            // Decode HTML entities (e.g., &apos; → ')
-            const decodeHtml = (text: string) => {
-                if (!text) return text;
-                return text
-                    .replace(/&apos;/g, "'")
-                    .replace(/&quot;/g, '"')
-                    .replace(/&amp;/g, '&')
-                    .replace(/&lt;/g, '<')
-                    .replace(/&gt;/g, '>');
-            };
+                // Decode HTML entities (e.g., &apos; → ')
+                const decodeHtml = (text: string) => {
+                    if (!text) return text;
+                    return text
+                        .replace(/&apos;/g, "'")
+                        .replace(/&quot;/g, '"')
+                        .replace(/&amp;/g, '&')
+                        .replace(/&lt;/g, '<')
+                        .replace(/&gt;/g, '>');
+                };
 
-            const name = decodeHtml(data.name);
-            const altName = data.alternateName ? decodeHtml(data.alternateName) : null;
-            const hasCyrillicName = /[а-яА-Я]/.test(name);
-            const hasCyrillicAlt = altName ? /[а-яА-Я]/.test(altName) : false;
+                const name = decodeHtml(data.name);
+                const altName = data.alternateName ? decodeHtml(data.alternateName) : null;
+                const hasCyrillicName = /[а-яА-Я]/.test(name);
+                const hasCyrillicAlt = altName ? /[а-яА-Я]/.test(altName) : false;
 
-            if (hasCyrillicName) {
-                result.titleBG = name;
-                result.titleEN = altName || name;
-            } else if (hasCyrillicAlt) {
-                result.titleBG = altName;
-                result.titleEN = name;
-            } else {
-                result.titleBG = name;
-                result.titleEN = name;
-            }
+                if (hasCyrillicName) {
+                    result.titleBG = name;
+                    result.titleEN = altName || name;
+                } else if (hasCyrillicAlt) {
+                    result.titleBG = altName;
+                    result.titleEN = name;
+                } else {
+                    result.titleBG = name;
+                    result.titleEN = name;
+                }
 
-            result.description = data.description;
-            result.genres = Array.isArray(data.genre) ? data.genre : (data.genre ? [data.genre] : []);
-            result.year = data.datePublished?.split('-')[0] || '';
-            result.posterUrl = data.image || '';
-            result.rating = data.aggregateRating?.ratingValue ? String(data.aggregateRating.ratingValue) : '';
-            result.director = Array.isArray(data.director) ? data.director[0]?.name : data.director?.name;
-            result.cast = data.actor?.slice(0, 5).map((a: any) => a.name).join(', ');
+                result.description = data.description;
+                result.genres = Array.isArray(data.genre) ? data.genre : (data.genre ? [data.genre] : []);
+                result.year = data.datePublished?.split('-')[0] || '';
+                result.posterUrl = data.image || '';
+                result.rating = data.aggregateRating?.ratingValue ? String(data.aggregateRating.ratingValue) : '';
+                result.director = Array.isArray(data.director) ? data.director[0]?.name : data.director?.name;
+                result.cast = data.actor?.slice(0, 5).map((a: any) => a.name).join(', ');
 
-            if (data['@type'] === 'TVSeries' || data['@type'] === 'TVShow') {
-                result.isSeries = true;
-            }
+                if (data['@type'] === 'TVSeries' || data['@type'] === 'TVShow') {
+                    result.isSeries = true;
+                }
 
-            if (data.duration) {
-                const hMatch = data.duration.match(/(\d+)H/);
-                const mMatch = data.duration.match(/(\d+)M/);
-                const h = hMatch ? parseInt(hMatch[1]) : 0;
-                const m = mMatch ? parseInt(mMatch[1]) : 0;
-                result.duration = (h || m) ? String(h * 60 + m) : '';
+                if (data.duration) {
+                    const hMatch = data.duration.match(/(\d+)H/);
+                    const mMatch = data.duration.match(/(\d+)M/);
+                    const h = hMatch ? parseInt(hMatch[1]) : 0;
+                    const m = mMatch ? parseInt(mMatch[1]) : 0;
+                    result.duration = (h || m) ? String(h * 60 + m) : '';
+                }
+            } catch (jsonErr) {
+                console.error(`[Scraper] JSON-LD parse error for ${url}:`, jsonErr);
             }
         }
     }
