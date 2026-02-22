@@ -18,12 +18,16 @@ interface MoviePlayerWrapperProps {
     videoUrl?: string;
     videoServers?: VideoServer[];
     initialPosition?: number;
+    posterUrl?: string;
+    backdropUrl?: string;
 }
 
-export function MoviePlayerWrapper({ movieId, videoUrl, videoServers }: MoviePlayerWrapperProps) {
+export function MoviePlayerWrapper({ movieId, videoUrl, videoServers, posterUrl, backdropUrl }: MoviePlayerWrapperProps) {
     return <DynamicVideoPlayer
         movieId={movieId}
         videoUrl={videoUrl}
         videoServers={videoServers}
+        posterUrl={posterUrl}
+        backdropUrl={backdropUrl}
     />;
 }

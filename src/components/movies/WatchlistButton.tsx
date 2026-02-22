@@ -3,8 +3,10 @@
 import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
-import { Bookmark, BookmarkCheck } from 'lucide-react';
+import { Heart } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getTranslation, Locale } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
 
 interface WatchlistButtonProps {
     movieId: number;
@@ -13,6 +15,10 @@ interface WatchlistButtonProps {
 export function WatchlistButton({ movieId }: WatchlistButtonProps) {
     const { data: session } = useSession();
     const { toast } = useToast();
+    const pathname = usePathname();
+    const locale = (pathname?.split('/')[1] || 'bg') as Locale;
+    const t = (key: any) => getTranslation(key, locale);
+
     const [isAdded, setIsAdded] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -31,8 +37,8 @@ export function WatchlistButton({ movieId }: WatchlistButtonProps) {
     const toggleWatchlist = async () => {
         if (!session) {
             toast({
-                title: 'Влезте в профила си',
-                description: 'Трябва да сте влезли, за да добавяте филми в Любими.',
+                title: t('login_required') || 'Влезте в профила си',
+                description: t('login_to_watchlist') || 'Трябва да сте влезли, за да добавяте филми в Любими.',
                 variant: 'destructive',
             });
             return;
@@ -50,16 +56,16 @@ export function WatchlistButton({ movieId }: WatchlistButtonProps) {
                 const data = await res.json();
                 setIsAdded(data.added);
                 toast({
-                    title: data.added ? 'Добавено!' : 'Премахнато!',
+                    title: data.added ? t('added') || 'Добавено!' : t('removed') || 'Премахнато!',
                     description: data.added
-                        ? 'Филмът е добавен в Любими.'
-                        : 'Филмът е премахнат от Любими.',
+                        ? t('added_to_favorites') || 'Филмът е добавен в Любими.'
+                        : t('removed_from_favorites') || 'Филмът е премахнат от Любими.',
                 });
             }
         } catch (error) {
             toast({
-                title: 'Грешка',
-                description: 'Неуспешна операция.',
+                title: t('error') || 'Грешка',
+                description: t('operation_failed') || 'Неуспешна операция.',
                 variant: 'destructive',
             });
         } finally {
@@ -68,25 +74,16 @@ export function WatchlistButton({ movieId }: WatchlistButtonProps) {
     };
 
     return (
-        <Button
-            variant={isAdded ? "default" : "outline"}
-            size="lg"
+        <button
             onClick={toggleWatchlist}
             disabled={loading}
-            className={`gap-2 min-w-[160px] h-14 text-lg font-semibold transition-all ${isAdded ? 'bg-primary shadow-lg shadow-primary/20' : 'hover:border-primary/50'
+            className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 ${isAdded
+                    ? 'bg-brand-playRed text-white shadow-[0_0_20px_rgba(229,57,53,0.3)] scale-110'
+                    : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 hover:text-white border border-brand-royalPurple/20'
                 }`}
+            title={isAdded ? t('in_favorites') : t('favorites')}
         >
-            {isAdded ? (
-                <>
-                    <BookmarkCheck className="h-6 w-6" />
-                    В Любими
-                </>
-            ) : (
-                <>
-                    <Bookmark className="h-6 w-6 text-muted-foreground" />
-                    Добави
-                </>
-            )}
-        </Button>
+            <Heart className={`h-6 w-6 transition-all duration-500 ${isAdded ? 'fill-current scale-110' : 'group-hover:scale-110'}`} />
+        </button>
     );
 }

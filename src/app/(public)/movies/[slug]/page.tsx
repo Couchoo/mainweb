@@ -178,14 +178,17 @@ export default async function MoviePage({
                                 </div>
 
                                 <div className="flex flex-wrap justify-center md:justify-start items-center gap-4 pt-4">
-                                    <a href="#watch" className="px-10 py-5 bg-brand-playRed hover:bg-brand-playRed/90 text-white font-display text-2xl tracking-widest uppercase rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-2xl shadow-brand-playRed/20 flex items-center gap-4">
-                                        <Play className="h-6 w-6 fill-current" />
-                                        {t('watch_online') || 'ГЛЕДАЙ'}
-                                    </a>
-                                    <div className="flex items-center gap-3 bg-brand-deepNight/50 p-2 rounded-[2rem] border border-brand-royalPurple/20 backdrop-blur-md">
-                                        <WatchlistButton movieId={movie.id} />
-                                        <div className="w-[1px] h-6 bg-brand-royalPurple/30" />
-                                        <CollectionDialog movieId={movie.id} />
+                                    <div className="flex flex-wrap justify-center md:justify-start items-center gap-6 pt-6">
+                                        <a href="#watch" className="group/btn relative px-12 py-5 bg-brand-playRed hover:bg-brand-playRed/90 text-white font-display text-2xl tracking-widest uppercase rounded-[2rem] transition-all hover:scale-105 active:scale-95 shadow-[0_20px_40px_rgba(229,57,53,0.3)] flex items-center gap-5 overflow-hidden">
+                                            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover/btn:animate-shimmer" />
+                                            <Play className="h-7 w-7 fill-current transition-transform group-hover/btn:scale-110" />
+                                            <span className="relative z-10">{t('watch_online') || 'ГЛЕДАЙ'}</span>
+                                        </a>
+                                        <div className="flex items-center gap-4 bg-brand-deepNight/50 p-2.5 rounded-[2.5rem] border border-brand-royalPurple/20 backdrop-blur-md shadow-2xl">
+                                            <WatchlistButton movieId={movie.id} />
+                                            <div className="w-[1px] h-8 bg-brand-royalPurple/30 mx-1" />
+                                            <CollectionDialog movieId={movie.id} />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -203,9 +206,14 @@ export default async function MoviePage({
                         <div className="h-[1px] flex-1 bg-gradient-to-r from-brand-royalPurple/30 to-transparent ml-6" />
 
                         {/* Friendly mascot tip */}
-                        <div className="hidden lg:flex items-center gap-3 px-4 py-2 bg-brand-deepNight/50 rounded-2xl border border-brand-royalPurple/20 backdrop-blur-sm">
-                            <img src="/brand/couchoo-icon-32.png" className="h-6 w-6 object-contain opacity-50" alt="" />
-                            <span className="text-[11px] font-display tracking-widest text-brand-softLavender uppercase">Chouchoo Препоръчва Max Качество</span>
+                        <div className="hidden lg:flex items-center gap-4 px-6 py-3 bg-brand-deepNight/50 rounded-[2rem] border border-brand-royalPurple/20 backdrop-blur-md group/tip hover:border-brand-cinemaGold/40 transition-all">
+                            <div className="relative">
+                                <img src="/brand/couchoo-icon-32.png" className="h-6 w-6 object-contain opacity-50 group-hover/tip:opacity-100 transition-opacity" alt="" />
+                                <div className="absolute inset-0 bg-brand-cinemaGold/20 blur-lg rounded-full opacity-0 group-hover/tip:opacity-100 transition-opacity" />
+                            </div>
+                            <span className="text-[10px] font-display tracking-[0.2em] text-brand-softLavender/60 uppercase group-hover/tip:text-brand-cinemaGold transition-colors">
+                                {t('ai_quality_optimal') || "Chouchoo Препоръчва Max Качество"}
+                            </span>
                         </div>
                     </div>
 
@@ -213,6 +221,8 @@ export default async function MoviePage({
                         movieId={movie.id}
                         videoUrl={movie.videoUrl || undefined}
                         videoServers={movie.videoserver && movie.videoserver.length > 0 ? movie.videoserver : undefined}
+                        posterUrl={movie.posterUrl}
+                        backdropUrl={movie.backdropUrl || undefined}
                     />
                     <AdBanner slot="movie_under_player" />
                 </section>

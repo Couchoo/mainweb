@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
-import { Plus, Bookmark, Loader2, Check, FolderOpen } from 'lucide-react';
+import { Plus, Bookmark, Loader2, Check, FolderOpen, Layers } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { getTranslation, Locale } from '@/lib/i18n';
+import { usePathname } from 'next/navigation';
 
 interface Collection {
     id: number;
@@ -14,6 +16,10 @@ interface Collection {
 }
 
 export function CollectionDialog({ movieId, trigger }: { movieId: number, trigger?: React.ReactNode }) {
+    const pathname = usePathname();
+    const locale = (pathname?.split('/')[1] || 'bg') as Locale;
+    const t = (key: any) => getTranslation(key, locale);
+
     const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(false);
     const [newCollectionName, setNewCollectionName] = useState('');
@@ -48,10 +54,10 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
             if (res.ok) {
                 setNewCollectionName('');
                 fetchCollections();
-                toast({ title: 'Колекцията е създадена!' });
+                toast({ title: t('collection_created') || 'Колекцията е създадена!' });
             }
         } catch (error) {
-            toast({ title: 'Грешка при създаване', variant: 'destructive' });
+            toast({ title: t('error_creating') || 'Грешка при създаване', variant: 'destructive' });
         }
     }
 
@@ -63,13 +69,13 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
                 body: JSON.stringify({ movieId }),
             });
             if (res.ok) {
-                toast({ title: 'Добавено в колекцията!', description: 'Филмът беше успешно добавен.' });
+                toast({ title: t('added_to_collection') || 'Добавено в колекцията!', description: t('added_success') || 'Филмът беше успешно добавен.' });
                 setOpen(false);
             } else {
-                toast({ title: 'Вече е в тази колекция', variant: 'destructive' });
+                toast({ title: t('already_in_collection') || 'Вече е в тази колекция', variant: 'destructive' });
             }
         } catch (error) {
-            toast({ title: 'Грешка', variant: 'destructive' });
+            toast({ title: t('error') || 'Грешка', variant: 'destructive' });
         }
     }
 
@@ -77,10 +83,12 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
                 {trigger || (
-                    <Button variant="outline" size="sm" className="gap-2 rounded-xl">
-                        <Bookmark className="h-4 w-4" />
-                        Добави в Колекция
-                    </Button>
+                    <button
+                        className="flex items-center justify-center w-12 h-12 rounded-2xl bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 hover:text-white border border-brand-royalPurple/20 transition-all duration-300 group"
+                        title={t('add_to_collection') || "Добави в Колекция"}
+                    >
+                        <Layers className="h-6 w-6 transition-transform group-hover:scale-110" />
+                    </button>
                 )}
             </DialogTrigger>
             <DialogContent className="sm:max-w-[425px] bg-card border-secondary rounded-3xl backdrop-blur-xl">

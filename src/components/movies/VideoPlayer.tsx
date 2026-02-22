@@ -271,6 +271,8 @@ interface VideoPlayerProps {
     isPaused?: boolean;        // Server pause state
     isCinemaMode?: boolean;    // Disables controls, auto-plays, locks seeking
     onEnded?: () => void;      // Callback when movie finishes
+    posterUrl?: string;
+    backdropUrl?: string;
 }
 
 // ─────────────────────────────────────────────
@@ -284,6 +286,8 @@ export function VideoPlayer({
     isPaused = false,
     isCinemaMode = false,
     onEnded,
+    posterUrl,
+    backdropUrl,
 }: VideoPlayerProps) {
     const { data: session } = useSession();
     const [showVideo, setShowVideo] = useState(false);
@@ -354,11 +358,14 @@ export function VideoPlayer({
 
     if (isVIPOnly && !isVIP) {
         return (
-            <div className="aspect-video bg-secondary rounded-lg flex flex-col items-center justify-center border-2 border-primary/20">
-                <Gem className="h-10 w-10 text-amber-400 mb-4" />
-                <h3 className="text-xl font-black uppercase italic">VIP Ексклузивно</h3>
-                <p className="text-muted-foreground text-sm mt-2 text-center px-8">Надстройте сега за неограничен достъп!</p>
-                <Button asChild size="lg" className="mt-4 rounded-xl">
+            <div className="aspect-video bg-secondary rounded-[3rem] flex flex-col items-center justify-center border-2 border-primary/20 overflow-hidden relative">
+                {posterUrl && (
+                    <img src={posterUrl} className="absolute inset-0 w-full h-full object-cover opacity-10 blur-xl" alt="" />
+                )}
+                <Gem className="h-12 w-12 text-amber-400 mb-4 relative z-10" />
+                <h3 className="text-2xl font-black uppercase italic relative z-10">VIP Ексклузивно</h3>
+                <p className="text-muted-foreground text-sm mt-2 text-center px-8 relative z-10">Надстройте сега за неограничен достъп!</p>
+                <Button asChild size="lg" className="mt-6 rounded-2xl relative z-10 bg-brand-cinemaGold text-brand-midnight hover:bg-brand-cinemaGold/90">
                     <Link href="/vip">Стани VIP</Link>
                 </Button>
             </div>
@@ -371,7 +378,7 @@ export function VideoPlayer({
 
         return (
             <div className="space-y-3 h-full">
-                <div className="aspect-video bg-black rounded-lg overflow-hidden border border-secondary shadow-2xl relative h-full">
+                <div className="aspect-video bg-black rounded-[3rem] overflow-hidden border border-brand-royalPurple/30 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative h-full">
                     {isDirectVideoFile(url) ? (
                         // 🎬 Direct file — 100% precise seeking
                         <DirectVideoPlayer
@@ -412,21 +419,22 @@ export function VideoPlayer({
                 </div>
 
                 {!isCinemaMode && servers.length > 1 && (
-                    <div className="flex flex-wrap gap-2 justify-center">
+                    <div className="flex flex-wrap gap-3 justify-center pt-2">
                         {servers.map((server, index) => (
-                            <Button
+                            <button
                                 key={index}
-                                variant={selectedServerIndex === index ? 'default' : 'outline'}
-                                size="sm"
                                 onClick={() => {
                                     setSelectedServerIndex(index);
                                     setShowVideo(false);
                                     setTimeout(() => setShowVideo(true), 100);
                                 }}
-                                className="min-w-[100px]"
+                                className={`px-6 py-2 rounded-xl font-display uppercase tracking-widest text-[11px] transition-all ${selectedServerIndex === index
+                                        ? 'bg-brand-cinemaGold text-brand-midnight shadow-lg'
+                                        : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 border border-brand-royalPurple/10'
+                                    }`}
                             >
                                 {server.name}
-                            </Button>
+                            </button>
                         ))}
                     </div>
                 )}
@@ -437,11 +445,14 @@ export function VideoPlayer({
     // ── Ad countdown ──
     if (adStep > 0 && adStep <= 3) {
         return (
-            <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center border border-primary/20">
-                <div className="text-center space-y-4">
-                    <div className="text-7xl font-black text-primary animate-pulse">{countdown}</div>
-                    <p className="text-xl font-bold">Реклама {adStep} от 3</p>
-                    <Button asChild variant="outline" size="sm" className="rounded-xl">
+            <div className="aspect-video bg-brand-deepNight rounded-[3rem] flex items-center justify-center border border-brand-royalPurple/20 relative overflow-hidden">
+                {posterUrl && (
+                    <img src={posterUrl} className="absolute inset-0 w-full h-full object-cover opacity-10 blur-2xl" alt="" />
+                )}
+                <div className="text-center space-y-4 relative z-10">
+                    <div className="text-8xl font-black text-brand-playRed animate-pulse drop-shadow-[0_0_30px_rgba(229,57,53,0.5)]">{countdown}</div>
+                    <p className="text-xl font-display uppercase tracking-widest text-white">Реклама {adStep} от 3</p>
+                    <Button asChild variant="outline" size="sm" className="rounded-2xl border-brand-royalPurple/30 text-brand-softLavender">
                         <Link href="/vip">Премахни рекламите</Link>
                     </Button>
                 </div>
@@ -452,10 +463,15 @@ export function VideoPlayer({
     // ── No servers ──
     if (servers.length === 0) {
         return (
-            <div className="aspect-video bg-secondary rounded-lg flex items-center justify-center border border-secondary p-8 text-center">
-                <div className="space-y-2">
-                    <AlertCircle className="h-10 w-10 text-muted-foreground mx-auto opacity-20" />
-                    <p className="text-muted-foreground italic">В момента няма наличен видео сървър за този филм.</p>
+            <div className="aspect-video bg-brand-deepNight rounded-[3rem] flex items-center justify-center border border-brand-royalPurple/20 p-8 text-center relative overflow-hidden">
+                {posterUrl && (
+                    <img src={posterUrl} className="absolute inset-0 w-full h-full object-cover opacity-5 blur-3xl" alt="" />
+                )}
+                <div className="space-y-4 relative z-10">
+                    <div className="w-16 h-16 rounded-full bg-brand-royalPurple/20 flex items-center justify-center mx-auto">
+                        <AlertCircle className="h-8 w-8 text-brand-softLavender opacity-40" />
+                    </div>
+                    <p className="text-brand-softLavender/40 italic font-display uppercase tracking-widest text-sm">Няма наличен сървър</p>
                 </div>
             </div>
         );
@@ -464,16 +480,48 @@ export function VideoPlayer({
     // ── Play button ──
     return (
         <div className="space-y-4 h-full">
-            <div className="group relative aspect-video bg-secondary rounded-lg flex items-center justify-center overflow-hidden border border-secondary hover:border-primary/50 transition-all shadow-lg h-full">
-                <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                <Button
-                    size="lg"
-                    onClick={handlePlay}
-                    className="relative z-10 gap-3 px-8 h-14 text-lg font-bold shadow-xl transition-transform group-hover:scale-110"
-                >
-                    <Play className="h-6 w-6 fill-white" />
-                    Гледай сега
-                </Button>
+            <div className="group relative aspect-video bg-brand-deepNight rounded-[3rem] flex items-center justify-center overflow-hidden border border-brand-royalPurple/30 hover:border-brand-cinemaGold/40 transition-all duration-700 shadow-[0_40px_100px_rgba(0,0,0,0.8)] h-full">
+                {/* Enhanced Player Placeholder Background */}
+                {(backdropUrl || posterUrl) && (
+                    <div className="absolute inset-0 transition-transform duration-1000 group-hover:scale-110">
+                        <img
+                            src={backdropUrl || posterUrl}
+                            className="w-full h-full object-cover opacity-40 group-hover:opacity-50 transition-opacity"
+                            alt=""
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-brand-midnight via-brand-midnight/20 to-transparent" />
+                        <div className="absolute inset-0 backdrop-blur-[2px]" />
+                    </div>
+                )}
+
+                {/* Cinematic Logo Overlay */}
+                <div className="absolute top-10 flex items-center gap-3 opacity-20 pointer-events-none">
+                    <img src="/brand/couchoo-icon-32.png" className="w-6 h-6 animate-pulse" alt="" />
+                    <span className="font-display uppercase tracking-[0.5em] text-xs">CHOUCHOO CINEMA</span>
+                </div>
+
+                {/* Enhanced Play Button */}
+                <div className="relative z-10 group/play cursor-pointer" onClick={handlePlay}>
+                    <div className="relative">
+                        {/* Outer Glow */}
+                        <div className="absolute inset-0 bg-brand-cinemaGold/30 blur-[40px] rounded-full scale-150 opacity-0 group-hover/play:opacity-100 transition-opacity duration-500" />
+
+                        {/* Shimmer Border */}
+                        <div className="p-[2px] rounded-full bg-gradient-to-br from-brand-cinemaGold/50 via-white/50 to-brand-cinemaGold/50 shadow-2xl transition-transform group-hover/play:scale-110 duration-500">
+                            <div className="w-24 h-24 md:w-32 md:h-32 rounded-full bg-brand-midnight/80 backdrop-blur-2xl flex items-center justify-center border border-white/5 overflow-hidden">
+                                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover/play:animate-shimmer" />
+                                <Play className="h-10 w-10 md:h-14 md:h-14 fill-brand-cinemaGold text-brand-cinemaGold ml-2 drop-shadow-[0_0_20px_rgba(240,192,64,0.5)]" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="mt-8 text-center animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+                        <p className="text-white font-display uppercase tracking-[0.4em] text-sm group-hover/play:text-brand-cinemaGold transition-colors">
+                            {session ? "ГЛЕДАЙ СЕГА" : "ВЛЕЗ И ГЛЕДАЙ"}
+                        </p>
+                        <div className="h-[2px] w-0 bg-brand-cinemaGold mx-auto mt-2 transition-all duration-500 group-hover/play:w-20" />
+                    </div>
+                </div>
             </div>
         </div>
     );

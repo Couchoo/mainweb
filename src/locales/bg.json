@@ -19,6 +19,8 @@
     "home": "Начало",
     "movies": "Филми",
     "watchlist": "Любими",
+    "favorites": "Любими",
+    "in_favorites": "В Любими",
     "profile": "Профил",
     "vipAccount": "VIP Акаунт",
     "upgradeToVip": "Надстрой до VIP",
@@ -167,6 +169,7 @@
     "hero_scroll_titles": "Скролни за над 15,000 заглавия",
     "hero_explore": "ОТКРИЙ",
     "hero_badge_uhd": "ULTRA HD",
+    "ai_quality_optimal": "AI Оптимално Качество",
     "hero_badge_4k": "4K КИНО",
     "hero_badge_atmosphere": "ATMOSPHERE",
     "hero_badge_ai": "AI МОЩ"
