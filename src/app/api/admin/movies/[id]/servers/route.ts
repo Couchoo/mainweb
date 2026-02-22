@@ -7,10 +7,11 @@ import { prisma } from '@/lib/db';
  */
 export async function GET(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const movieId = parseInt(params.id);
+        const { id } = await params;
+        const movieId = parseInt(id);
 
         const servers = await (prisma as any).$queryRawUnsafe(`
             SELECT id, name, url, \`order\`
@@ -39,10 +40,11 @@ export async function GET(
  */
 export async function POST(
     request: NextRequest,
-    { params }: { params: { id: string } }
+    { params }: { params: Promise<{ id: string }> }
 ) {
     try {
-        const movieId = parseInt(params.id);
+        const { id } = await params;
+        const movieId = parseInt(id);
         const body = await request.json();
         const { servers } = body; // Array of { name, url }
 
