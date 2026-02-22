@@ -9,9 +9,20 @@ import (
 )
 
 func loadEnv() {
-	file, err := os.Open("../.env")
+	paths := []string{"../.env", "./.env", "../../.env"}
+	var file *os.File
+	var err error
+
+	for _, p := range paths {
+		file, err = os.Open(p)
+		if err == nil {
+			log.Printf("📂 Loaded .env from: %s", p)
+			break
+		}
+	}
+
 	if err != nil {
-		log.Println("No .env file found in parent directory, using environment variables")
+		log.Println("No .env file found, using system environment variables")
 		return
 	}
 	defer file.Close()
