@@ -48,13 +48,13 @@ export async function POST(request: NextRequest) {
                 update: {
                     status: 'ACTIVE',
                     currentPeriodEnd: newExpiry,
-                    planId: 'POPCORN_REDEMPTION'
                 },
                 create: {
                     userId,
+                    id: `sub_${Date.now()}`,
+                    stripeCustomerId: `popcorn_cust_${userId}`,
                     status: 'ACTIVE',
                     currentPeriodEnd: newExpiry,
-                    planId: 'POPCORN_REDEMPTION',
                     stripeSubscriptionId: `popcorn_${Date.now()}`
                 }
             });
