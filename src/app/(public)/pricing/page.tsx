@@ -5,7 +5,6 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Check, Gem, X, Star } from 'lucide-react';
 import { useState } from 'react';
-import { headers } from 'next/headers';
 import { Locale } from '@/lib/i18n';
 
 export default function PricingPage() {

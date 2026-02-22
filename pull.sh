@@ -17,7 +17,7 @@ npm run build
 echo "------------------------------------------"
 echo "🐹 Степен 3: Обновяване на Cinema-WS (Go)..."
 cd cinema-ws
-go build -o ws-server
+/usr/local/go/bin/go build -o ws-server
 cd ..
 
 echo "------------------------------------------"
