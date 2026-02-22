@@ -200,15 +200,25 @@ export function Header({ locale = 'bg' }: HeaderProps) {
 
                     {/* Center: Desktop Navigation (Pill Style) */}
                     <div className="hidden xl:flex items-center bg-brand-deepNight/50 border border-brand-royalPurple/10 rounded-full px-2 py-1 gap-1">
-                        {mainOrdered.slice(0, 6).map((cat) => (
-                            <Link
-                                key={cat.slug}
-                                href={`/category/${cat.slug}`}
-                                className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all whitespace-nowrap font-display tracking-widest uppercase"
-                            >
-                                {getCategoryDisplayName(cat)}
-                            </Link>
-                        ))}
+                        {mainOrdered.slice(0, 6).map((cat) => {
+                            const enName = (cat as any).nameEN ||
+                                Object.keys(GENRE_MAPPING).find(k =>
+                                    GENRE_MAPPING[k] === cat.name ||
+                                    k.toLowerCase() === cat.name.toLowerCase()
+                                ) ||
+                                cat.name;
+                            const urlSlug = enName.toLowerCase().replace(/\s+/g, '-');
+
+                            return (
+                                <Link
+                                    key={cat.id}
+                                    href={`/category/${urlSlug}`}
+                                    className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all whitespace-nowrap font-display tracking-widest uppercase"
+                                >
+                                    {getCategoryDisplayName(cat)}
+                                </Link>
+                            );
+                        })}
                         {otherCategories.length > 0 && (
                             <DropdownMenu>
                                 <DropdownMenuTrigger className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all font-display tracking-widest uppercase outline-none">
@@ -257,9 +267,12 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                             else if (searchName.includes('war')) { CategoryIcon = Skull; accentColor = "from-gray-700/30"; }
                                             else if (searchName.includes('western')) { CategoryIcon = Clapperboard; accentColor = "from-orange-600/20"; }
 
+                                            // Canonical English slug for the URL
+                                            const urlSlug = enName.toLowerCase().replace(/\s+/g, '-');
+
                                             return (
-                                                <DropdownMenuItem key={cat.slug} asChild className="rounded-[2rem] focus:bg-brand-royalPurple/20 p-2 cursor-pointer group/cat border border-white/5 hover:border-brand-royalPurple/40 transition-all active:scale-[0.98] relative overflow-hidden">
-                                                    <Link href={`/category/${cat.slug}`} className="flex items-center gap-5 relative z-10 w-full">
+                                                <DropdownMenuItem key={cat.id} asChild className="rounded-[2rem] focus:bg-brand-royalPurple/20 p-2 cursor-pointer group/cat border border-white/5 hover:border-brand-royalPurple/40 transition-all active:scale-[0.98] relative overflow-hidden">
+                                                    <Link href={`/category/${urlSlug}`} className="flex items-center gap-5 relative z-10 w-full">
                                                         {/* Innovative Banner Background Glow */}
                                                         <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500`} />
 

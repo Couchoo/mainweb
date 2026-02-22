@@ -7,6 +7,7 @@ import { getTranslation, getLocalizedMovie, getLocalizedCategory, Locale } from 
 import { FilterBar } from '@/components/movies/FilterBar';
 import { Metadata } from 'next';
 import { generateCategoryMetadata } from '@/lib/seo-utils';
+import { GENRE_MAPPING } from '@/lib/genre-mapping';
 
 export async function generateMetadata(
     { params }: { params: Promise<{ slug: string }> }
@@ -58,6 +59,11 @@ export default async function CategoryPage({
     // Normalize slug to lowercase for consistent lookup
     const searchSlug = slug.toLowerCase();
 
+    // Find the Bulgarian counterpart if the slug is English
+    const bgName = Object.entries(GENRE_MAPPING).find(([en, bg]) =>
+        en.toLowerCase() === searchSlug
+    )?.[1];
+
     const where: any = {
         published: true,
         moviecategory: {
@@ -65,7 +71,8 @@ export default async function CategoryPage({
                 category: {
                     OR: [
                         { slug: searchSlug },
-                        { name: searchSlug }
+                        { name: searchSlug },
+                        ...(bgName ? [{ name: bgName }] : [])
                     ]
                 }
             }
@@ -84,7 +91,8 @@ export default async function CategoryPage({
         where: {
             OR: [
                 { slug: searchSlug },
-                { name: searchSlug }
+                { name: searchSlug },
+                ...(bgName ? [{ name: bgName }] : [])
             ]
         },
     });
