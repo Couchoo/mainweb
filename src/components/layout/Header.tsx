@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Search, LogOut, Bookmark, User, Play, Star } from 'lucide-react';
+import { Menu, Search, LogOut, Bookmark, User, Play, Star, Sword, Ghost, Heart, Smile, Rocket, Zap, Music, Skull, Clapperboard, Shield, History, Film, Trophy, Users, Monitor, Sparkles } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NAVBAR_ORDER, GENRE_MAPPING } from '@/lib/genre-mapping';
 import { getTranslation, Locale } from '@/lib/i18n';
@@ -218,29 +218,47 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                     <div className="col-span-2 px-3 py-2 border-b border-brand-royalPurple/10 mb-2">
                                         <span className="text-[9px] font-bold text-brand-cinemaGold uppercase tracking-[0.3em]">Explore Genres</span>
                                     </div>
-                                    {otherCategories.map((cat) => {
-                                        // Simple icon mapping
-                                        let CategoryIcon = Menu;
-                                        const name = (cat as any).nameEN || cat.name;
-                                        if (name.includes('Animation')) CategoryIcon = Play;
-                                        if (name.includes('Horror')) CategoryIcon = Star; // Using Star as placeholder
-                                        if (name.includes('Crime')) CategoryIcon = Bookmark;
-                                        if (name.includes('Mystery')) CategoryIcon = Search;
-                                        if (name.includes('Romance')) CategoryIcon = Star;
+                                    {otherCategories
+                                        .sort((a, b) => getCategoryDisplayName(a).localeCompare(getCategoryDisplayName(b)))
+                                        .map((cat) => {
+                                            // Rich thematic icon mapping
+                                            let CategoryIcon = Film;
+                                            const name = (cat as any).nameEN || cat.name;
+                                            if (name.includes('Action')) CategoryIcon = Sword;
+                                            if (name.includes('Animation')) CategoryIcon = Sparkles;
+                                            if (name.includes('Comedy')) CategoryIcon = Smile;
+                                            if (name.includes('Crime')) CategoryIcon = Shield;
+                                            if (name.includes('Documentary')) CategoryIcon = Monitor;
+                                            if (name.includes('Drama')) CategoryIcon = Heart;
+                                            if (name.includes('Family')) CategoryIcon = Users;
+                                            if (name.includes('Fantasy')) CategoryIcon = Zap;
+                                            if (name.includes('History')) CategoryIcon = History;
+                                            if (name.includes('Horror')) CategoryIcon = Ghost;
+                                            if (name.includes('Music')) CategoryIcon = Music;
+                                            if (name.includes('Mystery')) CategoryIcon = Search;
+                                            if (name.includes('Romance')) CategoryIcon = Heart;
+                                            if (name.includes('Sci-Fi')) CategoryIcon = Rocket;
+                                            if (name.includes('Sport')) CategoryIcon = Trophy;
+                                            if (name.includes('Thriller')) CategoryIcon = Zap;
+                                            if (name.includes('War')) CategoryIcon = Skull;
+                                            if (name.includes('Western')) CategoryIcon = Clapperboard;
 
-                                        return (
-                                            <DropdownMenuItem key={cat.slug} asChild className="rounded-2xl focus:bg-brand-royalPurple/20 py-3 cursor-pointer group">
-                                                <Link href={`/category/${cat.slug}`} className="flex items-center gap-3">
-                                                    <div className="w-8 h-8 rounded-xl bg-brand-royalPurple/20 flex items-center justify-center text-brand-softLavender group-hover:text-brand-cinemaGold group-hover:bg-brand-royalPurple/40 transition-all shadow-lg">
-                                                        <CategoryIcon className="w-4 h-4" />
-                                                    </div>
-                                                    <span className="font-display tracking-widest uppercase text-[10px] font-bold text-brand-softLavender/90 group-hover:text-brand-warmCream transition-colors">
-                                                        {getCategoryDisplayName(cat)}
-                                                    </span>
-                                                </Link>
-                                            </DropdownMenuItem>
-                                        );
-                                    })}
+                                            return (
+                                                <DropdownMenuItem key={cat.slug} asChild className="rounded-[1.5rem] focus:bg-brand-royalPurple/20 p-1.5 cursor-pointer group/cat border border-transparent hover:border-brand-royalPurple/20 transition-all active:scale-[0.98]">
+                                                    <Link href={`/category/${cat.slug}`} className="flex items-center gap-4">
+                                                        <div className="w-11 h-11 rounded-2xl bg-brand-royalPurple/10 flex items-center justify-center text-brand-softLavender group-hover/cat:text-brand-cinemaGold group-hover/cat:bg-brand-royalPurple/30 transition-all shadow-inner border border-white/5">
+                                                            <CategoryIcon className="w-5 h-5" />
+                                                        </div>
+                                                        <div className="flex flex-col">
+                                                            <span className="font-display tracking-widest uppercase text-[10px] font-bold text-brand-warmCream/90 group-hover/cat:text-white transition-colors">
+                                                                {getCategoryDisplayName(cat)}
+                                                            </span>
+                                                            <span className="text-[8px] text-brand-softLavender/40 uppercase tracking-tighter mt-0.5">Explore Movies</span>
+                                                        </div>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            );
+                                        })}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
