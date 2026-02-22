@@ -8,7 +8,7 @@ import { MoviePlayerWrapper } from '@/components/movies/MoviePlayerWrapper';
 import { MovieCard } from '@/components/movies/MovieCard';
 import { MovieComments } from '@/components/movies/MovieComments';
 import { AdBanner } from '@/components/ads/AdBanner';
-import { getTranslation, Locale, getLocalizedMovie } from '@/lib/i18n';
+import { getTranslation, Locale, getLocalizedMovie, TranslationKey } from '@/lib/i18n';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { headers } from 'next/headers';
@@ -287,7 +287,7 @@ export default async function MoviePage({
                                     </h3>
                                 </div>
                                 <div className="space-y-5">
-                                    {collectionMovies.map((relatedMovie: { id: number, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
+                                    {collectionMovies.map((relatedMovie: { id: number, slug: string, isHD: boolean, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
                                         <div key={relatedMovie.id} className="relative group">
                                             <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
                                             <MovieCard movie={relatedMovie} locale={locale} />
@@ -316,7 +316,7 @@ export default async function MoviePage({
                         <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-cinemaGold/30 to-transparent ml-6" />
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-                        {relatedMovies.map((m: { id: number, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
+                        {relatedMovies.map((m: { id: number, slug: string, isHD: boolean, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
                             <MovieCard key={m.id} movie={getLocalizedMovie(m, locale)} locale={locale} />
                         ))}
                     </div>
