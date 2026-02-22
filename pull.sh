@@ -2,6 +2,7 @@
 
 # 🚀 Couchoo One-Click Update Script
 # Usage: ./pull.sh
+# Version: 1.0.1 (Fixed build errors)
 
 echo "------------------------------------------"
 echo "⏬ Степен 1: Изтегляне на нов код..."
