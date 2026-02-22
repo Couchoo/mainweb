@@ -4,7 +4,7 @@ import React from 'react';
 
 export default function HeroMascot() {
     return (
-        <div style={{
+        <div className="hero-mascot-wrapper" style={{
             position: 'relative',
             width: 'clamp(380px, 45vw, 620px)',
             filter: 'drop-shadow(0 30px 60px rgba(75,63,141,0.4))',

@@ -25,6 +25,7 @@ export default function HeroBadges() {
             {badges.map((badge: any, i) => (
                 <div
                     key={i}
+                    className="hero-badge"
                     style={{
                         position: 'absolute',
                         ...(badge.position as any),

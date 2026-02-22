@@ -71,7 +71,7 @@ export default function HeroBackground() {
             }} />
 
             {/* Film grain texture — animated */}
-            <div style={{
+            <div className="hero-grain" style={{
                 position: 'absolute',
                 inset: '-50%',
                 width: '200%',

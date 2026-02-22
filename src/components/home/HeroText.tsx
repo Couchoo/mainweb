@@ -43,10 +43,10 @@ export default function HeroText() {
     }, []);
 
     return (
-        <div style={{ position: 'relative', zIndex: 3 }}>
+        <div className="hero-text-block" style={{ position: 'relative', zIndex: 3 }}>
 
             {/* "THE NEW EXPERIENCE" pill */}
-            <div style={{
+            <div className="hero-pill" style={{
                 display: 'inline-flex',
                 alignItems: 'center',
                 gap: '8px',
@@ -94,13 +94,13 @@ export default function HeroText() {
             </div>
 
             {/* Main heading */}
-            <div style={{ marginBottom: '24px' }}>
+            <div className="hero-heading" style={{ marginBottom: '24px' }}>
                 <AnimatedWord text="CINEMA" color="white" startDelay={0.4} />
                 <AnimatedWord text="AT HOME" color="var(--gold)" startDelay={0.8} />
             </div>
 
             {/* Separator line */}
-            <div style={{
+            <div className="hero-separator-line" style={{
                 width: subtitleVisible ? '60px' : '0px',
                 height: '3px',
                 background: 'linear-gradient(90deg, var(--red-couchoo), transparent)',
@@ -110,7 +110,7 @@ export default function HeroText() {
             }} />
 
             {/* Casual subtitle */}
-            <p style={{
+            <p className="hero-subtitle" style={{
                 fontSize: 'clamp(15px, 1.4vw, 18px)',
                 color: 'var(--text-muted)',
                 lineHeight: 1.65,
@@ -131,7 +131,7 @@ export default function HeroText() {
             </p>
 
             {/* Scroll hint */}
-            <div style={{
+            <div className="hero-scroll-hint" style={{
                 marginTop: '48px',
                 display: 'flex',
                 alignItems: 'center',
