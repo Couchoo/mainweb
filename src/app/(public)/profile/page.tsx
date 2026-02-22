@@ -217,7 +217,7 @@ export default function ProfilePage() {
                 <div className="flex flex-col md:flex-row items-center gap-8 mb-16 p-8 rounded-[3rem] bg-brand-deepNight/40 border border-brand-royalPurple/20 backdrop-blur-xl shadow-2xl relative overflow-hidden group">
                     {/* Background Mascot hint */}
                     <div className="absolute -right-16 -bottom-16 opacity-5 group-hover:scale-110 group-hover:rotate-12 transition-all duration-1000">
-                        <img src="/brand/couchoo-mascot-footer.png" className="w-64 h-64 invert" alt="" />
+                        <img src="/brand/couchoo-mascot-transparent.png" className="w-64 h-64 invert" alt="" />
                     </div>
 
                     <div className="relative">
