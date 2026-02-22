@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo, memo } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Send,
     Users,
@@ -18,6 +19,15 @@ import {
     Star,
     X,
     Clock,
+    Pause,
+    Volume2,
+    VolumeX,
+    Maximize,
+    Heart,
+    Shield,
+    Award,
+    Target,
+    Zap
 } from 'lucide-react';
 import { VideoPlayer } from '@/components/movies/VideoPlayer';
 import { useToast } from '@/hooks/use-toast';
@@ -74,7 +84,35 @@ function CountdownTimer({ targetDate, locale }: { targetDate: Date, locale: Loca
     );
 }
 
-export function CinemaClient({ locale }: CinemaClientProps) {
+// 🚀 Memoized Viewer Item for high FPS list
+const ViewerItem = memo(({ viewer, onClick, t }: { viewer: any; onClick: () => void; t: any }) => (
+    <motion.div
+        layout
+        initial={{ opacity: 0, x: -20 }}
+        animate={{ opacity: 1, x: 0 }}
+        onClick={onClick}
+        className="flex items-center justify-between p-4 rounded-[1.8rem] bg-brand-royalPurple/[0.03] hover:bg-white/[0.08] transition-all duration-300 group cursor-pointer border border-brand-royalPurple/5 hover:border-brand-cinemaGold/30 shadow-sm active:scale-[0.98]"
+    >
+        <div className="flex items-center gap-4">
+            <Avatar className="h-12 w-12 border-2 border-brand-midnight group-hover:ring-2 group-hover:ring-brand-cinemaGold/40 transition-all duration-300">
+                <AvatarImage src={viewer.image} />
+                <AvatarFallback className="bg-brand-royalPurple text-xs font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
+            </Avatar>
+            <div className="flex flex-col">
+                <h4 className={`text-base font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
+                        viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
+                    }`}>{viewer.name}</h4>
+                <p className="text-[9px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</p>
+            </div>
+        </div>
+        <Button size="sm" variant="ghost" className="rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 bg-brand-cinemaGold/10 text-brand-cinemaGold hover:bg-brand-cinemaGold hover:text-brand-midnight font-display uppercase tracking-widest text-[9px] px-5 h-8">
+            {t('cinema_gift')} 🎁
+        </Button>
+    </motion.div>
+));
+ViewerItem.displayName = 'ViewerItem';
+
+export default function CinemaClient({ locale }: CinemaClientProps) {
     const { data: session } = useSession();
     const { toast } = useToast();
     const t = (key: any) => getTranslation(key, locale);
@@ -220,17 +258,16 @@ export function CinemaClient({ locale }: CinemaClientProps) {
         const performHeartbeat = async () => {
             if (!session) return;
             try {
-                console.log('[CINEMA-WS] Sending heartbeat...');
                 const res = await fetch('/api/cinema/heartbeat', { method: 'POST' });
-                if (res.ok) {
+                // 💡 If we have a working WebSocket, we prefer its presence updates
+                // But we still fetch the list once on load or if WS hasn't pushed anything.
+                if (res.ok && viewers.length === 0) {
                     const data = await res.json();
                     if (data.viewers) {
                         updateViewers(data.viewers);
                     }
                 }
-            } catch (e) {
-                console.error('[CINEMA-WS] Heartbeat fetch failed:', e);
-            }
+            } catch (e) { }
         };
 
         // Run immediately
@@ -245,22 +282,8 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             clearInterval(chatInterval);
             clearInterval(scheduleInterval);
 
-            // Notify server we are leaving
-            if (session) {
-                const body = JSON.stringify({ status: 'leaving' });
-                const blob = new Blob([body], { type: 'application/json' });
-
-                if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-                    navigator.sendBeacon('/api/cinema/heartbeat', blob);
-                } else {
-                    fetch('/api/cinema/heartbeat', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body,
-                        keepalive: true
-                    }).catch(() => { });
-                }
-            }
+            // ❌ Removing 'leaving' pulse to prevent multi-tab flicker.
+            // Presence will naturally timeout on the server or be managed by WebSocket.
         };
     }, [session]);
 
@@ -845,62 +868,58 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                     locale={locale}
                 />
 
-                {showViewersModal && (
-                    <div
-                        className="fixed inset-0 bg-brand-midnight/90 backdrop-blur-2xl z-[100] flex items-center justify-center p-6 animate-in fade-in duration-500"
-                        onClick={(e) => { if (e.target === e.currentTarget) setShowViewersModal(false); }}
-                    >
-                        <div className="w-full max-w-xl bg-brand-deepNight/90 rounded-[3.5rem] border border-brand-royalPurple/20 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative text-brand-warmCream">
-                            <div className="p-10 border-b border-brand-royalPurple/20 flex justify-between items-center bg-brand-royalPurple/10">
-                                <div className="flex items-center gap-5">
-                                    <div className="p-4 rounded-[1.5rem] bg-brand-cinemaGold/10 text-brand-cinemaGold shadow-lg shadow-brand-cinemaGold/5">
-                                        <Users className="w-7 h-7" />
-                                    </div>
-                                    <div>
-                                        <h2 className="text-2xl font-display tracking-widest uppercase">{t('cinema_viewersInHall')}</h2>
-                                        <p className="text-[11px] text-brand-softLavender/60 uppercase font-display tracking-[0.2em] mt-1">
-                                            <span className="text-brand-cinemaGold mr-2">{activeViewers}</span> {t('cinema_peopleTotal')}
-                                        </p>
-                                    </div>
-                                </div>
-                                <Button variant="ghost" size="icon" onClick={() => setShowViewersModal(false)} className="rounded-2xl hover:bg-brand-royalPurple/20 w-12 h-12 transition-all">
-                                    <X className="w-6 h-6" />
-                                </Button>
-                            </div>
-
-                            <ScrollArea className="flex-1 p-6">
-                                <div className="space-y-3 px-4">
-                                    {viewers.map((viewer) => (
-                                        <div
-                                            key={viewer.id}
-                                            onClick={() => {
-                                                setGiftingTo(viewer);
-                                                setShowViewersModal(false);
-                                            }}
-                                            className="flex items-center justify-between p-4 rounded-[1.8rem] bg-brand-royalPurple/[0.03] hover:bg-white/[0.08] transition-all duration-300 group cursor-pointer border border-brand-royalPurple/5 hover:border-brand-cinemaGold/30 shadow-sm active:scale-[0.98]"
-                                        >
-                                            <div className="flex items-center gap-4">
-                                                <Avatar className="h-12 w-12 border-2 border-brand-midnight group-hover:ring-2 group-hover:ring-brand-cinemaGold/40 transition-all duration-300">
-                                                    <AvatarImage src={viewer.image} />
-                                                    <AvatarFallback className="bg-brand-royalPurple text-xs font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex flex-col">
-                                                    <h4 className={`text-base font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                                                            viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
-                                                        }`}>{viewer.name}</h4>
-                                                    <p className="text-[9px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</p>
-                                                </div>
-                                            </div>
-                                            <Button size="sm" variant="ghost" className="rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 bg-brand-cinemaGold/10 text-brand-cinemaGold hover:bg-brand-cinemaGold hover:text-brand-midnight font-display uppercase tracking-widest text-[9px] px-5 h-8">
-                                                {t('cinema_gift')} 🎁
-                                            </Button>
+                <AnimatePresence>
+                    {showViewersModal && (
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="fixed inset-0 bg-brand-midnight/90 backdrop-blur-2xl z-[100] flex items-center justify-center p-6"
+                            onClick={(e) => { if (e.target === e.currentTarget) setShowViewersModal(false); }}
+                        >
+                            <motion.div
+                                initial={{ scale: 0.9, y: 20, opacity: 0 }}
+                                animate={{ scale: 1, y: 0, opacity: 1 }}
+                                exit={{ scale: 0.9, y: 20, opacity: 0 }}
+                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                                className="w-full max-w-xl bg-brand-deepNight/90 rounded-[3.5rem] border border-brand-royalPurple/20 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative text-brand-warmCream"
+                            >
+                                <div className="p-10 border-b border-brand-royalPurple/20 flex justify-between items-center bg-brand-royalPurple/10">
+                                    <div className="flex items-center gap-5">
+                                        <div className="p-4 rounded-[1.5rem] bg-brand-cinemaGold/10 text-brand-cinemaGold shadow-lg shadow-brand-cinemaGold/5">
+                                            <Users className="w-7 h-7" />
                                         </div>
-                                    ))}
+                                        <div>
+                                            <h2 className="text-2xl font-display tracking-widest uppercase">{t('cinema_viewersInHall')}</h2>
+                                            <p className="text-[11px] text-brand-softLavender/60 uppercase font-display tracking-[0.2em] mt-1">
+                                                <span className="text-brand-cinemaGold mr-2">{activeViewers}</span> {t('cinema_peopleTotal')}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <Button variant="ghost" size="icon" onClick={() => setShowViewersModal(false)} className="rounded-2xl hover:bg-brand-royalPurple/20 w-12 h-12 transition-all">
+                                        <X className="w-6 h-6" />
+                                    </Button>
                                 </div>
-                            </ScrollArea>
-                        </div>
-                    </div>
-                )}
+
+                                <ScrollArea className="flex-1 p-6">
+                                    <div className="space-y-3 px-4">
+                                        {viewers.map((viewer) => (
+                                            <ViewerItem
+                                                key={viewer.id}
+                                                viewer={viewer}
+                                                t={t}
+                                                onClick={() => {
+                                                    setGiftingTo(viewer);
+                                                    setShowViewersModal(false);
+                                                }}
+                                            />
+                                        ))}
+                                    </div>
+                                </ScrollArea>
+                            </motion.div>
+                        </motion.div>
+                    )}
+                </AnimatePresence>
             </div>
         </div>
     );
