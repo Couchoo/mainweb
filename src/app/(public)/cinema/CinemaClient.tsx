@@ -458,6 +458,7 @@ export default function CinemaClient({ locale }: CinemaClientProps) {
                                     isPaused={isPaused}
                                     isCinemaMode={true}
                                     onEnded={handleMovieEnd}
+                                    locale={locale}
                                 />
                                 <div className="absolute top-8 left-8 pointer-events-none transition-transform group-hover:translate-x-1 z-30">
                                     <div className="bg-brand-playRed text-white border-0 font-display uppercase tracking-widest px-6 py-2 rounded-2xl animate-pulse shadow-[0_0_30px_rgba(229,57,53,0.6)] flex items-center gap-3">
