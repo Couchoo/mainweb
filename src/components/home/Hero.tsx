@@ -14,6 +14,7 @@ export function Hero({ locale }: { locale: string }) {
 
     // ── Cursor golden glow (only in hero zone)
     useEffect(() => {
+        if ('ontouchstart' in window) return; // touch device = skip
         const hero = heroRef.current;
         const glow = cursorGlowRef.current;
         if (!hero || !glow) return;
@@ -42,6 +43,7 @@ export function Hero({ locale }: { locale: string }) {
 
     // ── Parallax scroll for mascot
     useEffect(() => {
+        if (window.innerWidth < 768) return; // skip on mobile
         const handleScroll = () => {
             const scrollY = window.scrollY;
             // Mascot moves slower — 30% of scroll speed
@@ -58,7 +60,7 @@ export function Hero({ locale }: { locale: string }) {
             style={{
                 position: 'relative',
                 width: '100%',
-                minHeight: '100vh',
+                minHeight: '100svh',
                 background: 'var(--hero-bg)',
                 overflow: 'hidden',
                 display: 'flex',
@@ -88,6 +90,7 @@ export function Hero({ locale }: { locale: string }) {
 
             {/* Main hero grid */}
             <div
+                className="hero-grid"
                 style={{
                     position: 'relative',
                     zIndex: 3,
@@ -99,7 +102,7 @@ export function Hero({ locale }: { locale: string }) {
                     gridTemplateColumns: '1fr 1fr',
                     alignItems: 'center',
                     gap: '40px',
-                    minHeight: '100vh',
+                    minHeight: '100svh',
                 }}
             >
                 {/* LEFT — Text */}
@@ -125,6 +128,7 @@ export function Hero({ locale }: { locale: string }) {
 
             {/* Scroll indicator */}
             <div
+                className="hero-scroll-hint"
                 style={{
                     position: 'absolute',
                     bottom: '32px',
