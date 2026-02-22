@@ -65,6 +65,7 @@ export function Hero({ locale }: { locale: string }) {
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
+                marginTop: '-72px', // Pull up under fixed header
             }}
         >
             {/* Film grain + ambient particles */}
