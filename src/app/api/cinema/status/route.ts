@@ -54,9 +54,26 @@ export async function GET(request: NextRequest) {
 
         const nextMovie = allPotential.find((s: any) => new Date(s.startTime).getTime() > nowMs);
 
-        const thirtySecondsAgo = new Date(nowMs - 30 * 1000);
+        // --- 🧹 CHAT CLEANUP LOGIC ---
+        // If a movie just ended (within the last 60s), clear the chat table
+        const justEnded = allPotential.find((s: any) => {
+            const endMs = new Date(s.endTime).getTime();
+            return nowMs > endMs && nowMs < endMs + 60000;
+        });
+
+        if (justEnded) {
+            const secretRaw = process.env.WS_INTERNAL_SECRET!;
+            const secret = secretRaw?.replace(/^["']|["']$/g, '');
+            const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+            fetch(`${baseUrl}/api/cinema/chat`, {
+                method: 'DELETE',
+                headers: { Authorization: `Bearer ${secret}` }
+            }).catch(() => { });
+        }
+
+        const fortyFiveSecondsAgo = new Date(nowMs - 45 * 1000);
         const activePresence = await (prisma as any).cinema_presence.findMany({
-            where: { lastSeen: { gte: thirtySecondsAgo } },
+            where: { lastSeen: { gte: fortyFiveSecondsAgo } },
             include: {
                 user: { select: { id: true, name: true, image: true, role: true, createdAt: true } }
             }

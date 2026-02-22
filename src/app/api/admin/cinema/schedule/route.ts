@@ -118,6 +118,16 @@ export async function DELETE(request: NextRequest) {
             isLive: false
         });
 
+        // 🚀 Clear chat for the next movie
+        const secretRaw = process.env.WS_INTERNAL_SECRET!;
+        const secret = secretRaw?.replace(/^["']|["']$/g, '');
+        const baseUrl = process.env.NEXTAUTH_URL || 'http://localhost:3000';
+
+        fetch(`${baseUrl}/api/cinema/chat`, {
+            method: 'DELETE',
+            headers: { Authorization: `Bearer ${secret}` }
+        }).catch(() => { });
+
         return NextResponse.json({ success: true });
     } catch (error: any) {
         return NextResponse.json({ error: error.message }, { status: 500 });

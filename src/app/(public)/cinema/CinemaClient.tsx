@@ -170,6 +170,11 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             setViewers(sortedViewers);
             setActiveViewers(payload.count);
         }, []),
+
+        onChatClear: useCallback(() => {
+            console.log('[CINEMA-WS] Chat cleared by system');
+            setMessages([]);
+        }, []),
     });
 
     useEffect(() => {
@@ -199,10 +204,12 @@ export function CinemaClient({ locale }: CinemaClientProps) {
         performHeartbeat();
 
         const heartbeat = setInterval(performHeartbeat, 7000); // Every 7 seconds for a better real-time feel
-
+        const chatInterval = setInterval(fetchMessages, 5000); // Fail-safe polling for chat if WS is down
         const scheduleInterval = setInterval(fetchCinemaData, 30000);
+
         return () => {
             clearInterval(heartbeat);
+            clearInterval(chatInterval);
             clearInterval(scheduleInterval);
         };
     }, [session]);

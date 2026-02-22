@@ -10,7 +10,8 @@ import crypto from 'crypto';
  */
 export async function GET() {
     const session = await getServerSession(authOptions);
-    const secret = process.env.WS_INTERNAL_SECRET!;
+    const secretRaw = process.env.WS_INTERNAL_SECRET!;
+    const secret = secretRaw?.replace(/^["']|["']$/g, '');
     if (!secret) {
         return NextResponse.json({ error: 'WS not configured' }, { status: 500 });
     }

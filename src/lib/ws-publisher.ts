@@ -5,7 +5,8 @@
  */
 
 const WS_INTERNAL_URL = process.env.WS_INTERNAL_URL || 'http://localhost:8080';
-const WS_INTERNAL_SECRET = process.env.WS_INTERNAL_SECRET || 'cinema-ws-secret-change-in-production';
+const WS_INTERNAL_SECRET_RAW = process.env.WS_INTERNAL_SECRET || 'cinema-ws-secret-change-in-production';
+const WS_INTERNAL_SECRET = WS_INTERNAL_SECRET_RAW.replace(/^["']|["']$/g, '');
 
 /**
  * Broadcast a message to all connected WebSocket clients.

@@ -53,3 +53,27 @@ export async function POST(request: NextRequest) {
         return NextResponse.json({ error: 'Error' }, { status: 500 });
     }
 }
+export async function DELETE(request: NextRequest) {
+    try {
+        const session = await getServerSession(authOptions);
+        if (!session?.user || (session.user as any).role !== 'ADMIN' && (session.user as any).role !== 'SUPER_ADMIN') {
+            // Internal system calls might not have session, so we also check for internal secret
+            const authHeader = request.headers.get('Authorization');
+            const secretRaw = process.env.WS_INTERNAL_SECRET!;
+            const secret = secretRaw?.replace(/^["']|["']$/g, '');
+
+            if (authHeader !== `Bearer ${secret}`) {
+                return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
+            }
+        }
+
+        await (prisma as any).cinema_message.deleteMany({});
+
+        // Notify WS to clear chat UI for all clients
+        publishToWS('chat:clear', {});
+
+        return NextResponse.json({ success: true });
+    } catch (error) {
+        return NextResponse.json({ error: 'Error' }, { status: 500 });
+    }
+}

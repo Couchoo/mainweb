@@ -8,6 +8,7 @@ interface UseCinemaWSOptions {
     onCinemaSync?: (payload: CinemaSyncPayload) => void;
     onCinemaState?: (payload: CinemaStatePayload) => void;
     onChatMessage?: (payload: any) => void;
+    onChatClear?: () => void;
     onGiftReceived?: (payload: GiftPayload) => void;
     onPresenceUpdate?: (payload: PresencePayload) => void;
     onCinemaReaction?: (payload: { emoji: string }) => void;
@@ -107,6 +108,9 @@ export function useCinemaWS(options: UseCinemaWSOptions = {}) {
                             break;
                         case 'chat:message':
                             optionsRef.current.onChatMessage?.(msg.payload);
+                            break;
+                        case 'chat:clear':
+                            optionsRef.current.onChatClear?.();
                             break;
                         case 'gift:received':
                             optionsRef.current.onGiftReceived?.(msg.payload);

@@ -26,11 +26,11 @@ export async function POST(request: NextRequest) {
             update: { lastSeen: new Date() }
         });
 
-        // Cleanup stale presence (older than 120 seconds)
-        // We use a wider window to prevent flickering if connections are slow
-        const twoMinutesAgo = new Date(Date.now() - 120 * 1000);
+        // Cleanup stale presence (older than 45 seconds)
+        // Responsive but allows for occasional slow heartbeat
+        const cleanupWindow = new Date(Date.now() - 45 * 1000);
         await (prisma as any).cinema_presence.deleteMany({
-            where: { lastSeen: { lt: twoMinutesAgo } }
+            where: { lastSeen: { lt: cleanupWindow } }
         }).catch(() => { });
 
         // Get current active viewers
