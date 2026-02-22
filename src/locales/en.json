@@ -135,5 +135,16 @@
     "gift_you_sent": "You Sent",
     "gift_you_received": "You Received",
     "gift_sent_message": "gifted",
-    "gift_to_recipient": "to"
+    "gift_to_recipient": "to",
+    "footer_discover": "Discover",
+    "footer_cinema_exp": "Cinema Experience",
+    "footer_my_couchoo": "My Couchoo",
+    "footer_support_legal": "Support & Legal",
+    "footer_hall_schedule": "Hall Schedule",
+    "footer_top_gifters": "Top Gifters",
+    "footer_popcorn_shop": "Popcorn Shop",
+    "footer_vip_portal": "VIP Portal",
+    "footer_dmca": "DMCA",
+    "footer_support_mail": "support@couchoo.com",
+    "footer_tagline_new": "Your premium cinema experience. Anytime, anywhere."
 }

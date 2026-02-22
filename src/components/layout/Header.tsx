@@ -136,7 +136,7 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                 <SheetContent side="left" className="w-[300px] border-secondary bg-brand-midnight">
                                     <SheetHeader>
                                         <SheetTitle className="text-left flex items-center gap-3">
-                                            <img src="/brand/couchoo-logo-navbar.png" alt="Couchoo" className="h-8 w-auto" />
+                                            <img src="/brand/couchoo-wordmark-dark.png" alt="Couchoo" className="h-8 w-auto" />
                                         </SheetTitle>
                                     </SheetHeader>
                                     <div className="mt-8 space-y-4">
@@ -216,19 +216,11 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                     </div>
 
                     {/* Logo & Navbar Mascot */}
-                    <Link href="/" className="flex items-center gap-2 group">
-                        <div className="relative overflow-visible">
-                            <img
-                                src="/brand/couchoo-icon-64.png"
-                                className="h-9 w-9 object-contain transition-transform group-hover:scale-110 duration-500"
-                                alt="Chouchoo Icon"
-                            />
-                            <div className="absolute inset-0 bg-brand-cinemaGold/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-                        </div>
+                    <Link href="/" className="flex items-center group pl-2">
                         <img
-                            src="/brand/couchoo-logo-navbar.png"
-                            className="h-7 w-auto hidden sm:block"
-                            alt="Couchoo Logo"
+                            src="/brand/couchoo-wordmark-dark.png"
+                            className="h-8 md:h-10 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_15px_rgba(240,192,64,0.3)] filter"
+                            alt="Couchoo"
                         />
                     </Link>
                 </div>
