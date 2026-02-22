@@ -103,6 +103,26 @@ export function CinemaClient({ locale }: CinemaClientProps) {
     const scrollRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
 
+    const stableSortViewers = useCallback((viewList: any[]) => {
+        return [...viewList]
+            .filter((v, index, self) => v && v.id && self.findIndex(t => t.id === v.id) === index) // Unique by ID
+            .sort((a, b) => {
+                // Secondary sort by name if ID is somehow identical (fallback)
+                if (a.id !== b.id) return a.id - b.id;
+                return (a.name || '').localeCompare(b.name || '');
+            });
+    }, []);
+
+    const updateViewers = useCallback((rawViewers: any[], totalCount?: number) => {
+        const sorted = stableSortViewers(rawViewers);
+        setViewers(sorted);
+        if (totalCount !== undefined) {
+            setActiveViewers(totalCount);
+        } else {
+            setActiveViewers(sorted.length);
+        }
+    }, [stableSortViewers]);
+
     // ─── WebSocket: Real-time events ────────────────────────────────────────────
     const { connectionState, sendReaction } = useCinemaWS({
         onCinemaSync: useCallback((payload: any) => {
@@ -110,16 +130,14 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             setIsCinemaLive(payload.isLive);
             setIsPaused(payload.isPaused);
             if (payload.viewers) {
-                const sortedViewers = [...payload.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
-                setViewers(sortedViewers);
-                setActiveViewers(payload.viewers.length);
+                updateViewers(payload.viewers);
             } else if (payload.viewerCount !== undefined) {
                 setActiveViewers(payload.viewerCount);
             }
             if (payload.isLive && !currentMovie && !loading) {
                 fetchCinemaData();
             }
-        }, [currentMovie, loading]),
+        }, [currentMovie, loading, updateViewers]),
 
         onCinemaState: useCallback((payload: any) => {
             setIsCinemaLive(payload.isLive);
@@ -179,10 +197,8 @@ export function CinemaClient({ locale }: CinemaClientProps) {
         }, []),
 
         onPresenceUpdate: useCallback((payload: any) => {
-            const sortedViewers = [...payload.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
-            setViewers(sortedViewers);
-            setActiveViewers(payload.count);
-        }, []),
+            updateViewers(payload.viewers, payload.count);
+        }, [updateViewers]),
 
         onChatClear: useCallback(() => {
             console.log('[CINEMA-WS] Chat cleared by system');
@@ -203,9 +219,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                 if (res.ok) {
                     const data = await res.json();
                     if (data.viewers) {
-                        const sortedViewers = [...data.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
-                        setViewers(sortedViewers);
-                        setActiveViewers(data.viewers.length);
+                        updateViewers(data.viewers);
                     }
                 }
             } catch (e) {
@@ -697,8 +711,8 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                                 disabled={isLocked}
                                                 onClick={() => sendGift(gift.type, gift.amount)}
                                                 className={`group relative flex flex-col items-center p-5 rounded-[2.5rem] bg-brand-midnight/40 border transition-all active:scale-95 shadow-lg ${isLocked
-                                                        ? 'opacity-40 border-brand-royalPurple/10 cursor-not-allowed scale-95'
-                                                        : 'border-brand-royalPurple/20 hover:border-brand-cinemaGold/40 hover:bg-brand-royalPurple/10'
+                                                    ? 'opacity-40 border-brand-royalPurple/10 cursor-not-allowed scale-95'
+                                                    : 'border-brand-royalPurple/20 hover:border-brand-cinemaGold/40 hover:bg-brand-royalPurple/10'
                                                     }`}
                                             >
                                                 <div className={`text-4xl mb-3 transition-transform drop-shadow-lg ${isLocked ? 'grayscale opacity-30 group-hover:scale-100' : 'group-hover:scale-110'}`}>
@@ -757,8 +771,8 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                         </div>
                         <div className="flex items-center gap-6">
                             <div className="flex -space-x-4 items-center cursor-pointer group/pres" onClick={() => setShowViewersModal(true)}>
-                                {viewers.slice(0, 5).map((viewer, i) => (
-                                    <Avatar key={viewer.id || i} className="h-12 w-12 border-4 border-brand-midnight ring-2 ring-brand-royalPurple/20 shadow-2xl transition-all group-hover/pres:scale-110 group-hover/pres:z-10 group-hover/pres:ring-brand-cinemaGold/40">
+                                {viewers.slice(0, 5).map((viewer) => (
+                                    <Avatar key={viewer.id} className="h-12 w-12 border-4 border-brand-midnight ring-2 ring-brand-royalPurple/20 shadow-2xl transition-all group-hover/pres:scale-110 group-hover/pres:z-10 group-hover/pres:ring-brand-cinemaGold/40">
                                         <AvatarImage src={viewer.image} />
                                         <AvatarFallback className="bg-brand-royalPurple text-xs font-display">{viewer.name?.[0] || '?'}</AvatarFallback>
                                     </Avatar>
@@ -850,9 +864,9 @@ export function CinemaClient({ locale }: CinemaClientProps) {
 
                             <ScrollArea className="flex-1 p-6">
                                 <div className="space-y-3">
-                                    {viewers.map((viewer, i) => (
+                                    {viewers.map((viewer) => (
                                         <div
-                                            key={viewer.id || i}
+                                            key={viewer.id}
                                             onClick={() => {
                                                 setGiftingTo(viewer);
                                                 setShowViewersModal(false);
