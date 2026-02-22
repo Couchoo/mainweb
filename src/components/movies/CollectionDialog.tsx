@@ -17,7 +17,8 @@ interface Collection {
 
 export function CollectionDialog({ movieId, trigger }: { movieId: number, trigger?: React.ReactNode }) {
     const pathname = usePathname();
-    const locale = (pathname?.split('/')[1] || 'bg') as Locale;
+    const segment = pathname?.split('/')[1];
+    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
     const t = (key: any) => getTranslation(key, locale);
 
     const [collections, setCollections] = useState<Collection[]>([]);

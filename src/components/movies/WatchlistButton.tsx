@@ -16,7 +16,8 @@ export function WatchlistButton({ movieId }: WatchlistButtonProps) {
     const { data: session } = useSession();
     const { toast } = useToast();
     const pathname = usePathname();
-    const locale = (pathname?.split('/')[1] || 'bg') as Locale;
+    const segment = pathname?.split('/')[1];
+    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
     const t = (key: any) => getTranslation(key, locale);
 
     const [isAdded, setIsAdded] = useState(false);
@@ -78,8 +79,8 @@ export function WatchlistButton({ movieId }: WatchlistButtonProps) {
             onClick={toggleWatchlist}
             disabled={loading}
             className={`flex items-center justify-center w-12 h-12 rounded-2xl transition-all duration-300 ${isAdded
-                    ? 'bg-brand-playRed text-white shadow-[0_0_20px_rgba(229,57,53,0.3)] scale-110'
-                    : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 hover:text-white border border-brand-royalPurple/20'
+                ? 'bg-brand-playRed text-white shadow-[0_0_20px_rgba(229,57,53,0.3)] scale-110'
+                : 'bg-brand-royalPurple/20 text-brand-softLavender hover:bg-brand-royalPurple/40 hover:text-white border border-brand-royalPurple/20'
                 }`}
             title={isAdded ? t('in_favorites') : t('favorites')}
         >
