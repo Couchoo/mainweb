@@ -157,5 +157,17 @@
     "settings": "Настройки",
     "watched_stats": "Гледани",
     "watchlist_stats": "Списък",
-    "popcorn_stats": "Пуканки"
+    "popcorn_stats": "Пуканки",
+    "nav_cinema": "КИНО",
+    "hero_pill_text": "НОВОТО ИЗЖИВЯВАНЕ",
+    "hero_heading_cinema": "КИНО",
+    "hero_heading_at_home": "У ДОМА",
+    "hero_subtitle_part1": "Хвани дистанционното, вземи пуканките —",
+    "hero_subtitle_part2": "Chouchoo знае какво да гледаш тази вечер.",
+    "hero_scroll_titles": "Скролни за над 15,000 заглавия",
+    "hero_explore": "ОТКРИЙ",
+    "hero_badge_uhd": "ULTRA HD",
+    "hero_badge_4k": "4K КИНО",
+    "hero_badge_atmosphere": "ATMOSPHERE",
+    "hero_badge_ai": "AI МОЩ"
 }

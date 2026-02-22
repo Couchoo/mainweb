@@ -5,9 +5,10 @@ import HeroBackground from './HeroBackground';
 import HeroMascot from './HeroMascot';
 import HeroText from './HeroText';
 import HeroBadges from './HeroBadges';
+import { getTranslation, Locale } from '@/lib/i18n';
 import './hero.css';
 
-export function Hero({ locale }: { locale: string }) {
+export function Hero({ locale = 'bg' }: { locale: string }) {
     const heroRef = useRef<HTMLElement>(null);
     const cursorGlowRef = useRef<HTMLDivElement>(null);
     const [mascotOffset, setMascotOffset] = useState(0);
@@ -107,7 +108,7 @@ export function Hero({ locale }: { locale: string }) {
                 }}
             >
                 {/* LEFT — Text */}
-                <HeroText />
+                <HeroText locale={locale as any} />
 
                 {/* RIGHT — Mascot */}
                 <div
@@ -125,7 +126,7 @@ export function Hero({ locale }: { locale: string }) {
             </div>
 
             {/* Floating info badges */}
-            <HeroBadges />
+            <HeroBadges locale={locale as any} />
 
             {/* Scroll indicator */}
             <div
@@ -151,7 +152,7 @@ export function Hero({ locale }: { locale: string }) {
                     textTransform: 'uppercase',
                     fontFamily: 'monospace',
                 }}>
-                    EXPLORE
+                    {getTranslation('hero_explore', locale as any)}
                 </span>
                 <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
                     <path

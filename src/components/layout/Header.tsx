@@ -191,7 +191,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                                     onClick={() => setIsMenuOpen(false)}
                                                 >
                                                     <Play className="h-4 w-4 fill-current text-brand-playRed" />
-                                                    {t('home')} (Live)
+                                                    {t('nav_cinema')} (Live)
                                                 </Link>
                                             </nav>
                                             <div className="space-y-4">
@@ -337,7 +337,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                 <Play className="w-3.5 h-3.5 fill-current" />
                                 <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full animate-ping" />
                             </div>
-                            <span className="text-[11px] font-bold font-display tracking-widest uppercase">Cinema</span>
+                            <span className="text-[11px] font-bold font-display tracking-widest uppercase">{t('nav_cinema')}</span>
                         </Link>
 
                         <Link href="/cinema" className="flex lg:hidden">

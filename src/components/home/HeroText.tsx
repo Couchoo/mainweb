@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { getTranslation, Locale } from '@/lib/i18n';
 
 // Splits text into spans for stagger animation
 function AnimatedWord({ text, color, startDelay = 0 }: { text: string; color: string; startDelay?: number }) {
@@ -30,7 +31,8 @@ function AnimatedWord({ text, color, startDelay = 0 }: { text: string; color: st
     );
 }
 
-export default function HeroText() {
+export default function HeroText({ locale = 'bg' }: { locale?: Locale }) {
+    const t = (key: any) => getTranslation(key, locale);
     const [subtitleVisible, setSubtitleVisible] = useState(false);
     const [pillVisible, setPillVisible] = useState(false);
 
@@ -89,14 +91,14 @@ export default function HeroText() {
                     fontFamily: 'monospace',
                     textTransform: 'uppercase',
                 }}>
-                    The New Experience
+                    {t('hero_pill_text')}
                 </span>
             </div>
 
             {/* Main heading */}
             <div className="hero-heading" style={{ marginBottom: '24px' }}>
-                <AnimatedWord text="CINEMA" color="white" startDelay={0.4} />
-                <AnimatedWord text="AT HOME" color="var(--gold)" startDelay={0.8} />
+                <AnimatedWord text={t('hero_heading_cinema')} color="white" startDelay={0.4} />
+                <AnimatedWord text={t('hero_heading_at_home')} color="var(--gold)" startDelay={0.8} />
             </div>
 
             {/* Separator line */}
@@ -123,10 +125,10 @@ export default function HeroText() {
                 transition: 'opacity 0.7s ease, transform 0.7s ease',
                 margin: 0,
             }}>
-                Хвани дистанционното, вземи пуканките —
+                {t('hero_subtitle_part1')}
                 <br />
                 <span style={{ color: 'rgba(255,255,255,0.75)' }}>
-                    Chouchoo знае какво да гледаш тази вечер.
+                    {t('hero_subtitle_part2')}
                 </span>
             </p>
 
@@ -151,7 +153,7 @@ export default function HeroText() {
                     fontFamily: 'monospace',
                     textTransform: 'uppercase',
                 }}>
-                    Скролни за над 15,000 заглавия
+                    {t('hero_scroll_titles')}
                 </span>
             </div>
         </div>

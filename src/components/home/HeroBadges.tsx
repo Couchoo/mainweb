@@ -1,20 +1,22 @@
 'use client';
 
 import React from 'react';
+import { getTranslation, Locale } from '@/lib/i18n';
 
-export default function HeroBadges() {
+export default function HeroBadges({ locale = 'bg' }: { locale?: Locale }) {
+    const t = (key: any) => getTranslation(key, locale);
     const badges = [
         {
             icon: '★',
-            label: 'ULTRA HD',
-            sublabel: '4K CINEMA',
+            label: t('hero_badge_uhd'),
+            sublabel: t('hero_badge_4k'),
             delay: '1.8s',
             position: { top: '18%', right: '6%' },
         },
         {
             icon: '✦',
-            label: 'ATMOSPHERE',
-            sublabel: 'AI POWERED',
+            label: t('hero_badge_atmosphere'),
+            sublabel: t('hero_badge_ai'),
             delay: '2.1s',
             position: { bottom: '22%', right: '10%' },
         },
