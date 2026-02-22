@@ -442,21 +442,23 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                     <motion.div
                                         initial={{ opacity: 0, y: 15, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        className="relative"
+                                        className="relative group/card"
                                     >
-                                        {/* Mascot Area */}
-                                        <div className="absolute -top-10 left-0 right-0 h-10 flex justify-center z-20 pointer-events-none">
+                                        {/* Mascot Area - Peeking from background */}
+                                        <div className="absolute -top-6 -left-4 w-20 h-20 z-0 pointer-events-none opacity-40 group-hover/card:opacity-100 transition-opacity duration-700">
                                             <motion.img
                                                 src="/brand/couchoo-mascot-transparent.png"
                                                 alt="Mascot"
-                                                className="w-20 h-20 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]"
-                                                initial={{ y: 5 }}
-                                                animate={{ y: 0 }}
-                                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
+                                                className="w-full h-full object-contain -rotate-12"
+                                                animate={{
+                                                    y: [0, -5, 0],
+                                                    rotate: [-12, -8, -12]
+                                                }}
+                                                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
                                             />
                                         </div>
 
-                                        <div className="relative overflow-hidden bg-[#0F0F11]/98 backdrop-blur-3xl border border-white/10 rounded-[1.75rem] shadow-[0_20px_60px_rgba(0,0,0,0.9)] pb-3">
+                                        <div className="relative overflow-hidden bg-[#0F0F11]/98 backdrop-blur-3xl border border-white/10 rounded-[1.75rem] shadow-[0_20px_60px_rgba(0,0,0,0.9)] pb-3 z-10">
                                             <div className="h-20 w-full bg-gradient-to-b from-brand-royalPurple/20 to-transparent absolute top-0 left-0" />
 
                                             <div className="relative z-10 p-5 pt-7 text-center border-b border-white/5">
@@ -487,10 +489,10 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                                     { label: t('watchlist_stats'), val: userStats?.watchlist, icon: Bookmark, color: 'text-brand-warmCream' },
                                                     { label: t('popcorn_stats'), val: userStats?.popcorn, icon: Sparkles, color: 'text-brand-royalPurple' }
                                                 ].map((s, i) => (
-                                                    <div key={i} className="flex flex-col items-center p-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
-                                                        <s.icon className={`w-3 h-3 ${s.color} mb-1 opacity-70`} />
-                                                        <span className="text-xs font-display font-black text-brand-warmCream">{s.val || 0}</span>
-                                                        <span className="text-[6px] font-bold uppercase text-brand-softLavender/30 tracking-tight">{s.label}</span>
+                                                    <div key={i} className="flex flex-col items-center p-2 rounded-xl bg-white/[0.04] border border-white/[0.08] hover:bg-white/[0.08] transition-all">
+                                                        <s.icon className={`w-3.5 h-3.5 ${s.color} mb-1`} />
+                                                        <span className="text-sm font-display font-black text-brand-warmCream">{s.val || 0}</span>
+                                                        <span className="text-[8px] font-black uppercase text-brand-softLavender/70 tracking-tight">{s.label}</span>
                                                     </div>
                                                 ))}
                                             </div>
@@ -498,14 +500,14 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                             <div className="px-3 pb-2 grid grid-cols-2 gap-2">
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
                                                     <Link href="/profile" className="flex flex-col items-center justify-center h-14 rounded-xl bg-brand-royalPurple/5 border border-brand-royalPurple/10 hover:bg-brand-royalPurple/20 transition-all group/btn">
-                                                        <User className="w-3.5 h-3.5 mb-1 text-brand-royalPurple group-hover/btn:text-brand-cinemaGold transition-colors" />
-                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/70">{t('profile')}</span>
+                                                        <User className="w-4 h-4 mb-1 text-brand-royalPurple group-hover/btn:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/60">{t('profile')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
                                                     <Link href="/collections" className="flex flex-col items-center justify-center h-14 rounded-xl bg-brand-playRed/5 border border-brand-playRed/10 hover:bg-brand-playRed/20 transition-all group/btn">
-                                                        <Library className="w-3.5 h-3.5 mb-1 text-brand-playRed group-hover/btn:text-brand-cinemaGold transition-colors" />
-                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/70">{t('collections')}</span>
+                                                        <Library className="w-4 h-4 mb-1 text-brand-playRed group-hover/btn:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/60">{t('collections')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                             </div>
@@ -513,7 +515,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                             <div className="px-3 space-y-1">
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
                                                     <Link href="/settings" className="flex items-center gap-3 w-full h-9 px-4 rounded-xl hover:bg-white/5 text-brand-softLavender/50 group/line transition-all">
-                                                        <Settings className="w-3 h-3 group-hover/line:rotate-90 transition-transform" />
+                                                        <Settings className="w-3.5 h-3.5 group-hover/line:rotate-90 transition-transform" />
                                                         <span className="text-[10px] font-bold">{t('settings')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
@@ -521,7 +523,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                                     onClick={() => signOut()}
                                                     className="flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-brand-playRed/10 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all cursor-pointer font-black text-[9px] uppercase tracking-widest border border-brand-playRed/10"
                                                 >
-                                                    <LogOut className="w-3 h-3" />
+                                                    <LogOut className="w-3.5 h-3.5" />
                                                     {t('logout')}
                                                 </DropdownMenuItem>
                                             </div>
