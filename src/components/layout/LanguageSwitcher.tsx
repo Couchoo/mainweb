@@ -28,12 +28,12 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2 group px-4 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-brand-cinemaGold/40 transition-all shadow-lg active:scale-95 group">
+                <Button variant="ghost" size="sm" className="flex items-center gap-1.5 group px-3 py-1.5 rounded-xl bg-white/5 border border-white/10 hover:border-brand-cinemaGold/40 transition-all shadow-lg active:scale-95 group">
                     <Globe className="w-3.5 h-3.5 text-brand-softLavender group-hover:text-brand-cinemaGold transition-colors" />
-                    <span className="font-bold uppercase text-[10px] tracking-widest text-brand-softLavender group-hover:text-brand-warmCream transition-colors">
+                    <span className="font-bold uppercase text-[10px] tracking-widest text-brand-softLavender group-hover:text-brand-warmCream transition-colors hidden sm:inline">
                         {currentLocale === 'bg' ? 'Български' : 'English'}
                     </span>
-                    <span className="text-sm drop-shadow-sm ml-1">
+                    <span className="text-sm drop-shadow-sm">
                         {currentLocale === 'bg' ? '🇧🇬' : '🇺🇸'}
                     </span>
                 </Button>
