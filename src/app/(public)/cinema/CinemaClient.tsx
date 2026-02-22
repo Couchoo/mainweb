@@ -107,10 +107,12 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             setPlaybackOffset(payload.offsetSeconds);
             setIsCinemaLive(payload.isLive);
             setIsPaused(payload.isPaused);
-            if (payload.viewerCount !== undefined) setActiveViewers(payload.viewerCount);
             if (payload.viewers) {
                 const sortedViewers = [...payload.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
                 setViewers(sortedViewers);
+                setActiveViewers(payload.viewers.length);
+            } else if (payload.viewerCount !== undefined) {
+                setActiveViewers(payload.viewerCount);
             }
             if (payload.isLive && !currentMovie && !loading) {
                 fetchCinemaData();

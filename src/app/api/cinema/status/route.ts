@@ -40,7 +40,8 @@ export async function GET(request: NextRequest) {
         const currentMovie = allPotential.find((s: any) => {
             const startMs = new Date(s.startTime).getTime();
             const endMs = new Date(s.endTime).getTime();
-            const isLive = startMs <= nowMs && endMs >= nowMs;
+            // 🛡️ LEAD TIME: Mark as live if starting within 10s to account for skew
+            const isLive = startMs <= (nowMs + 10000) && endMs >= nowMs;
 
             if (isLive) {
                 playbackOffset = Math.floor((nowMs - startMs) / 1000);

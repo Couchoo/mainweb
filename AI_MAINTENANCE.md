@@ -44,5 +44,10 @@ Whenever a change is made locally:
 - **Animations**: Use Framer Motion and Lucide-react icons for micro-interactions.
 - **User Experience**: Real-time presence and chat are core to the "Cinema" experience.
 
+## 🎬 Cinema Synchronization Logic
+- **Sync Pulse**: Go server broadcasts `cinema:sync` every 5 seconds.
+- **Iframe Reload Protection**: In `VideoPlayer.tsx`, iframes DO NOT use the `playbackOffset` in the `key`. This prevents the player from reloading on every sync pulse.
+- **Direct MP4 Sync**: MP4 files use a React `useEffect` and `onLoadedMetadata` for sub-second precision seeking without reloads.
+
 ---
 *Created on 2026-02-22 to ensure no knowledge is lost.*

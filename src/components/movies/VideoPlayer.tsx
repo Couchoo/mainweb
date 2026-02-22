@@ -70,6 +70,8 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
     const [isMuted, setIsMuted] = useState(false);
     const [duration, setDuration] = useState(0);
     const [isLocallyPaused, setIsLocallyPaused] = useState(false);
+    const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false);
+    const [isBuffering, setIsBuffering] = useState(true);
 
     // Initial seek and periodic drift compensation
     useEffect(() => {
@@ -111,7 +113,12 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
             // auto-resume the video. Only resume if the user isn't locally paused.
             if (video.paused && cinemaMode && !isLocallyPaused) {
                 video.currentTime = offset;
-                video.play().catch(err => console.log('[CINEMA] Autoplay prevented:', err));
+                video.play().then(() => {
+                    setIsAutoplayBlocked(false);
+                }).catch(err => {
+                    console.log('[CINEMA] Autoplay prevented:', err);
+                    setIsAutoplayBlocked(true);
+                });
                 setIsLocallyPaused(false);
             }
         }
@@ -124,7 +131,9 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
 
         console.log('[CINEMA] User resumed, jumping to live:', offset);
         video.currentTime = offset;
-        video.play().catch(() => { });
+        video.play().then(() => {
+            setIsAutoplayBlocked(false);
+        }).catch(() => { });
         setIsLocallyPaused(false);
     }, [offset]);
 
@@ -177,7 +186,10 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
                     setDuration(e.currentTarget.duration);
                     // 🎬 Instant sync once metadata is here
                     if (offset > 0) e.currentTarget.currentTime = offset;
+                    setIsBuffering(false);
                 }}
+                onWaiting={() => setIsBuffering(true)}
+                onPlaying={() => setIsBuffering(false)}
                 style={cinemaMode ? { pointerEvents: 'none' } : {}}
             />
 
@@ -186,20 +198,33 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
                     {/* Central Play/Pause Overlay */}
                     <div
                         onClick={() => isLocallyPaused ? handlePlay() : handlePause()}
-                        className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 ${isLocallyPaused ? 'bg-black/40' : 'bg-transparent hover:bg-black/10'}`}
+                        className={`absolute inset-0 flex items-center justify-center cursor-pointer transition-all duration-300 z-10 
+                            ${(isLocallyPaused || isAutoplayBlocked) ? 'bg-black/60' : 'bg-transparent hover:bg-black/10'}`}
                     >
-                        <div className={`transition-all duration-300 transform ${isLocallyPaused ? 'scale-100 opacity-100' : 'scale-50 opacity-0 group-hover/player:scale-100 group-hover/player:opacity-100'}`}>
-                            <div className="w-24 h-24 rounded-full bg-primary/20 backdrop-blur-3xl border border-primary/30 flex items-center justify-center shadow-2xl">
-                                {isLocallyPaused ? (
+                        {(isLocallyPaused || isAutoplayBlocked) && (
+                            <div className="text-center animate-in zoom-in duration-300">
+                                <div className="w-24 h-24 rounded-full bg-primary/20 backdrop-blur-3xl border border-primary/30 flex items-center justify-center shadow-2xl mx-auto mb-4 relative">
+                                    {isBuffering && (
+                                        <div className="absolute inset-0 rounded-full border-4 border-primary border-t-transparent animate-spin" />
+                                    )}
                                     <Play className="w-10 h-10 text-white fill-white ml-1" />
-                                ) : (
+                                </div>
+                                <p className="text-white font-display uppercase tracking-[0.3em] text-sm drop-shadow-lg">
+                                    {isAutoplayBlocked ? 'КЛИКНИ ЗА ГЛЕДАНЕ' : 'ПАУЗА'}
+                                </p>
+                            </div>
+                        )}
+
+                        {!isLocallyPaused && !isAutoplayBlocked && (
+                            <div className="transition-all duration-300 transform scale-50 opacity-0 group-hover/player:scale-100 group-hover/player:opacity-100">
+                                <div className="w-24 h-24 rounded-full bg-primary/20 backdrop-blur-3xl border border-primary/30 flex items-center justify-center shadow-2xl">
                                     <div className="flex gap-1.5">
                                         <div className="w-2.5 h-10 bg-white rounded-full shadow-lg" />
                                         <div className="w-2.5 h-10 bg-white rounded-full shadow-lg" />
                                     </div>
-                                )}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </div>
 
                     {/* Volume Controls */}
@@ -350,6 +375,7 @@ export function VideoPlayer({
                     {isDirectVideoFile(url) ? (
                         // 🎬 Direct file — 100% precise seeking
                         <DirectVideoPlayer
+                            key={`direct-${movieId}`}
                             url={url}
                             offset={playbackOffset}
                             isPaused={isPaused}
@@ -360,7 +386,7 @@ export function VideoPlayer({
                         // 📺 YouTube — ?start= approximate sync
                         // FIX: Remove playbackOffset from key to prevent reload every sync pulse
                         <iframe
-                            key={`yt-${selectedServerIndex}`}
+                            key={`yt-${movieId}-${selectedServerIndex}`}
                             src={buildYouTubeEmbedUrl(url, playbackOffset, isCinemaMode)}
                             className="w-full h-full"
                             allowFullScreen
@@ -370,7 +396,7 @@ export function VideoPlayer({
                         // 🌐 Generic embed
                         // FIX: Remove playbackOffset from key
                         <iframe
-                            key={`gen-${selectedServerIndex}`}
+                            key={`gen-${movieId}-${selectedServerIndex}`}
                             src={buildGenericEmbedUrl(url, playbackOffset)}
                             className="w-full h-full"
                             allowFullScreen
