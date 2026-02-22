@@ -15,9 +15,13 @@ export async function POST(request: NextRequest) {
             console.log('[HEARTBEAT] Unauthorized access');
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
-        console.log('[HEARTBEAT] Updating presence for user:', (session.user as any).id);
-
+        const { status } = await request.json().catch(() => ({ status: 'active' }));
         const userId = parseInt((session.user as any).id);
+
+        if (status === 'leaving') {
+            await (prisma as any).cinema_presence.delete({ where: { userId } }).catch(() => { });
+            return NextResponse.json({ success: true, viewers: [] });
+        }
 
         // Update or create presence
         await (prisma as any).cinema_presence.upsert({

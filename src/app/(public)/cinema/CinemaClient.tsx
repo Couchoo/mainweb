@@ -211,6 +211,16 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             clearInterval(heartbeat);
             clearInterval(chatInterval);
             clearInterval(scheduleInterval);
+
+            // Notify server we are leaving
+            if (session) {
+                fetch('/api/cinema/heartbeat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status: 'leaving' }),
+                    keepalive: true
+                }).catch(() => { });
+            }
         };
     }, [session]);
 

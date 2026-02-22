@@ -29,9 +29,7 @@ export function Footer({ locale = 'bg' }: FooterProps) {
                     {/* Links Section */}
                     <div className="flex flex-col items-center md:items-end gap-4">
                         <nav className="flex items-center gap-6 text-[13px] font-display tracking-widest uppercase text-brand-warmCream/60">
-                            <Link href="/terms" className="hover:text-brand-cinemaGold transition-colors">{t('terms')}</Link>
-                            <Link href="/privacy" className="hover:text-brand-cinemaGold transition-colors">{t('privacy')}</Link>
-                            <Link href="/contacts" className="hover:text-brand-cinemaGold transition-colors">{t('contacts')}</Link>
+                            {/* Links removed as they are now handled via modals/external pages to be implemented */}
                         </nav>
 
                         <div className="flex items-center gap-4">
