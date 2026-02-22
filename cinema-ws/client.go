@@ -73,8 +73,14 @@ func (c *Client) readPump() {
 
 			case "cinema:reaction":
 				// Broadcast reaction to everyone else
-				// Payload usually contains { "emoji": "🍿" }
-				c.hub.Broadcast("cinema:reaction", msg["payload"])
+				payload, _ := msg["payload"].(map[string]interface{})
+				emoji, _ := payload["emoji"].(string)
+
+				// Track streak for popcorn
+				c.hub.cinema.HandleReaction(emoji)
+
+				// Broadcast to everyone else
+				c.hub.Broadcast("cinema:reaction", payload)
 			}
 		}
 	}

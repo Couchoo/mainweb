@@ -60,6 +60,7 @@ func main() {
 	go hub.run()
 
 	cinema := newCinemaSync(hub)
+	hub.cinema = cinema
 	go cinema.run()
 
 	mux := http.NewServeMux()

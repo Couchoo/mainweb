@@ -20,9 +20,11 @@ type CinemaState struct {
 
 // CinemaSync runs a 500ms ticker that broadcasts cinema:sync events.
 type CinemaSync struct {
-	hub   *Hub
-	state CinemaState
-	mu    sync.RWMutex
+	hub            *Hub
+	state          CinemaState
+	mu             sync.RWMutex
+	popcornStreak  int
+	lastReactionAt time.Time
 }
 
 func newCinemaSync(hub *Hub) *CinemaSync {
@@ -78,6 +80,35 @@ func (cs *CinemaSync) Pause(isPaused bool) {
 		"serverTimeMs":  now.UnixMilli(),
 		"videoUrl":      cs.state.VideoUrl,
 	})
+}
+
+// HandleReaction adds to the global popcorn streak and broadcasts milestones.
+func (cs *CinemaSync) HandleReaction(emoji string) {
+	if emoji != "🍿" {
+		return
+	}
+
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+
+	now := time.Now()
+	// Reset streak if more than 3 seconds since last reaction
+	if now.Sub(cs.lastReactionAt) > 3*time.Second {
+		cs.popcornStreak = 0
+	}
+
+	cs.popcornStreak++
+	cs.lastReactionAt = now
+
+	// Broadcast the streak at milestones
+	streak := cs.popcornStreak
+	if streak == 10 || streak == 50 || streak == 100 || (streak > 100 && streak%50 == 0) {
+		log.Printf("[CINEMA] HYPE: Popcorn Streak x%d!", streak)
+		cs.hub.Broadcast("cinema:streak", map[string]interface{}{
+			"count": streak,
+			"emoji": "🍿",
+		})
+	}
 }
 
 // GetState returns the current cinema state (used when new clients connect).

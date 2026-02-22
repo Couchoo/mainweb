@@ -21,6 +21,7 @@ type Hub struct {
 	register   chan *Client
 	unregister chan *Client
 	mu         sync.RWMutex // only used for Presence() reads
+	cinema     *CinemaSync
 }
 
 func newHub() *Hub {

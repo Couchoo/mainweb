@@ -97,6 +97,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
     const [isPaused, setIsPaused] = useState(false);
     const [showViewersModal, setShowViewersModal] = useState(false);
     const [reactions, setReactions] = useState<{ id: number; emoji: string; x: number }[]>([]);
+    const [activeStreak, setActiveStreak] = useState<{ count: number; id: number } | null>(null);
     const [giftLeaderboard, setGiftLeaderboard] = useState<Record<string, { name: string; amount: number; image?: string }>>({});
     const scrollRef = useRef<HTMLDivElement>(null);
     const router = useRouter();
@@ -165,6 +166,15 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             setTimeout(() => {
                 setReactions(prev => prev.filter(r => r.id !== id));
             }, 3000);
+        }, []),
+
+        onCinemaStreak: useCallback((payload: { count: number; emoji: string }) => {
+            const id = Date.now();
+            setActiveStreak({ count: payload.count, id });
+            // Hide streak after 4 seconds
+            setTimeout(() => {
+                setActiveStreak(current => current?.id === id ? null : current);
+            }, 4000);
         }, []),
 
         onPresenceUpdate: useCallback((payload: any) => {
@@ -491,6 +501,16 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                 .animate-popcorn {
                                     animation: popcorn-float 2.5s ease-out forwards;
                                 }
+                                @keyframes streak-in {
+                                    0% { transform: translateX(100%) scale(0.5); opacity: 0; }
+                                    15% { transform: translateX(-10px) scale(1.1); opacity: 1; }
+                                    20% { transform: translateX(0) scale(1); opacity: 1; }
+                                    80% { transform: translateX(0) scale(1); opacity: 1; }
+                                    100% { transform: translateX(100%) scale(0.5); opacity: 0; }
+                                }
+                                .animate-streak {
+                                    animation: streak-in 4s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+                                }
                             `}</style>
                             {reactions.map(r => (
                                 <div
@@ -501,6 +521,20 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                     {r.emoji}
                                 </div>
                             ))}
+
+                            {activeStreak && (
+                                <div className="absolute bottom-24 right-4 z-30 animate-streak pointer-events-none">
+                                    <div className="bg-gradient-to-r from-brand-cinemaGold via-amber-400 to-brand-cinemaGold p-[2px] rounded-2xl shadow-[0_0_30px_rgba(240,192,64,0.4)]">
+                                        <div className="bg-brand-midnight px-6 py-3 rounded-[14px] flex items-center gap-3">
+                                            <span className="text-2xl animate-bounce">🔥</span>
+                                            <div className="flex flex-col">
+                                                <span className="text-[10px] font-display uppercase tracking-[0.2em] text-brand-cinemaGold leading-none">Popcorn Streak</span>
+                                                <span className="text-2xl font-display text-white italic tracking-tighter tabular-nums">x{activeStreak.count}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
                         <ScrollArea className="flex-1 pr-4" ref={scrollRef}>

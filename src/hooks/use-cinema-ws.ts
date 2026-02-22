@@ -12,6 +12,7 @@ interface UseCinemaWSOptions {
     onGiftReceived?: (payload: GiftPayload) => void;
     onPresenceUpdate?: (payload: PresencePayload) => void;
     onCinemaReaction?: (payload: { emoji: string }) => void;
+    onCinemaStreak?: (payload: { count: number; emoji: string }) => void;
     onScraperStatus?: (payload: any) => void;
 }
 
@@ -120,6 +121,9 @@ export function useCinemaWS(options: UseCinemaWSOptions = {}) {
                             break;
                         case 'cinema:reaction':
                             optionsRef.current.onCinemaReaction?.(msg.payload);
+                            break;
+                        case 'cinema:streak':
+                            optionsRef.current.onCinemaStreak?.(msg.payload);
                             break;
                         case 'scraper:status':
                             optionsRef.current.onScraperStatus?.(msg.payload);
