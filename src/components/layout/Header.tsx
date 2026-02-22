@@ -20,28 +20,42 @@ import {
 } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Search, LogOut, Bookmark, User, Play, Star, Sword, Ghost, Heart, Smile, Rocket, Zap, Music, Skull, Clapperboard, Shield, History, Film, Trophy, Users, Monitor, Sparkles, Mic2, Compass, Waves, Flame, Camera } from 'lucide-react';
+import {
+    Menu, Search, LogOut, Bookmark, User, Play, Star, Sword,
+    Ghost, Heart, Smile, Rocket, Zap, Music, Skull,
+    Clapperboard, Shield, History, Film, Trophy, Users,
+    Monitor, Sparkles, Mic2, Compass, Waves, Flame, Camera,
+    Crown, ChevronDown, Library, Hexagon, PieChart, CreditCard, Settings
+} from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NAVBAR_ORDER, GENRE_MAPPING } from '@/lib/genre-mapping';
 import { getTranslation, Locale } from '@/lib/i18n';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { motion, AnimatePresence } from 'framer-motion';
 
-interface HeaderProps {
-    locale?: Locale;
+interface UserStats {
+    watched: number;
+    watchlist: number;
+    collections: number;
+    popcorn: number;
+    xp: number;
+    role: string;
 }
 
-export function Header({ locale = 'bg' }: HeaderProps) {
+export function Header() {
     const { data: session } = useSession();
     const router = useRouter();
-    const t = (key: any) => getTranslation(key, locale);
+    const t = (key: any) => getTranslation(key, locale as Locale);
+    const locale = (router as any).locale || 'bg';
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [showResults, setShowResults] = useState(false);
     const [categories, setCategories] = useState<{ id: number; name: string; slug: string; _count?: { moviecategory: number } }[]>([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [isSearchOpen, setIsSearchOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
+    const [userStats, setUserStats] = useState<UserStats | null>(null);
 
     useEffect(() => {
         setMounted(true);
@@ -51,19 +65,28 @@ export function Header({ locale = 'bg' }: HeaderProps) {
     }, []);
 
     useEffect(() => {
-        async function fetchCategories() {
+        const fetchData = async () => {
             try {
-                const res = await fetch(`/api/categories`);
-                if (res.ok) {
-                    const data = await res.json();
+                const [catsRes, statsRes] = await Promise.all([
+                    fetch('/api/categories'),
+                    session ? fetch('/api/user/stats') : Promise.resolve(null)
+                ]);
+
+                if (catsRes.ok) {
+                    const data = await catsRes.json();
                     setCategories(data);
                 }
+
+                if (statsRes && statsRes.ok) {
+                    const stats = await statsRes.json();
+                    setUserStats(stats);
+                }
             } catch (error) {
-                console.error('Failed to fetch categories');
+                console.error("Error fetching header data:", error);
             }
-        }
-        fetchCategories();
-    }, [locale]);
+        };
+        fetchData();
+    }, [session, locale]);
 
     useEffect(() => {
         if (searchQuery.length < 2) {
@@ -412,25 +435,113 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                         </div>
                                     </button>
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent align="end" className="w-64 p-3 border-brand-royalPurple/20 bg-brand-midnight/98 backdrop-blur-2xl shadow-2xl rounded-[2rem]">
-                                    <div className="p-4 mb-2 rounded-[1.5rem] bg-brand-royalPurple/10 border border-brand-royalPurple/20">
-                                        <p className="text-[9px] font-bold text-brand-softLavender uppercase tracking-[0.2em] opacity-40 mb-1">Authenticated as</p>
-                                        <p className="font-bold truncate text-brand-warmCream text-sm">{session.user?.email}</p>
-                                    </div>
-                                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-brand-royalPurple/20 py-3">
-                                        <Link href="/profile" className="flex items-center text-[13px] font-bold text-brand-softLavender">
-                                            <User className="mr-3 h-4 w-4" /> {t('profile')}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-brand-royalPurple/20 py-3">
-                                        <Link href="/watchlist" className="flex items-center text-[13px] font-bold text-brand-softLavender">
-                                            <Bookmark className="mr-3 h-4 w-4" /> {t('watchlist')}
-                                        </Link>
-                                    </DropdownMenuItem>
-                                    <DropdownMenuSeparator className="bg-brand-royalPurple/10 my-2" />
-                                    <DropdownMenuItem onClick={() => signOut()} className="rounded-xl cursor-pointer text-brand-playRed focus:bg-brand-playRed focus:text-white py-3">
-                                        <LogOut className="mr-3 h-4 w-4" /> <span className="font-bold uppercase tracking-widest text-[11px]">{t('logout')}</span>
-                                    </DropdownMenuItem>
+                                <DropdownMenuContent
+                                    align="end"
+                                    sideOffset={12}
+                                    className="w-80 p-0 border-none bg-transparent shadow-none"
+                                >
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        className="relative overflow-hidden bg-brand-midnight/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                                    >
+                                        {/* Mascot Owl Peeking */}
+                                        <motion.img
+                                            src="/brand/couchoo-mascot-transparent.png"
+                                            alt="Mascot"
+                                            className="absolute -right-6 -top-4 w-24 h-24 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700 pointer-events-none"
+                                            initial={{ rotate: 10, x: 20 }}
+                                            animate={{ rotate: 0, x: 0 }}
+                                            transition={{ delay: 0.2, type: "spring" }}
+                                        />
+
+                                        {/* Header Section */}
+                                        <div className="p-6 pb-4 relative z-10">
+                                            <div className="flex items-center gap-4 mb-4">
+                                                <Avatar className="h-14 w-14 border-2 border-brand-cinemaGold/30">
+                                                    <AvatarImage src={session.user?.image || undefined} />
+                                                    <AvatarFallback className="bg-brand-royalPurple text-brand-cinemaGold font-bold text-lg">
+                                                        {session.user?.email?.[0].toUpperCase()}
+                                                    </AvatarFallback>
+                                                </Avatar>
+                                                <div className="flex-1 min-w-0">
+                                                    <h4 className="font-display font-black text-brand-warmCream truncate text-lg tracking-tight">
+                                                        {session.user?.name || session.user?.email?.split('@')[0]}
+                                                    </h4>
+                                                    <div className="flex items-center gap-2 mt-0.5">
+                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/20">
+                                                            <Crown className="w-3 h-3 text-brand-cinemaGold" />
+                                                            <span className="text-[10px] font-black uppercase text-brand-cinemaGold tracking-widest">
+                                                                {userStats?.role || (session.user as any)?.role || 'Standard'}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            {/* Stats Grid */}
+                                            <div className="grid grid-cols-3 gap-2 py-4 border-y border-white/5">
+                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                                                    <p className="text-xl font-display font-black text-brand-cinemaGold">{userStats?.watched || 0}</p>
+                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Gledani</p>
+                                                </div>
+                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                                                    <p className="text-xl font-display font-black text-brand-warmCream">{userStats?.watchlist || 0}</p>
+                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Spisuk</p>
+                                                </div>
+                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
+                                                    <p className="text-xl font-display font-black text-brand-royalPurple">{userStats?.popcorn || 0}</p>
+                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Popcorn</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {/* Menu Items */}
+                                        <div className="p-3 pt-0 flex flex-col gap-1 relative z-10">
+                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                <Link href="/profile" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
+                                                    <div className="flex items-center gap-3">
+                                                        <User className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[13px] font-bold">{t('profile')}</span>
+                                                    </div>
+                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                <Link href="/watchlist" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
+                                                    <div className="flex items-center gap-3">
+                                                        <Bookmark className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[13px] font-bold">{t('watchlist')}</span>
+                                                    </div>
+                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                <Link href="/collections" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
+                                                    <div className="flex items-center gap-3">
+                                                        <Library className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[13px] font-bold">Kolekcii</span>
+                                                    </div>
+                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
+                                                </Link>
+                                            </DropdownMenuItem>
+
+                                            <div className="h-[1px] bg-white/5 my-2 mx-4" />
+
+                                            <DropdownMenuItem
+                                                onClick={() => signOut()}
+                                                className="flex items-center gap-3 w-full h-12 px-4 rounded-[1.25rem] hover:bg-brand-playRed/10 text-brand-playRed transition-all cursor-pointer group/logout"
+                                            >
+                                                <LogOut className="w-4 h-4 group-hover/logout:translate-x-1 transition-transform" />
+                                                <span className="text-[11px] font-black uppercase tracking-widest">{t('logout')}</span>
+                                            </DropdownMenuItem>
+                                        </div>
+
+                                        {/* Decorative Elements */}
+                                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-royalPurple via-brand-cinemaGold to-brand-playRed opacity-20" />
+                                    </motion.div>
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         ) : (
