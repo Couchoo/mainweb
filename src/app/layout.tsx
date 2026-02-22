@@ -34,6 +34,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="bg" className="dark" style={{ colorScheme: 'dark' }} suppressHydrationWarning>
+      <head>
+        <link href="https://fonts.googleapis.com/css2?family=Anton&display=swap" rel="stylesheet" />
+      </head>
       <body className={`${nunito.variable} ${bebas.variable} ${inter.variable} font-body bg-background text-foreground shrink-0 overflow-x-hidden`} suppressHydrationWarning>
         {process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID && (
           <Script

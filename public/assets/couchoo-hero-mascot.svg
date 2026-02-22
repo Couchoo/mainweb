@@ -1,0 +1,387 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" width="900" height="700">
+  <defs>
+    <!-- Projector light cone gradient -->
+    <linearGradient id="lightCone" x1="0%" y1="50%" x2="100%" y2="50%">
+      <stop offset="0%" style="stop-color:#FFF8DC;stop-opacity:0.9"/>
+      <stop offset="60%" style="stop-color:#FFE87C;stop-opacity:0.3"/>
+      <stop offset="100%" style="stop-color:#FFE87C;stop-opacity:0"/>
+    </linearGradient>
+
+    <!-- Owl body gradient -->
+    <radialGradient id="owlBody" cx="45%" cy="40%" r="55%">
+      <stop offset="0%" style="stop-color:#6B5DB8"/>
+      <stop offset="100%" style="stop-color:#3A2F7A"/>
+    </radialGradient>
+
+    <!-- Owl belly -->
+    <radialGradient id="owlBelly" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5A4FA0"/>
+      <stop offset="100%" style="stop-color:#453D8A"/>
+    </radialGradient>
+
+    <!-- Eye gradient -->
+    <radialGradient id="eyeGlow" cx="35%" cy="35%" r="60%">
+      <stop offset="0%" style="stop-color:#FFE066"/>
+      <stop offset="70%" style="stop-color:#F5C518"/>
+      <stop offset="100%" style="stop-color:#C8970A"/>
+    </radialGradient>
+
+    <!-- Projector metal gradient -->
+    <linearGradient id="projectorBody" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#4A4A5E"/>
+      <stop offset="50%" style="stop-color:#2E2E40"/>
+      <stop offset="100%" style="stop-color:#1A1A28"/>
+    </linearGradient>
+
+    <!-- Projector lens -->
+    <radialGradient id="lens" cx="40%" cy="35%" r="55%">
+      <stop offset="0%" style="stop-color:#8BE0FF"/>
+      <stop offset="40%" style="stop-color:#4ABCF5"/>
+      <stop offset="100%" style="stop-color:#1A6FA0"/>
+    </radialGradient>
+
+    <!-- Film reel gradient -->
+    <radialGradient id="reel" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" style="stop-color:#5A5A70"/>
+      <stop offset="100%" style="stop-color:#2A2A3E"/>
+    </radialGradient>
+
+    <!-- Dust particles filter -->
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <filter id="softGlow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Projector light animation -->
+    <filter id="lightGlow">
+      <feGaussianBlur stdDeviation="12" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+
+    <!-- Clip for film strip -->
+    <clipPath id="reelClip">
+      <circle cx="0" cy="0" r="52"/>
+    </clipPath>
+  </defs>
+
+  <!-- ===================== BACKGROUND ATMOSPHERE ===================== -->
+  <!-- Subtle dark bg for context (transparent-friendly) -->
+
+  <!-- PROJECTOR LIGHT BEAM (behind everything) -->
+  <g opacity="0.85" filter="url(#lightGlow)">
+    <!-- Main cone -->
+    <polygon points="310,268  880,120  880,420" fill="url(#lightCone)" opacity="0.6"/>
+    <!-- Inner brighter core -->
+    <polygon points="318,268  880,190  880,350" fill="#FFFDE0" opacity="0.25"/>
+  </g>
+
+  <!-- Floating dust particles in beam -->
+  <g opacity="0.6">
+    <circle cx="420" cy="220" r="2" fill="#FFF8DC" opacity="0.8">
+      <animate attributeName="cy" values="220;200;220" dur="3s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.8;0.2;0.8" dur="3s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="500" cy="280" r="1.5" fill="#FFF8DC" opacity="0.6">
+      <animate attributeName="cy" values="280;255;280" dur="4s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.6;0.1;0.6" dur="4s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="580" cy="240" r="2" fill="#FFF8DC" opacity="0.7">
+      <animate attributeName="cy" values="240;220;240" dur="2.5s" repeatCount="indefinite"/>
+      <animate attributeName="opacity" values="0.7;0.15;0.7" dur="2.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="650" cy="310" r="1.5" fill="#FFF8DC" opacity="0.5">
+      <animate attributeName="cy" values="310;290;310" dur="3.5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="460" cy="320" r="1" fill="#FFF8DC" opacity="0.6">
+      <animate attributeName="cy" values="320;300;320" dur="5s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="720" cy="250" r="2" fill="#FFF8DC" opacity="0.4">
+      <animate attributeName="cy" values="250;230;250" dur="3.8s" repeatCount="indefinite"/>
+    </circle>
+    <circle cx="390" cy="260" r="1.5" fill="#FFF8DC" opacity="0.5">
+      <animate attributeName="cx" values="390;400;390" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="cy" values="260;240;260" dur="6s" repeatCount="indefinite"/>
+    </circle>
+  </g>
+
+  <!-- ===================== PROJECTOR STAND ===================== -->
+  <!-- Stand pole -->
+  <rect x="155" y="430" width="18" height="160" rx="4" fill="#252535"/>
+  <!-- Stand base -->
+  <ellipse cx="164" cy="588" rx="55" ry="10" fill="#1A1A28"/>
+  <!-- Stand foot left -->
+  <rect x="110" y="582" width="55" height="10" rx="5" fill="#252535"/>
+  <!-- Stand foot right -->
+  <rect x="165" y="582" width="55" height="10" rx="5" fill="#252535"/>
+
+  <!-- Tilt arm connecting stand to projector -->
+  <rect x="155" y="390" width="60" height="14" rx="5" fill="#333348" transform="rotate(-8, 155, 390)"/>
+
+  <!-- ===================== PROJECTOR BODY ===================== -->
+  <g transform="translate(60, 200)">
+    <!-- Main projector box -->
+    <rect x="0" y="120" width="260" height="110" rx="16" fill="url(#projectorBody)"/>
+    <!-- Top panel (lid) -->
+    <rect x="10" y="108" width="240" height="24" rx="8" fill="#3A3A50"/>
+    <!-- Side detail stripe -->
+    <rect x="0" y="150" width="8" height="50" rx="4" fill="#F5C518"/>
+    <!-- Bottom trim -->
+    <rect x="0" y="218" width="260" height="8" rx="4" fill="#252535"/>
+
+    <!-- Lens housing (front) -->
+    <circle cx="250" cy="175" r="42" fill="#252535"/>
+    <circle cx="250" cy="175" r="36" fill="#1A1A28"/>
+    <!-- Lens glass -->
+    <circle cx="250" cy="175" r="28" fill="url(#lens)" filter="url(#glow)"/>
+    <!-- Lens reflection -->
+    <ellipse cx="240" cy="163" rx="10" ry="7" fill="white" opacity="0.4"/>
+    <!-- Lens rim -->
+    <circle cx="250" cy="175" r="28" fill="none" stroke="#4ABCF5" stroke-width="2" opacity="0.6"/>
+    <circle cx="250" cy="175" r="33" fill="none" stroke="#3A3A55" stroke-width="3"/>
+
+    <!-- Lens glow pulse animation -->
+    <circle cx="250" cy="175" r="36" fill="none" stroke="#4ABCF5" stroke-width="2" opacity="0">
+      <animate attributeName="opacity" values="0;0.6;0" dur="2s" repeatCount="indefinite"/>
+      <animate attributeName="r" values="36;44;36" dur="2s" repeatCount="indefinite"/>
+    </circle>
+
+    <!-- Ventilation slots top -->
+    <rect x="30" y="115" width="50" height="4" rx="2" fill="#252535"/>
+    <rect x="90" y="115" width="50" height="4" rx="2" fill="#252535"/>
+    <rect x="150" y="115" width="50" height="4" rx="2" fill="#252535"/>
+
+    <!-- Control buttons on top -->
+    <circle cx="50" cy="142" r="6" fill="#F5C518"/>
+    <circle cx="75" cy="142" r="6" fill="#E74C3C"/>
+    <circle cx="100" cy="142" r="6" fill="#2ECC71"/>
+
+    <!-- Film slot -->
+    <rect x="140" y="128" width="70" height="8" rx="4" fill="#1A1A28"/>
+
+    <!-- Side reel spindles -->
+    <!-- Left reel -->
+    <g transform="translate(60, 130)">
+      <circle cx="0" cy="0" r="52" fill="url(#reel)"/>
+      <!-- Reel spokes -->
+      <line x1="0" y1="-45" x2="0" y2="45" stroke="#4A4A60" stroke-width="6" stroke-linecap="round"/>
+      <line x1="-45" y1="0" x2="45" y2="0" stroke="#4A4A60" stroke-width="6" stroke-linecap="round"/>
+      <line x1="-32" y1="-32" x2="32" y2="32" stroke="#4A4A60" stroke-width="6" stroke-linecap="round"/>
+      <line x1="32" y1="-32" x2="-32" y2="32" stroke="#4A4A60" stroke-width="6" stroke-linecap="round"/>
+      <!-- Center hub -->
+      <circle cx="0" cy="0" r="14" fill="#333348"/>
+      <circle cx="0" cy="0" r="6" fill="#F5C518"/>
+      <!-- Film around reel edge -->
+      <circle cx="0" cy="0" r="52" fill="none" stroke="#555568" stroke-width="3" stroke-dasharray="8,4"/>
+      <!-- Reel rotation animation -->
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="4s" repeatCount="indefinite"/>
+    </g>
+
+    <!-- Projector body details - screws -->
+    <circle cx="15" cy="135" r="4" fill="#252535"/>
+    <circle cx="245" cy="135" r="4" fill="#252535"/>
+    <circle cx="15" cy="220" r="4" fill="#252535"/>
+    <circle cx="245" cy="220" r="4" fill="#252535"/>
+  </g>
+
+  <!-- Film strip coming out of projector downward -->
+  <g transform="translate(100, 328)">
+    <rect x="0" y="0" width="30" height="120" rx="3" fill="#1A1A28" stroke="#333348" stroke-width="1"/>
+    <!-- Film holes left -->
+    <rect x="2" y="8" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="22" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="36" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="50" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="64" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="78" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="92" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="2" y="106" width="7" height="5" rx="1" fill="#333348"/>
+    <!-- Film holes right -->
+    <rect x="21" y="8" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="22" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="36" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="50" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="64" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="78" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="92" width="7" height="5" rx="1" fill="#333348"/>
+    <rect x="21" y="106" width="7" height="5" rx="1" fill="#333348"/>
+    <!-- Frame dividers -->
+    <line x1="9" y1="0" x2="9" y2="120" stroke="#252535" stroke-width="1"/>
+    <line x1="21" y1="0" x2="21" y2="120" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="18" x2="21" y2="18" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="32" x2="21" y2="32" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="46" x2="21" y2="46" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="60" x2="21" y2="60" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="74" x2="21" y2="74" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="88" x2="21" y2="88" stroke="#252535" stroke-width="1"/>
+    <line x1="9" y1="102" x2="21" y2="102" stroke="#252535" stroke-width="1"/>
+    <!-- Tiny colored frames -->
+    <rect x="10" y="1" width="10" height="16" rx="1" fill="#4B3F8D" opacity="0.7"/>
+    <rect x="10" y="19" width="10" height="12" rx="1" fill="#8B1A1A" opacity="0.7"/>
+    <rect x="10" y="33" width="10" height="12" rx="1" fill="#1A4A8B" opacity="0.7"/>
+    <rect x="10" y="47" width="10" height="12" rx="1" fill="#2A6B2A" opacity="0.7"/>
+    <rect x="10" y="61" width="10" height="12" rx="1" fill="#8B5A1A" opacity="0.7"/>
+    <rect x="10" y="75" width="10" height="12" rx="1" fill="#5A1A8B" opacity="0.7"/>
+    <rect x="10" y="89" width="10" height="12" rx="1" fill="#1A7A7A" opacity="0.7"/>
+    <rect x="10" y="103" width="10" height="16" rx="1" fill="#7A3A1A" opacity="0.7"/>
+  </g>
+
+  <!-- ===================== OWL BODY ===================== -->
+  <g transform="translate(280, 80)">
+    <!-- OWL SHADOW -->
+    <ellipse cx="155" cy="545" rx="120" ry="20" fill="#0A0A18" opacity="0.5"/>
+
+    <!-- Tail feathers -->
+    <ellipse cx="155" cy="500" rx="80" ry="28" fill="#3A2F7A"/>
+
+    <!-- Main body -->
+    <ellipse cx="155" cy="390" rx="115" ry="140" fill="url(#owlBody)"/>
+
+    <!-- Belly -->
+    <ellipse cx="155" cy="420" rx="70" ry="90" fill="url(#owlBelly)"/>
+
+    <!-- Wing LEFT (folded, relaxed) -->
+    <ellipse cx="62" cy="400" rx="50" ry="80" fill="#4B3F8D" transform="rotate(-15, 62, 400)"/>
+    <ellipse cx="55" cy="430" rx="35" ry="55" fill="#3A2F7A" transform="rotate(-15, 55, 430)"/>
+
+    <!-- Wing RIGHT (raised in excitement!) -->
+    <g transform="rotate(-40, 248, 350)">
+      <ellipse cx="248" cy="350" rx="50" ry="85" fill="#4B3F8D"/>
+      <ellipse cx="258" cy="375" rx="35" ry="60" fill="#3A2F7A"/>
+      <!-- Wing tip feathers -->
+      <ellipse cx="258" cy="295" rx="14" ry="30" fill="#3A2F7A" transform="rotate(-10, 258, 295)"/>
+      <ellipse cx="272" cy="300" rx="12" ry="28" fill="#3A2F7A" transform="rotate(5, 272, 300)"/>
+      <ellipse cx="244" cy="292" rx="12" ry="26" fill="#3A2F7A" transform="rotate(-20, 244, 292)"/>
+    </g>
+
+    <!-- Feather detail texture on body -->
+    <ellipse cx="155" cy="340" rx="60" ry="30" fill="#5A4FA0" opacity="0.4"/>
+    <ellipse cx="130" cy="380" rx="25" ry="35" fill="#5A4FA0" opacity="0.25"/>
+    <ellipse cx="180" cy="370" rx="22" ry="30" fill="#5A4FA0" opacity="0.25"/>
+
+    <!-- HEAD -->
+    <circle cx="155" cy="230" r="110" fill="url(#owlBody)"/>
+
+    <!-- Ear tufts -->
+    <polygon points="110,140 90,85 130,130" fill="#3A2F7A"/>
+    <polygon points="200,140 220,85 180,130" fill="#3A2F7A"/>
+    <polygon points="110,140 95,95 125,135" fill="#4B3F8D"/>
+    <polygon points="200,140 215,95 185,135" fill="#4B3F8D"/>
+
+    <!-- Facial disc (lighter circle around face) -->
+    <ellipse cx="155" cy="235" rx="88" ry="82" fill="#5A4FA0" opacity="0.35"/>
+
+    <!-- EYE SOCKETS -->
+    <circle cx="118" cy="220" r="42" fill="#2A2240"/>
+    <circle cx="192" cy="220" r="42" fill="#2A2240"/>
+
+    <!-- EYES -->
+    <circle cx="118" cy="220" r="36" fill="url(#eyeGlow)" filter="url(#glow)"/>
+    <circle cx="192" cy="220" r="36" fill="url(#eyeGlow)" filter="url(#glow)"/>
+
+    <!-- Eye pupils -->
+    <circle cx="122" cy="218" r="20" fill="#1A1228"/>
+    <circle cx="196" cy="218" r="20" fill="#1A1228"/>
+
+    <!-- Eye shine -->
+    <circle cx="112" cy="208" r="8" fill="white" opacity="0.9"/>
+    <circle cx="186" cy="208" r="8" fill="white" opacity="0.9"/>
+    <circle cx="126" cy="228" r="4" fill="white" opacity="0.5"/>
+    <circle cx="200" cy="228" r="4" fill="white" opacity="0.5"/>
+
+    <!-- Eye rim rings -->
+    <circle cx="118" cy="220" r="36" fill="none" stroke="#C8970A" stroke-width="3"/>
+    <circle cx="192" cy="220" r="36" fill="none" stroke="#C8970A" stroke-width="3"/>
+
+    <!-- Blink animation - eyelids -->
+    <ellipse cx="118" cy="220" rx="36" ry="0" fill="#3A2F7A">
+      <animate attributeName="ry" values="0;0;0;0;36;0;0;0;0;0;0;0;36;0;0" dur="5s" repeatCount="indefinite"/>
+    </ellipse>
+    <ellipse cx="192" cy="220" rx="36" ry="0" fill="#3A2F7A">
+      <animate attributeName="ry" values="0;0;0;0;36;0;0;0;0;0;0;0;36;0;0" dur="5s" repeatCount="indefinite"/>
+    </ellipse>
+
+    <!-- BEAK -->
+    <polygon points="155,270 140,300 170,300" fill="#C8970A"/>
+    <polygon points="155,270 140,285 170,285" fill="#F5C518"/>
+
+    <!-- FEET -->
+    <!-- Left foot -->
+    <ellipse cx="115" cy="533" rx="22" ry="14" fill="#4B3F8D"/>
+    <rect x="90" y="528" width="12" height="22" rx="6" fill="#3A2F7A" transform="rotate(-15, 96, 535)"/>
+    <rect x="103" y="530" width="12" height="20" rx="6" fill="#3A2F7A"/>
+    <rect x="116" y="528" width="12" height="22" rx="6" fill="#3A2F7A" transform="rotate(15, 122, 535)"/>
+
+    <!-- Right foot -->
+    <ellipse cx="195" cy="533" rx="22" ry="14" fill="#4B3F8D"/>
+    <rect x="170" y="528" width="12" height="22" rx="6" fill="#3A2F7A" transform="rotate(-15, 176, 535)"/>
+    <rect x="183" y="530" width="12" height="20" rx="6" fill="#3A2F7A"/>
+    <rect x="196" y="528" width="12" height="22" rx="6" fill="#3A2F7A" transform="rotate(15, 202, 535)"/>
+
+    <!-- Film reel held in raised right wing -->
+    <g transform="translate(240, 270) rotate(25)">
+      <!-- Outer ring -->
+      <circle cx="0" cy="0" r="55" fill="url(#reel)" stroke="#4A4A60" stroke-width="3"/>
+      <!-- Film wound around reel (outer layer) -->
+      <circle cx="0" cy="0" r="55" fill="none" stroke="#555568" stroke-width="8" stroke-dasharray="12,5" opacity="0.7"/>
+      <!-- Spokes -->
+      <line x1="0" y1="-46" x2="0" y2="46" stroke="#5A5A75" stroke-width="7" stroke-linecap="round"/>
+      <line x1="-46" y1="0" x2="46" y2="0" stroke="#5A5A75" stroke-width="7" stroke-linecap="round"/>
+      <line x1="-33" y1="-33" x2="33" y2="33" stroke="#5A5A75" stroke-width="7" stroke-linecap="round"/>
+      <line x1="33" y1="-33" x2="-33" y2="33" stroke="#5A5A75" stroke-width="7" stroke-linecap="round"/>
+      <!-- Center hub -->
+      <circle cx="0" cy="0" r="16" fill="#333348"/>
+      <circle cx="0" cy="0" r="8" fill="#F5C518"/>
+      <!-- Film strip tag coming off reel -->
+      <rect x="50" y="-6" width="35" height="12" rx="3" fill="#1A1A28" stroke="#333348" stroke-width="1"/>
+      <rect x="52" y="-4" width="5" height="4" rx="1" fill="#333348"/>
+      <rect x="52" y="1" width="5" height="4" rx="1" fill="#333348"/>
+      <rect x="78" y="-4" width="5" height="4" rx="1" fill="#333348"/>
+      <rect x="78" y="1" width="5" height="4" rx="1" fill="#333348"/>
+    </g>
+
+    <!-- Excitement sparkles around raised wing -->
+    <g filter="url(#glow)">
+      <text x="370" y="240" font-size="28" fill="#F5C518" opacity="0.9">✦</text>
+      <text x="390" y="270" font-size="20" fill="#F5C518" opacity="0.7">✦</text>
+      <text x="355" y="275" font-size="16" fill="#F5C518" opacity="0.6">✦</text>
+      <text x="375" y="300" font-size="22" fill="#FFE066" opacity="0.5">✦</text>
+    </g>
+
+    <!-- Gentle body hover animation -->
+    <animateTransform attributeName="transform" type="translate" values="280,80; 280,74; 280,80" dur="3s" repeatCount="indefinite" additive="sum"/>
+  </g>
+
+  <!-- ===================== FLOOR SHADOW LINE ===================== -->
+  <line x1="50" y1="600" x2="450" y2="600" stroke="#252535" stroke-width="2" opacity="0.5"/>
+
+  <!-- ===================== BRAND LABEL ===================== -->
+  <g transform="translate(320, 630)">
+    <rect x="0" y="0" width="240" height="40" rx="20" fill="#1A1228" opacity="0.8"/>
+    <text x="120" y="26" font-family="Georgia, serif" font-size="14" fill="#F5C518" text-anchor="middle" letter-spacing="4" font-weight="bold">COUCHOO</text>
+  </g>
+
+  <!-- Stars in background top right -->
+  <g opacity="0.4">
+    <circle cx="780" cy="80" r="2" fill="white"/>
+    <circle cx="820" cy="50" r="1.5" fill="white"/>
+    <circle cx="860" cy="90" r="1" fill="white"/>
+    <circle cx="750" cy="40" r="1" fill="white"/>
+    <circle cx="840" cy="120" r="1.5" fill="white"/>
+    <circle cx="800" cy="140" r="1" fill="white"/>
+  </g>
+
+</svg>
