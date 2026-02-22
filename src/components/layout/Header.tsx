@@ -42,11 +42,15 @@ interface UserStats {
     role: string;
 }
 
-export function Header() {
+interface HeaderProps {
+    locale?: Locale;
+}
+
+export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
     const { data: session } = useSession();
     const router = useRouter();
     const t = (key: any) => getTranslation(key, locale as Locale);
-    const locale = (router as any).locale || 'bg';
+    const locale = initialLocale;
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [showResults, setShowResults] = useState(false);
