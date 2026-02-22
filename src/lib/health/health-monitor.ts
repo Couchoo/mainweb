@@ -9,14 +9,13 @@ const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 /**
  * Health Monitor - Main orchestrator for health check system
- * 
- * Features:
- * - Background processing loop
- * - Graceful start/stop
- * - Progress tracking
- * - Auto-fix broken links
- * - Auto-unpublish unfixable movies
  */
+
+export interface FixResult {
+    action: string;
+    archived: boolean;
+    brokenServers: number;
+}
 
 export class HealthMonitor {
     private jobId: string;
@@ -179,15 +178,12 @@ export class HealthMonitor {
                 brokenServers
             );
 
-            // Log based on tier
-            if (fixResult.tier === 1) {
-                await this.log('SUCCESS', `✅ ${movieTitle} - ${fixResult.action}`);
-            } else if (fixResult.tier === 2) {
-                this.stats.fixed++;
-                await this.log('SUCCESS', `🔧 ${movieTitle} - ${fixResult.action}`);
-            } else {
+            // Log based on status
+            if (fixResult.archived) {
                 this.stats.unpublished++;
                 await this.log('ERROR', `🚫 ${movieTitle} - ${fixResult.action}`);
+            } else {
+                await this.log('SUCCESS', `✅ ${movieTitle} - ${fixResult.action}`);
             }
         } else {
             // All servers working - mark any broken servers as fixed
@@ -212,29 +208,6 @@ export class HealthMonitor {
 
             const actionMsg = wasPending ? 'Auto-published (was PENDING)' : `${workingServers.length} server(s) OK`;
             await this.log('SUCCESS', `✅ ${movieTitle} - ${actionMsg}`);
-        }
-    }
-
-    private async handleBrokenMovie(movie: any, brokenServers: any[]): Promise<void> {
-        const movieTitle = movie.titleEN || movie.titleBG || `Movie #${movie.id}`;
-
-        await this.log('WARN', `❌ ${movieTitle} - All servers broken, analyzing fix options...`);
-
-        // Use smart fix with 3-tier strategy
-        const { smartFixMovie } = await import('./auto-fixer');
-
-        const fixResult = await smartFixMovie(
-            movie.id,
-            movie.imdbId,
-            [], // No working servers (all broken)
-            brokenServers
-        );
-
-        // Stats already updated in checkMovie, just log
-        if (fixResult.tier === 2) {
-            await this.log('SUCCESS', `🔧 ${movieTitle} - ${fixResult.action}`);
-        } else if (fixResult.tier === 3) {
-            await this.log('ERROR', `🚫 ${movieTitle} - ${fixResult.action}`);
         }
     }
 

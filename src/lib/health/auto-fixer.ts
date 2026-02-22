@@ -1,20 +1,5 @@
 import { prisma } from '@/lib/db';
-
-/**
- * Simplified Auto-Fixer: Archive for Manual Review
- * 
- * No auto-fix logic. If ANY servers are broken:
- * 1. Unpublish movie
- * 2. Set status to ARCHIVED
- * 3. Add to review queue for manual moderator fix
- * 4. Log action
- */
-
-interface FixResult {
-    action: string;
-    archived: boolean;
-    brokenServers: number;
-}
+import { FixResult } from './health-monitor';
 
 /**
  * Archive movie with broken servers for manual review
