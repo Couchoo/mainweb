@@ -38,7 +38,8 @@ export async function GET() {
             health.status = 'DEGRADED';
         }
 
-        if (Object.values(health.checks).some(v => v === 'OFFLINE' || v.includes('FAIL'))) {
+        const checks = health.checks as Record<string, string>;
+        if (Object.values(checks).some((v) => v === 'OFFLINE' || v.includes('FAIL'))) {
             health.status = 'DEGRADED';
         }
 
