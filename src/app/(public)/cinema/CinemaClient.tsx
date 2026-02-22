@@ -108,12 +108,12 @@ const ViewerItem = memo(({ viewer, onClick, t, index }: { viewer: any; onClick: 
                         <AvatarFallback className="bg-brand-royalPurple text-lg font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
                     </Avatar>
                     <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-brand-midnight ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'bg-brand-playRed' :
-                            viewer.role === 'VIP' ? 'bg-brand-cinemaGold' : 'bg-emerald-500'
+                        viewer.role === 'VIP' ? 'bg-brand-cinemaGold' : 'bg-emerald-500'
                         }`} />
                 </div>
                 <div>
                     <h4 className={`text-xl font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                            viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
+                        viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
                         }`}>{viewer.name}</h4>
                     <div className="flex items-center gap-2 mt-1">
                         <span className="text-[10px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</span>
@@ -142,7 +142,7 @@ ViewerItem.displayName = 'ViewerItem';
 export default function CinemaClient({ locale }: CinemaClientProps) {
     const { data: session } = useSession();
     const { toast } = useToast();
-    const t = (key: any) => getTranslation(key, locale);
+    const t = useCallback((key: any) => getTranslation(key, locale), [locale]);
     const dfnsLocale = locale === 'bg' ? bgLocale : enUS;
 
     const [messages, setMessages] = useState<any[]>([]);
@@ -917,9 +917,20 @@ export default function CinemaClient({ locale }: CinemaClientProps) {
                             >
                                 {/* 🦉 Background Mascot Decoration - Surprised Owl */}
                                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none opacity-[0.03] overflow-hidden">
-                                    <img
+                                    <motion.img
                                         src="/brand/couchoo-mascot-transparent.png"
-                                        className="w-[80%] h-auto object-contain grayscale animate-pulse rotate-12 scale-150"
+                                        initial={{ scale: 1.5, rotate: 12, opacity: 0 }}
+                                        animate={{
+                                            scale: [1.5, 1.6, 1.5],
+                                            rotate: [12, 10, 12],
+                                            opacity: 0.03
+                                        }}
+                                        transition={{
+                                            duration: 4,
+                                            repeat: Infinity,
+                                            ease: "easeInOut"
+                                        }}
+                                        className="w-[80%] h-auto object-contain grayscale"
                                         alt=""
                                     />
                                 </div>
