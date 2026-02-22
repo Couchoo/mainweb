@@ -36,8 +36,12 @@ if [ -f "/root/mainweb/.env" ]; then
         # Скипваме коментари и празни редове
         [[ $line =~ ^#.*$ ]] && continue
         [[ -z $line ]] && continue
-        # Експортваме променливата
-        export "$line"
+        
+        # Разделяме на Ключ и Стойност и махаме кавичките
+        key=$(echo "$line" | cut -d '=' -f 1)
+        val=$(echo "$line" | cut -d '=' -f 2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+        
+        export "$key=$val"
     done < "/root/mainweb/.env"
 fi
 
