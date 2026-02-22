@@ -130,6 +130,10 @@ async function getCategoriesWithMovies() {
     });
 }
 
+import { Hero } from '@/components/home/Hero';
+
+// ... (keep previous functions)
+
 export default async function HomePage() {
     const headersList = await headers();
     const locale = (headersList.get('x-locale') || 'bg') as Locale;
@@ -156,54 +160,7 @@ export default async function HomePage() {
 
     return (
         <div suppressHydrationWarning className="pb-16 space-y-16">
-            {/* Hero Section */}
-            <section suppressHydrationWarning className="relative h-[450px] md:h-[550px] w-full overflow-hidden">
-                {/* Background Gradient & Glows */}
-                <div suppressHydrationWarning className="absolute inset-0 bg-brand-midnight" />
-                <div suppressHydrationWarning className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-brand-royalPurple/20 to-brand-midnight z-0" />
-                <div suppressHydrationWarning className="absolute -top-[20%] -left-[10%] w-[60%] h-[100%] bg-brand-royalPurple/10 rounded-full blur-[120px] animate-pulse" />
-                <div suppressHydrationWarning className="absolute bottom-0 right-0 w-[50%] h-[60%] bg-brand-cinemaGold/5 rounded-full blur-[100px]" />
-
-                <div className="container relative h-full flex items-center z-10">
-                    <div className="flex flex-col md:flex-row items-center justify-between w-full mt-10 md:mt-0">
-                        {/* Hero Text */}
-                        <div className="flex-1 text-center md:text-left space-y-6 animate-in fade-in slide-in-from-left-8 duration-1000">
-                            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-brand-royalPurple/30 border border-brand-royalPurple/40 text-brand-cinemaGold text-xs font-bold uppercase tracking-[0.2em] font-display">
-                                <Sparkles className="w-3.5 h-3.5" />
-                                {t('allRightsReserved') ? 'Новото изживяване' : 'The New Experience'}
-                            </div>
-                            <h1 className="text-5xl md:text-7xl lg:text-8xl font-display tracking-tight text-white leading-[0.9]">
-                                COUCHOO <br />
-                                <span className="text-brand-cinemaGold">{t('home') || 'КИНO'}</span> У ДОМА
-                            </h1>
-                            <p className="text-lg md:text-xl text-brand-softLavender font-medium max-w-xl italic">
-                                "{t('heroSub') || 'Настани се удобно на дивана и се наслади на най-добрите филми с Chouchoo.'}"
-                            </p>
-                            <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-4">
-                                <button className="px-8 py-4 bg-brand-playRed hover:bg-brand-playRed/90 text-white font-display text-xl tracking-widest uppercase rounded-2xl transition-all hover:scale-105 active:scale-95 shadow-xl shadow-brand-playRed/20">
-                                    {t('browse') || 'ГЛЕДАЙ СЕГА'}
-                                </button>
-                                <button className="px-8 py-4 bg-brand-royalPurple/20 hover:bg-brand-royalPurple/30 border border-brand-royalPurple/30 text-brand-warmCream font-display text-xl tracking-widest uppercase rounded-2xl transition-all">
-                                    {t('myList') || 'МОЯТ СПИСЪК'}
-                                </button>
-                            </div>
-                        </div>
-
-                        {/* Hero Mascot */}
-                        <div className="flex-1 relative mt-12 md:mt-0 animate-in fade-in zoom-in duration-1000 delay-300">
-                            <div className="relative z-10 w-full max-w-[450px] mx-auto group">
-                                <img
-                                    src="/brand/couchoo-mascot-hero.png"
-                                    alt="Chouchoo Hero"
-                                    className="w-full h-auto object-contain drop-shadow-[0_20px_50px_rgba(0,0,0,0.5)] transition-transform duration-700 group-hover:scale-105 group-hover:-translate-y-4"
-                                />
-                                {/* Glow reflection */}
-                                <div className="absolute -bottom-10 left-1/2 -translate-x-1/2 w-[80%] h-10 bg-brand-cinemaGold/20 blur-2xl rounded-full opacity-0 group-hover:opacity-100 transition-opacity" />
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </section>
+            <Hero t={t} />
 
             <div className="container space-y-16">
                 <AdBanner slot="home_top" />

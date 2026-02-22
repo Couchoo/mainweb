@@ -20,13 +20,12 @@ import {
 } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Search, LogOut, Bookmark, Gem, LayoutDashboard, User, Clock, Play, Star } from 'lucide-react';
+import { Menu, Search, LogOut, Bookmark, User, Play, Star } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NAVBAR_ORDER, GENRE_MAPPING } from '@/lib/genre-mapping';
 import { getTranslation, Locale } from '@/lib/i18n';
-import { prisma } from '@/lib/db';
-
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface HeaderProps {
     locale?: Locale;
@@ -42,12 +41,16 @@ export function Header({ locale = 'bg' }: HeaderProps) {
     const [categories, setCategories] = useState<{ id: number; name: string; slug: string }[]>([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
+    const [isScrolled, setIsScrolled] = useState(false);
 
     useEffect(() => {
         setMounted(true);
+        const handleScroll = () => setIsScrolled(window.scrollY > 20);
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // Fetch categories
+    // ... (keep fetchCategories and autocomplete search logic)
     useEffect(() => {
         async function fetchCategories() {
             try {
@@ -63,7 +66,6 @@ export function Header({ locale = 'bg' }: HeaderProps) {
         fetchCategories();
     }, [locale]);
 
-    // Autocomplete search with debounce
     useEffect(() => {
         if (searchQuery.length < 2) {
             setSearchResults([]);
@@ -82,7 +84,7 @@ export function Header({ locale = 'bg' }: HeaderProps) {
             } catch (error) {
                 console.error('Search failed:', error);
             }
-        }, 300); // 300ms debounce
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [searchQuery]);
@@ -120,310 +122,248 @@ export function Header({ locale = 'bg' }: HeaderProps) {
     };
 
     return (
-        <header className="sticky top-0 z-50 w-full border-b border-secondary bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-            <div className="container flex h-16 items-center">
-                {/* Left Zone: Logo & Mobile Menu */}
-                <div className="flex items-center gap-4 lg:gap-8 flex-1">
-                    {/* Mobile Menu */}
-                    <div className="md:hidden">
-                        {mounted && (
-                            <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
-                                <SheetTrigger asChild>
-                                    <Button variant="ghost" size="icon" className="text-brand-warmCream">
-                                        <Menu className="h-6 w-6" />
-                                    </Button>
-                                </SheetTrigger>
-                                <SheetContent side="left" className="w-[300px] border-secondary bg-brand-midnight">
-                                    <SheetHeader>
-                                        <SheetTitle className="text-left flex items-center gap-3">
-                                            <img src="/brand/couchoo-wordmark-dark.png" alt="Couchoo" className="h-8 w-auto" />
-                                        </SheetTitle>
-                                    </SheetHeader>
-                                    <div className="mt-8 space-y-4">
-                                        <form onSubmit={handleSearch} className="mb-6">
-                                            <div className="relative">
-                                                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <Input
-                                                    type="search"
-                                                    placeholder={t('search')}
-                                                    className="pl-10 h-11 bg-brand-deepNight/50 border-brand-royalPurple/30 rounded-2xl focus:ring-brand-cinemaGold/50 transition-all font-body"
-                                                    value={searchQuery}
-                                                    onChange={(e) => setSearchQuery(e.target.value)}
-                                                />
+        <header
+            className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled
+                ? 'py-2'
+                : 'py-4'
+                }`}
+        >
+            <div className="container px-4">
+                <nav className={`relative flex items-center justify-between transition-all duration-500 px-6 py-2.5 rounded-[2.5rem] border ${isScrolled
+                    ? 'bg-brand-midnight/90 backdrop-blur-2xl border-brand-royalPurple/40 shadow-[0_0_40px_rgba(0,0,0,0.5)]'
+                    : 'bg-brand-midnight/40 backdrop-blur-lg border-brand-royalPurple/10'
+                    }`}>
+
+                    {/* Left: Logo & Mobile Menu Trigger */}
+                    <div className="flex items-center gap-4">
+                        <div className="xl:hidden">
+                            {mounted && (
+                                <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
+                                    <SheetTrigger asChild>
+                                        <Button variant="ghost" size="icon" className="text-brand-warmCream rounded-full hover:bg-brand-royalPurple/20">
+                                            <Menu className="h-6 w-6" />
+                                        </Button>
+                                    </SheetTrigger>
+                                    <SheetContent side="left" className="w-[300px] border-brand-royalPurple/20 bg-brand-midnight p-0 overflow-hidden">
+                                        <div className="p-6 border-b border-brand-royalPurple/10">
+                                            <img src="/brand/couchoo-wordmark-dark.png" alt="Couchoo" className="h-8 w-auto mb-2" />
+                                            <p className="text-[10px] text-brand-softLavender font-display tracking-[0.2em] font-bold uppercase opacity-40">Your Cinema Experience</p>
+                                        </div>
+                                        <div className="p-4 space-y-6 overflow-y-auto max-h-[calc(100vh-100px)]">
+                                            <nav className="flex flex-col gap-1">
+                                                <Link
+                                                    href="/"
+                                                    className="px-4 py-3 text-sm font-bold text-brand-warmCream hover:bg-brand-royalPurple/20 rounded-2xl transition-all flex items-center gap-3 font-display tracking-widest uppercase group"
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                >
+                                                    <div className="h-2 w-2 rounded-full bg-brand-cinemaGold shadow-[0_0_10px_rgba(240,192,64,0.5)]" />
+                                                    {t('home')}
+                                                </Link>
+                                                <Link
+                                                    href="/cinema"
+                                                    className="px-4 py-3 text-sm font-bold text-white bg-brand-playRed/10 hover:bg-brand-playRed/20 border border-brand-playRed/20 rounded-2xl transition-all flex items-center gap-3 font-display tracking-widest uppercase my-2"
+                                                    onClick={() => setIsMenuOpen(false)}
+                                                >
+                                                    <Play className="h-4 w-4 fill-current text-brand-playRed" />
+                                                    {t('home')} (Live)
+                                                </Link>
+                                            </nav>
+                                            <div className="space-y-4">
+                                                <h4 className="px-4 text-[10px] font-bold text-brand-softLavender/40 uppercase tracking-[0.3em] font-display">Categories</h4>
+                                                <div className="grid grid-cols-2 gap-2">
+                                                    {categories.map((cat) => (
+                                                        <Link
+                                                            key={cat.slug}
+                                                            href={`/category/${cat.slug}`}
+                                                            className="px-4 py-2 text-[11px] font-bold text-brand-warmCream/60 hover:text-brand-cinemaGold hover:bg-brand-royalPurple/10 rounded-xl transition-all font-display tracking-widest uppercase"
+                                                            onClick={() => setIsMenuOpen(false)}
+                                                        >
+                                                            {getCategoryDisplayName(cat)}
+                                                        </Link>
+                                                    ))}
+                                                </div>
                                             </div>
-                                        </form>
-                                        <nav className="flex flex-col gap-2">
-                                            <Link
-                                                href="/"
-                                                className="px-4 py-3 text-sm font-semibold hover:bg-brand-royalPurple/20 text-brand-warmCream rounded-xl transition-all flex items-center gap-3 font-display tracking-widest uppercase"
-                                                onClick={() => setIsMenuOpen(false)}
-                                            >
-                                                <div className="h-2 w-2 rounded-full bg-brand-cinemaGold animate-pulse" />
-                                                {t('home')}
+                                        </div>
+                                    </SheetContent>
+                                </Sheet>
+                            )}
+                        </div>
+
+                        <Link href="/" className="flex items-center group">
+                            <motion.img
+                                whileHover={{ scale: 1.05 }}
+                                src="/brand/couchoo-wordmark-dark.png"
+                                className="h-8 md:h-9 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_20px_rgba(240,192,64,0.6)] brightness-0 invert"
+                                alt="Couchoo"
+                            />
+                        </Link>
+                    </div>
+
+                    {/* Center: Desktop Navigation (Pill Style) */}
+                    <div className="hidden xl:flex items-center bg-brand-deepNight/50 border border-brand-royalPurple/10 rounded-full px-2 py-1 gap-1">
+                        {mainOrdered.slice(0, 6).map((cat) => (
+                            <Link
+                                key={cat.slug}
+                                href={`/category/${cat.slug}`}
+                                className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all whitespace-nowrap font-display tracking-widest uppercase"
+                            >
+                                {getCategoryDisplayName(cat)}
+                            </Link>
+                        ))}
+                        {otherCategories.length > 0 && (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all font-display tracking-widest uppercase outline-none">
+                                    {t('more')}
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent className="max-h-[60vh] overflow-y-auto bg-brand-midnight/95 backdrop-blur-2xl border-brand-royalPurple/30 rounded-[1.5rem] p-2 shadow-2xl min-w-[180px]">
+                                    {otherCategories.map((cat) => (
+                                        <DropdownMenuItem key={cat.slug} asChild className="rounded-xl focus:bg-brand-royalPurple/40 py-2.5">
+                                            <Link href={`/category/${cat.slug}`} className="font-display tracking-widest uppercase text-[11px] font-bold text-brand-softLavender/80">
+                                                {getCategoryDisplayName(cat)}
                                             </Link>
-
-                                            {/* Mobile VIP/Upgrade Button */}
-                                            {session && !['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) ? (
-                                                <Link
-                                                    href="/vip"
-                                                    className="flex items-center gap-3 px-4 py-4 rounded-2xl text-white font-extrabold bg-gradient-to-r from-brand-playRed to-brand-playRed/80 shadow-lg shadow-brand-playRed/20 mb-4 transition-transform active:scale-95"
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                >
-                                                    <Gem className="h-6 w-6 animate-pulse" />
-                                                    <div className="flex flex-col font-display tracking-wider">
-                                                        <span className="leading-tight text-lg">{t('upgradeToVip')}</span>
-                                                        <span className="text-[10px] opacity-70 uppercase tracking-[0.2em] font-bold">Premium Features</span>
-                                                    </div>
-                                                </Link>
-                                            ) : (
-                                                <Link
-                                                    href="/vip"
-                                                    className="flex items-center gap-3 px-4 py-4 rounded-2xl text-brand-cinemaGold font-bold bg-brand-cinemaGold/10 border border-brand-cinemaGold/20 mb-4 font-display tracking-widest uppercase"
-                                                    onClick={() => setIsMenuOpen(false)}
-                                                >
-                                                    <Gem className="h-5 w-5" />
-                                                    {t('vipAccount')}
-                                                </Link>
-                                            )}
-                                            <div className="pt-2 pb-1 px-4 text-[10px] font-bold text-brand-softLavender uppercase tracking-[0.3em] font-display">
-                                                {t('categories')}
-                                            </div>
-                                            <div className="grid grid-cols-2 gap-2">
-                                                {mainOrdered.map((cat) => (
-                                                    <Link
-                                                        key={cat.slug}
-                                                        href={`/category/${cat.slug}`}
-                                                        className="px-4 py-2 text-xs font-semibold text-brand-warmCream/70 hover:text-brand-warmCream hover:bg-brand-royalPurple/30 rounded-xl transition-all font-display tracking-widest uppercase"
-                                                        onClick={() => setIsMenuOpen(false)}
-                                                    >
-                                                        {getCategoryDisplayName(cat)}
-                                                    </Link>
-                                                ))}
-                                            </div>
-                                        </nav>
-                                    </div>
-
-                                    {/* Mobile Friendly Chouchoo Message */}
-                                    <div className="absolute bottom-10 left-6 right-6 p-4 rounded-3xl bg-brand-royalPurple/10 border border-brand-royalPurple/20 flex items-center gap-3">
-                                        <img src="/brand/couchoo-icon-64.png" className="w-10 h-10 object-contain" alt="Chouchoo" />
-                                        <p className="text-[11px] text-brand-softLavender font-medium italic">
-                                            "Хей! Настани се удобно на дивана..."
-                                        </p>
-                                    </div>
-                                </SheetContent>
-                            </Sheet>
+                                        </DropdownMenuItem>
+                                    ))}
+                                </DropdownMenuContent>
+                            </DropdownMenu>
                         )}
                     </div>
 
-                    {/* Logo & Navbar Mascot */}
-                    <Link href="/" className="flex items-center group pl-2">
-                        <img
-                            src="/brand/couchoo-wordmark-dark.png"
-                            className="h-8 md:h-10 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_15px_rgba(240,192,64,0.3)] filter"
-                            alt="Couchoo"
-                        />
-                    </Link>
-                </div>
-
-                {/* Center Zone: Navigation */}
-                <nav className="hidden xl:flex items-center justify-center space-x-1 flex-[2]">
-                    {mainOrdered.map((cat) => (
+                    {/* Right: Actions (Cinema, Search, User) */}
+                    <div className="flex items-center gap-2">
+                        {/* Cinema Button */}
                         <Link
-                            key={cat.slug}
-                            href={`/category/${cat.slug}`}
-                            className="px-3 py-1.5 text-[13px] font-bold text-brand-warmCream/60 hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-xl transition-all whitespace-nowrap font-display tracking-widest uppercase"
+                            href="/cinema"
+                            className="hidden lg:flex items-center gap-2 px-5 py-2 rounded-full bg-brand-playRed/10 border border-brand-playRed/20 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all duration-300 group active:scale-95 shadow-lg shadow-brand-playRed/5"
                         >
-                            {getCategoryDisplayName(cat)}
+                            <div className="relative">
+                                <Play className="w-3.5 h-3.5 fill-current" />
+                                <div className="absolute -top-1 -right-1 w-1.5 h-1.5 bg-white rounded-full animate-ping" />
+                            </div>
+                            <span className="text-[11px] font-bold font-display tracking-widest uppercase">Cinema</span>
                         </Link>
-                    ))}
-                    {otherCategories.length > 0 && (
-                        <DropdownMenu>
-                            <DropdownMenuTrigger className="px-3 py-1.5 text-[13px] font-bold text-brand-warmCream/60 hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-xl transition-all font-display tracking-widest uppercase outline-none">
-                                {t('more')}
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent className="max-h-[70vh] overflow-y-auto bg-brand-deepNight border-brand-royalPurple/30 rounded-2xl p-2 shadow-2xl">
-                                {otherCategories.map((cat) => (
-                                    <DropdownMenuItem key={cat.slug} asChild className="rounded-xl focus:bg-brand-royalPurple/40">
-                                        <Link href={`/category/${cat.slug}`} className="font-display tracking-widest uppercase text-xs">
-                                            {getCategoryDisplayName(cat)}
+
+                        {/* Search Bar - Cinematic Expansion */}
+                        <div className="relative group/search hidden md:block">
+                            <form onSubmit={handleSearch} className="relative z-10">
+                                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-softLavender group-focus-within/search:text-brand-cinemaGold transition-colors" />
+                                <Input
+                                    type="search"
+                                    placeholder={t('search')}
+                                    className="w-[140px] focus:w-[240px] pl-10 h-10 bg-brand-deepNight/50 border-brand-royalPurple/20 rounded-full transition-all duration-500 focus:ring-brand-cinemaGold/30 font-body text-xs"
+                                    value={searchQuery}
+                                    onChange={(e) => setSearchQuery(e.target.value)}
+                                    onFocus={() => searchResults.length > 0 && setShowResults(true)}
+                                    onBlur={() => setTimeout(() => setShowResults(false), 200)}
+                                />
+                            </form>
+
+                            {/* Search Results Dropdown */}
+                            <AnimatePresence>
+                                {showResults && searchResults.length > 0 && (
+                                    <motion.div
+                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                                        exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        className="absolute top-full mt-4 right-0 w-[380px] bg-brand-midnight/95 backdrop-blur-3xl border border-brand-royalPurple/20 rounded-[2rem] shadow-[0_20px_50px_rgba(0,0,0,0.6)] z-[100] overflow-hidden"
+                                    >
+                                        <div className="p-4 border-b border-brand-royalPurple/10 flex items-center justify-between">
+                                            <span className="text-[10px] uppercase tracking-[0.3em] font-bold text-brand-cinemaGold">Search Spotlight</span>
+                                            <div className="flex gap-1">
+                                                {[1, 2, 3].map(i => <div key={i} className="w-1 h-1 rounded-full bg-brand-royalPurple/30" />)}
+                                            </div>
+                                        </div>
+                                        <div className="max-h-[420px] overflow-y-auto p-2">
+                                            {searchResults.map((movie) => (
+                                                <button
+                                                    key={movie.id}
+                                                    type="button"
+                                                    onClick={() => selectMovie(movie.slug)}
+                                                    className="w-full flex items-center gap-4 p-3 hover:bg-brand-royalPurple/10 transition-all text-left rounded-2xl group/item"
+                                                >
+                                                    <div className="relative overflow-hidden rounded-xl border border-white/5 shadow-lg shrink-0">
+                                                        <img
+                                                            src={movie.posterUrl || '/brand/couchoo-icon-64.png'}
+                                                            alt={movie.titleEN}
+                                                            className="w-12 h-18 object-cover group-hover/item:scale-110 transition-transform duration-500"
+                                                        />
+                                                        <div className="absolute inset-0 bg-gradient-to-t from-brand-midnight/60 to-transparent" />
+                                                    </div>
+                                                    <div className="flex-1 min-w-0">
+                                                        <h5 className="font-bold text-sm text-brand-warmCream group-hover/item:text-brand-cinemaGold transition-colors truncate">
+                                                            {movie.titleEN || movie.titleBG}
+                                                        </h5>
+                                                        <div className="flex items-center gap-2 mt-1.5">
+                                                            <span className="text-[9px] font-bold px-2 py-0.5 rounded bg-brand-deepNight text-brand-softLavender border border-brand-royalPurple/20 uppercase tracking-tighter">{movie.year}</span>
+                                                            {movie.rating && (
+                                                                <span className="flex items-center gap-1 text-brand-cinemaGold font-bold text-[10px]">
+                                                                    <Star className="w-3 h-3 fill-current" /> {movie.rating}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </motion.div>
+                                )}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className="w-[1px] h-6 bg-brand-royalPurple/10 mx-1 hidden sm:block" />
+
+                        <LanguageSwitcher currentLocale={locale} />
+
+                        {/* User Profile / Login */}
+                        {session ? (
+                            <DropdownMenu>
+                                <DropdownMenuTrigger asChild>
+                                    <button className="flex items-center gap-2 p-1.5 rounded-full bg-brand-deepNight/50 border border-brand-royalPurple/10 hover:border-brand-cinemaGold/40 transition-all outline-none group active:scale-95">
+                                        <Avatar className="h-8 w-8 border border-white/10 group-hover:border-brand-cinemaGold/40 transition-colors">
+                                            <AvatarImage src={session.user?.image || undefined} />
+                                            <AvatarFallback className="bg-brand-royalPurple/40 text-brand-cinemaGold text-[10px] font-bold">
+                                                {session.user?.email?.[0].toUpperCase()}
+                                            </AvatarFallback>
+                                        </Avatar>
+                                        <div className="hidden lg:flex flex-col items-start pr-2">
+                                            <span className="text-[10px] font-bold text-brand-warmCream max-w-[80px] truncate">
+                                                {session.user?.name || session.user?.email?.split('@')[0]}
+                                            </span>
+                                            {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) && (
+                                                <span className="text-[8px] uppercase tracking-tighter text-brand-cinemaGold font-bold">Premium</span>
+                                            )}
+                                        </div>
+                                    </button>
+                                </DropdownMenuTrigger>
+                                <DropdownMenuContent align="end" className="w-64 p-3 border-brand-royalPurple/20 bg-brand-midnight/98 backdrop-blur-2xl shadow-2xl rounded-[2rem]">
+                                    <div className="p-4 mb-2 rounded-[1.5rem] bg-brand-royalPurple/10 border border-brand-royalPurple/20">
+                                        <p className="text-[9px] font-bold text-brand-softLavender uppercase tracking-[0.2em] opacity-40 mb-1">Authenticated as</p>
+                                        <p className="font-bold truncate text-brand-warmCream text-sm">{session.user?.email}</p>
+                                    </div>
+                                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-brand-royalPurple/20 py-3">
+                                        <Link href="/profile" className="flex items-center text-[13px] font-bold text-brand-softLavender">
+                                            <User className="mr-3 h-4 w-4" /> {t('profile')}
                                         </Link>
                                     </DropdownMenuItem>
-                                ))}
-                            </DropdownMenuContent>
-                        </DropdownMenu>
-                    )}
-
-                    <div className="w-[1px] h-4 bg-brand-royalPurple/30 mx-2" />
-
-                    <Link
-                        href="/cinema"
-                        className="px-5 py-1.5 text-[13px] font-bold text-white bg-brand-playRed hover:bg-brand-playRed/90 rounded-2xl transition-all uppercase font-display tracking-[0.1em] flex items-center gap-2 group shadow-lg shadow-brand-playRed/10 active:scale-95"
-                    >
-                        <Play className="w-3.5 h-3.5 fill-current" />
-                        {t('home')}
-                    </Link>
-                </nav>
-
-                {/* Right Zone: Search & User */}
-                <div className="flex items-center justify-end space-x-2 lg:space-x-4 flex-1">
-                    <LanguageSwitcher currentLocale={locale} />
-
-                    {/* Search - Desktop */}
-                    <form onSubmit={handleSearch} className="hidden lg:block relative">
-                        <div className="relative group">
-                            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-softLavender group-focus-within:text-brand-cinemaGold transition-colors" />
-                            <Input
-                                type="search"
-                                placeholder={t('search')}
-                                className="w-[120px] xl:w-[180px] pl-10 h-10 bg-brand-deepNight/50 border-brand-royalPurple/30 rounded-2xl focus:w-[220px] transition-all focus:ring-brand-cinemaGold/30 font-body text-sm"
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                onFocus={() => searchResults.length > 0 && setShowResults(true)}
-                                onBlur={() => setTimeout(() => setShowResults(false), 200)}
-                            />
-                        </div>
-
-                        {/* Autocomplete Dropdown */}
-                        {showResults && searchResults.length > 0 && (
-                            <div className="absolute top-full mt-3 right-0 w-[350px] bg-brand-midnight/95 backdrop-blur-xl border border-brand-royalPurple/30 rounded-3xl shadow-2xl z-50 overflow-hidden ring-1 ring-white/5">
-                                <div className="p-3 border-b border-brand-royalPurple/20 flex items-center justify-between">
-                                    <span className="text-[10px] uppercase tracking-widest font-bold text-brand-softLavender ml-2">Резултати</span>
-                                    <img src="/brand/couchoo-icon-32.png" className="h-5 w-auto opacity-50" alt="" />
-                                </div>
-                                <div className="max-h-[400px] overflow-y-auto p-1">
-                                    {searchResults.map((movie) => (
-                                        <button
-                                            key={movie.id}
-                                            type="button"
-                                            onClick={() => selectMovie(movie.slug)}
-                                            className="w-full flex items-center gap-4 p-2.5 hover:bg-brand-royalPurple/20 transition-all text-left rounded-2xl group/item"
-                                        >
-                                            {movie.posterUrl ? (
-                                                <div className="relative">
-                                                    <img
-                                                        src={movie.posterUrl}
-                                                        alt={movie.titleEN || movie.titleBG}
-                                                        className="w-11 h-16 object-cover rounded-xl shadow-md border border-white/5"
-                                                    />
-                                                    <div className="absolute inset-0 bg-brand-cinemaGold/10 opacity-0 group-hover/item:opacity-100 transition-opacity rounded-xl" />
-                                                </div>
-                                            ) : (
-                                                <div className="w-11 h-16 bg-brand-deepNight rounded-xl flex items-center justify-center border border-brand-royalPurple/20">
-                                                    <Search className="h-5 w-5 opacity-30" />
-                                                </div>
-                                            )}
-                                            <div className="flex-1 min-w-0">
-                                                <div className="font-bold text-sm truncate text-brand-warmCream group-hover/item:text-brand-cinemaGold transition-colors">
-                                                    {movie.titleEN || movie.titleBG}
-                                                </div>
-                                                <div className="text-[11px] text-brand-softLavender flex items-center gap-2 mt-1">
-                                                    <span className="bg-brand-deepNight px-2 py-0.5 rounded-md border border-brand-royalPurple/20">{movie.year}</span>
-                                                    {movie.rating && (
-                                                        <span className="flex items-center gap-1 text-brand-cinemaGold font-bold">
-                                                            <Star className="w-3 h-3 fill-current" /> {movie.rating}
-                                                        </span>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        </button>
-                                    ))}
-                                </div>
-                            </div>
+                                    <DropdownMenuItem asChild className="rounded-xl cursor-pointer focus:bg-brand-royalPurple/20 py-3">
+                                        <Link href="/watchlist" className="flex items-center text-[13px] font-bold text-brand-softLavender">
+                                            <Bookmark className="mr-3 h-4 w-4" /> {t('watchlist')}
+                                        </Link>
+                                    </DropdownMenuItem>
+                                    <DropdownMenuSeparator className="bg-brand-royalPurple/10 my-2" />
+                                    <DropdownMenuItem onClick={() => signOut()} className="rounded-xl cursor-pointer text-brand-playRed focus:bg-brand-playRed focus:text-white py-3">
+                                        <LogOut className="mr-3 h-4 w-4" /> <span className="font-bold uppercase tracking-widest text-[11px]">{t('logout')}</span>
+                                    </DropdownMenuItem>
+                                </DropdownMenuContent>
+                            </DropdownMenu>
+                        ) : (
+                            <Link href="/login" className="px-5 py-2 rounded-full bg-brand-cinemaGold text-brand-midnight font-bold font-display tracking-widest uppercase text-[11px] hover:bg-white transition-colors active:scale-95 shadow-xl shadow-brand-cinemaGold/10">
+                                {t('login')}
+                            </Link>
                         )}
-                    </form>
-
-                    {/* User Menu */}
-                    {session ? (
-                        <div className="flex items-center gap-2 sm:gap-4">
-                            {mounted && (
-                                <DropdownMenu>
-                                    <DropdownMenuTrigger asChild>
-                                        <button className="flex items-center gap-2.5 p-1 pl-1 pr-3 rounded-2xl bg-brand-deepNight/40 border border-brand-royalPurple/30 hover:bg-brand-royalPurple/20 hover:border-brand-cinemaGold/30 transition-all group outline-none">
-                                            <div className="relative">
-                                                <Avatar className="h-9 w-9 border-2 border-brand-deepNight rounded-xl shadow-inner group-hover:scale-105 transition-transform">
-                                                    <AvatarImage src={session.user?.image || undefined} className="rounded-xl" />
-                                                    <AvatarFallback className="bg-brand-royalPurple/40 text-brand-cinemaGold text-xs font-bold rounded-xl">
-                                                        {session.user?.email?.[0].toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) && (
-                                                    <div className="absolute -top-1 -right-1 bg-brand-cinemaGold text-brand-midnight rounded-full h-4.5 w-4.5 flex items-center justify-center shadow-lg border-2 border-brand-midnight">
-                                                        <Gem className="h-2.5 w-2.5" />
-                                                    </div>
-                                                )}
-                                            </div>
-                                            <div className="hidden sm:flex flex-col items-start leading-tight">
-                                                <span className="text-xs font-bold truncate max-w-[90px] text-brand-warmCream">
-                                                    {session.user?.name || session.user?.email?.split('@')[0]}
-                                                </span>
-                                                <span className={`text-[9px] uppercase tracking-wider font-display font-bold ${['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) ? 'text-brand-cinemaGold' : 'text-brand-softLavender'}`}>
-                                                    {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) ? t('vipAccount') : 'Standard'}
-                                                </span>
-                                            </div>
-                                        </button>
-                                    </DropdownMenuTrigger>
-                                    <DropdownMenuContent align="end" className="w-64 p-2.5 border-brand-royalPurple/30 bg-brand-midnight/95 backdrop-blur-2xl shadow-[0_32px_64px_-12px_rgba(0,0,0,0.8)] rounded-[2rem] overflow-hidden">
-                                        <div className="p-4 mb-2 rounded-3xl bg-brand-deepNight/50 border border-brand-royalPurple/20 flex flex-col gap-1 relative overflow-hidden group">
-                                            <div className="absolute top-0 right-0 p-2 opacity-5 scale-150 transition-transform group-hover:scale-175 duration-700">
-                                                <img src="/brand/couchoo-icon-64.png" alt="" />
-                                            </div>
-                                            <p className="text-[10px] font-bold text-brand-softLavender uppercase tracking-[0.2em] font-display">{t('account')}</p>
-                                            <p className="font-bold truncate text-brand-warmCream text-sm">{session.user?.email}</p>
-                                        </div>
-
-                                        <div className="flex flex-col gap-1">
-                                            <DropdownMenuItem asChild className="rounded-2xl cursor-pointer focus:bg-brand-royalPurple/30 py-2.5">
-                                                <Link href="/profile" className="flex items-center text-sm font-semibold">
-                                                    <User className="mr-3 h-4 w-4 text-brand-softLavender" />
-                                                    {t('profile')}
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild className="rounded-2xl cursor-pointer focus:bg-brand-royalPurple/30 py-2.5">
-                                                <Link href="/watchlist" className="flex items-center text-sm font-semibold">
-                                                    <Bookmark className="mr-3 h-4 w-4 text-brand-softLavender" />
-                                                    {t('watchlist')}
-                                                </Link>
-                                            </DropdownMenuItem>
-                                            <DropdownMenuItem asChild className="rounded-2xl cursor-pointer text-brand-cinemaGold focus:text-brand-cinemaGold focus:bg-brand-cinemaGold/10 py-2.5">
-                                                <Link href="/vip" className="flex items-center text-sm font-bold">
-                                                    <Gem className="mr-3 h-4 w-4" />
-                                                    {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) ? t('vipAccount') : t('upgradeToVip')}
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            {((session.user as any)?.role === 'ADMIN' || (session.user as any)?.role === 'SUPER_ADMIN') && (
-                                                <DropdownMenuItem asChild className="rounded-2xl cursor-pointer text-blue-400 focus:text-blue-400 focus:bg-blue-400/10 py-2.5">
-                                                    <Link href="/admin" className="flex items-center text-sm font-semibold">
-                                                        <LayoutDashboard className="mr-3 h-4 w-4" />
-                                                        {t('adminPanel')}
-                                                    </Link>
-                                                </DropdownMenuItem>
-                                            )}
-                                        </div>
-
-                                        <DropdownMenuSeparator className="my-2 bg-brand-royalPurple/20" />
-
-                                        <DropdownMenuItem onClick={() => signOut()} className="rounded-2xl cursor-pointer text-brand-playRed focus:text-white focus:bg-brand-playRed transition-all py-2.5 mb-1">
-                                            <LogOut className="mr-3 h-4 w-4" />
-                                            <span className="font-bold">{t('logout')}</span>
-                                        </DropdownMenuItem>
-                                    </DropdownMenuContent>
-                                </DropdownMenu>
-                            )}
-                        </div>
-                    ) : (
-                        <div className="flex items-center space-x-2">
-                            <Button asChild variant="ghost" className="hidden sm:inline-flex rounded-2xl text-brand-softLavender hover:text-brand-warmCream hover:bg-brand-royalPurple/20 font-display tracking-widest uppercase text-xs">
-                                <Link href="/login">{t('login')}</Link>
-                            </Button>
-                            <Button asChild className="bg-brand-playRed text-white font-bold hover:bg-brand-playRed/90 shadow-lg shadow-brand-playRed/10 transition-all rounded-2xl px-6 font-display tracking-widest uppercase text-xs h-10">
-                                <Link href="/register">{t('register')}</Link>
-                            </Button>
-                        </div>
-                    )}
-                </div>
+                    </div>
+                </nav>
             </div>
-        </header >
+        </header>
     );
 }
 
