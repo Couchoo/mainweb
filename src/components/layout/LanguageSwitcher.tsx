@@ -28,29 +28,31 @@ export function LanguageSwitcher({ currentLocale }: LanguageSwitcherProps) {
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>
-                <Button variant="ghost" size="sm" className="flex items-center gap-2 group px-4 py-1.5 rounded-xl bg-white/5 border border-white/5 hover:border-primary/30 transition-all">
-                    <Globe className="w-3.5 h-3.5 text-muted-foreground group-hover:text-primary transition-colors" />
-                    <span className="font-black uppercase text-[11px] tracking-widest text-muted-foreground group-hover:text-foreground transition-colors">
+                <Button variant="ghost" size="sm" className="flex items-center gap-2 group px-4 py-1.5 rounded-xl bg-white/5 border border-white/5 hover:border-brand-cinemaGold/30 transition-all">
+                    <span className="text-sm grayscale group-hover:grayscale-0 transition-all">
+                        {currentLocale === 'bg' ? '🇧🇬' : '🇺🇸'}
+                    </span>
+                    <span className="font-bold uppercase text-[10px] tracking-widest text-brand-softLavender group-hover:text-brand-warmCream transition-colors">
                         {currentLocale === 'bg' ? 'Български' : 'English'}
                     </span>
                 </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="bg-background border-secondary min-w-[120px]">
+            <DropdownMenuContent align="end" className="bg-brand-midnight/95 backdrop-blur-2xl border-brand-royalPurple/20 min-w-[160px] rounded-[1.5rem] p-2 shadow-2xl">
                 <DropdownMenuItem
                     onClick={() => setLocale('bg')}
-                    className="flex items-center gap-3 cursor-pointer py-2.5"
+                    className="flex items-center gap-3 cursor-pointer py-3 rounded-xl focus:bg-brand-royalPurple/20 group"
                 >
-                    <span className="text-xl">🇧🇬</span>
-                    <span className="font-medium">Български</span>
-                    {currentLocale === 'bg' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+                    <span className="text-xl grayscale group-hover:grayscale-0 transition-all">🇧🇬</span>
+                    <span className="font-bold text-sm text-brand-softLavender group-hover:text-brand-warmCream">Български</span>
+                    {currentLocale === 'bg' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-cinemaGold shadow-[0_0_10px_rgba(240,192,64,0.5)]" />}
                 </DropdownMenuItem>
                 <DropdownMenuItem
                     onClick={() => setLocale('en')}
-                    className="flex items-center gap-3 cursor-pointer py-2.5"
+                    className="flex items-center gap-3 cursor-pointer py-3 rounded-xl focus:bg-brand-royalPurple/20 group"
                 >
-                    <span className="text-xl">🇺🇸</span>
-                    <span className="font-medium">English</span>
-                    {currentLocale === 'en' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-primary" />}
+                    <span className="text-xl grayscale group-hover:grayscale-0 transition-all">🇺🇸</span>
+                    <span className="font-bold text-sm text-brand-softLavender group-hover:text-brand-warmCream">English</span>
+                    {currentLocale === 'en' && <div className="ml-auto w-1.5 h-1.5 rounded-full bg-brand-cinemaGold shadow-[0_0_10px_rgba(240,192,64,0.5)]" />}
                 </DropdownMenuItem>
             </DropdownMenuContent>
         </DropdownMenu>

@@ -214,14 +214,33 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                 <DropdownMenuTrigger className="px-4 py-2 text-[11px] font-bold text-brand-softLavender hover:text-brand-cinemaGold hover:bg-brand-royalPurple/20 rounded-full transition-all font-display tracking-widest uppercase outline-none">
                                     {t('more')}
                                 </DropdownMenuTrigger>
-                                <DropdownMenuContent className="max-h-[60vh] overflow-y-auto bg-brand-midnight/95 backdrop-blur-2xl border-brand-royalPurple/30 rounded-[1.5rem] p-2 shadow-2xl min-w-[180px]">
-                                    {otherCategories.map((cat) => (
-                                        <DropdownMenuItem key={cat.slug} asChild className="rounded-xl focus:bg-brand-royalPurple/40 py-2.5">
-                                            <Link href={`/category/${cat.slug}`} className="font-display tracking-widest uppercase text-[11px] font-bold text-brand-softLavender/80">
-                                                {getCategoryDisplayName(cat)}
-                                            </Link>
-                                        </DropdownMenuItem>
-                                    ))}
+                                <DropdownMenuContent className="bg-brand-midnight/95 backdrop-blur-2xl border-brand-royalPurple/30 rounded-[2.5rem] p-4 shadow-2xl min-w-[420px] grid grid-cols-2 gap-2">
+                                    <div className="col-span-2 px-3 py-2 border-b border-brand-royalPurple/10 mb-2">
+                                        <span className="text-[9px] font-bold text-brand-cinemaGold uppercase tracking-[0.3em]">Explore Genres</span>
+                                    </div>
+                                    {otherCategories.map((cat) => {
+                                        // Simple icon mapping
+                                        let CategoryIcon = Menu;
+                                        const name = (cat as any).nameEN || cat.name;
+                                        if (name.includes('Animation')) CategoryIcon = Play;
+                                        if (name.includes('Horror')) CategoryIcon = Star; // Using Star as placeholder
+                                        if (name.includes('Crime')) CategoryIcon = Bookmark;
+                                        if (name.includes('Mystery')) CategoryIcon = Search;
+                                        if (name.includes('Romance')) CategoryIcon = Star;
+
+                                        return (
+                                            <DropdownMenuItem key={cat.slug} asChild className="rounded-2xl focus:bg-brand-royalPurple/20 py-3 cursor-pointer group">
+                                                <Link href={`/category/${cat.slug}`} className="flex items-center gap-3">
+                                                    <div className="w-8 h-8 rounded-xl bg-brand-royalPurple/20 flex items-center justify-center text-brand-softLavender group-hover:text-brand-cinemaGold group-hover:bg-brand-royalPurple/40 transition-all shadow-lg">
+                                                        <CategoryIcon className="w-4 h-4" />
+                                                    </div>
+                                                    <span className="font-display tracking-widest uppercase text-[10px] font-bold text-brand-softLavender/90 group-hover:text-brand-warmCream transition-colors">
+                                                        {getCategoryDisplayName(cat)}
+                                                    </span>
+                                                </Link>
+                                            </DropdownMenuItem>
+                                        );
+                                    })}
                                 </DropdownMenuContent>
                             </DropdownMenu>
                         )}
