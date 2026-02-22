@@ -1,0 +1,33 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Next.js Dev",
+            "type": "node-terminal",
+            "request": "launch",
+            "command": "npm run dev",
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "name": "Go Cinema Server",
+            "type": "go",
+            "request": "launch",
+            "mode": "auto",
+            "program": "${workspaceFolder}/../cinema-ws",
+            "env": {
+                "WS_INTERNAL_SECRET": "cinema-ws-secret-change-in-production",
+                "WS_PORT": "8080"
+            }
+        }
+    ],
+    "compounds": [
+        {
+            "name": "🚀 Start All (Next + Go)",
+            "configurations": [
+                "Next.js Dev",
+                "Go Cinema Server"
+            ],
+            "stopAll": true
+        }
+    ]
+}

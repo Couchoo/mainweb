@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="bg">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Couchoo — Brand Kit</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg-dark: #0F0E17;
+    --bg-card: #1A1828;
+    --bg-light: #F5F0E8;
+    --purple-deep: #2D2460;
+    --purple-mid: #3D3080;
+    --owl-body: #5B4B8A;
+    --owl-face: #7B6BAA;
+    --gold: #F0C040;
+    --gold-dark: #C8922A;
+    --accent-red: #E53935;
+    --text-white: #FFFFFF;
+    --text-muted: #7B7B9A;
+    --couch-brown: #3A2A1A;
+    --couch-mid: #5C3D22;
+    --couch-light: #7A5030;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--bg-dark);
+    color: var(--text-white);
+    font-family: 'Nunito', sans-serif;
+    padding: 40px 20px 80px;
+  }
+  .page-title {
+    text-align: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 6px;
+    color: var(--text-muted);
+    margin-bottom: 60px;
+  }
+
+  /* ===== SECTIONS ===== */
+  .section {
+    max-width: 900px;
+    margin: 0 auto 80px;
+  }
+  .section-label {
+    font-family: 'Bebas Neue', cursive;
+    letter-spacing: 5px;
+    font-size: 11px;
+    color: var(--text-muted);
+    text-align: center;
+    margin-bottom: 30px;
+  }
+
+  /* ===== HERO LOGO ===== */
+  .hero-logo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .logo-text {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 72px;
+    letter-spacing: 10px;
+    line-height: 1;
+  }
+  .logo-text span.white { color: #fff; }
+  .logo-text span.gold { color: var(--gold); }
+  .tagline {
+    font-family: 'Nunito', sans-serif;
+    font-size: 12px;
+    letter-spacing: 5px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+
+  /* ===== NAVBAR PREVIEW ===== */
+  .navbar {
+    background: #1A1828;
+    border: 1px solid #2A2845;
+    border-radius: 12px;
+    padding: 14px 24px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+  .navbar .brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .navbar .logo-text-sm {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    letter-spacing: 4px;
+  }
+  .navbar nav {
+    margin-left: 16px;
+    display: flex;
+    gap: 20px;
+    font-size: 14px;
+    color: rgba(255,255,255,0.75);
+  }
+  .navbar .cta {
+    margin-left: auto;
+    background: var(--accent-red);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  /* ===== VARIANTS GRID ===== */
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .variant-card {
+    border-radius: 16px;
+    padding: 32px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 14px;
+  }
+  .variant-card.dark { background: #1A1828; }
+  .variant-card.light { background: var(--bg-light); }
+  .variant-card.icon-only { background: #1A1828; }
+  .variant-card .label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-family: 'Bebas Neue', cursive;
+  }
+  .variant-card.light .label { color: #999; }
+  .variant-card .logo-text-md {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 32px;
+    letter-spacing: 5px;
+  }
+  .variant-card.light .logo-text-md span.white { color: #1a1828; }
+
+  /* ===== COLORS ===== */
+  .colors-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+    gap: 16px;
+  }
+  .color-swatch {
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .swatch-block {
+    height: 80px;
+    border-radius: 12px 12px 0 0;
+  }
+  .swatch-info {
+    background: #1A1828;
+    padding: 10px 12px;
+    border-radius: 0 0 12px 12px;
+  }
+  .swatch-name {
+    font-size: 11px;
+    font-weight: 700;
+    color: white;
+  }
+  .swatch-hex {
+    font-size: 10px;
+    color: var(--text-muted);
+    font-family: monospace;
+  }
+
+  /* ===== TYPOGRAPHY ===== */
+  .type-showcase {
+    background: #1A1828;
+    border-radius: 16px;
+    padding: 36px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+  .type-row {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    padding-bottom: 20px;
+  }
+  .type-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .type-meta {
+    min-width: 150px;
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+  }
+  .type-sample { flex: 1; }
+
+  /* ===== APP ICON SIZES ===== */
+  .icons-row {
+    display: flex;
+    align-items: flex-end;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .icon-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+  }
+  .icon-item span {
+    font-size: 10px;
+    color: var(--text-muted);
+    letter-spacing: 1px;
+  }
+
+  /* ===== SVG MASCOT ===== */
+  svg { overflow: visible; }
+</style>
+</head>
+<body>
+
+<p class="page-title">COUCHOO — BRAND KIT 2025</p>
+
+<!-- ==================== HERO MAIN LOGO ==================== -->
+<div class="section">
+  <p class="section-label">ГЛАВНО ЛОГО</p>
+  <div class="hero-logo">
+
+    <!-- IMPROVED MASCOT SVG -->
+    <svg width="260" height="200" viewBox="0 0 260 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <!-- COUCH - cleaner, warmer, clearly a sofa -->
+      <!-- Back cushion / backrest -->
+      <rect x="30" y="100" width="200" height="60" rx="12" fill="#5C3D22"/>
+      <!-- Back cushion highlight/seam -->
+      <rect x="30" y="100" width="200" height="30" rx="12" fill="#7A5030"/>
+      <!-- Seat cushion left -->
+      <rect x="38" y="128" width="82" height="36" rx="8" fill="#6A4428"/>
+      <!-- Seat cushion right -->
+      <rect x="128" y="128" width="82" height="36" rx="8" fill="#6A4428"/>
+      <!-- Cushion seam line left -->
+      <line x1="79" y1="130" x2="79" y2="162" stroke="#5C3D22" stroke-width="2"/>
+      <!-- Cushion seam line right -->
+      <line x1="169" y1="130" x2="169" y2="162" stroke="#5C3D22" stroke-width="2"/>
+      <!-- Left arm -->
+      <rect x="18" y="104" width="24" height="60" rx="8" fill="#7A5030"/>
+      <rect x="14" y="140" width="32" height="20" rx="6" fill="#8A6040"/>
+      <!-- Right arm -->
+      <rect x="218" y="104" width="24" height="60" rx="8" fill="#7A5030"/>
+      <rect x="214" y="140" width="32" height="20" rx="6" fill="#8A6040"/>
+      <!-- Legs -->
+      <rect x="42" y="158" width="14" height="20" rx="4" fill="#4A2E14"/>
+      <rect x="204" y="158" width="14" height="20" rx="4" fill="#4A2E14"/>
+
+      <!-- REMOTE CONTROL - clearly a TV remote, not cyber -->
+      <g transform="translate(178, 118) rotate(-15)">
+        <!-- Remote body -->
+        <rect x="0" y="0" width="22" height="46" rx="6" fill="#2A2A3A"/>
+        <rect x="0" y="0" width="22" height="18" rx="6" fill="#3A3A4A"/>
+        <!-- Screen on remote top -->
+        <rect x="3" y="3" width="16" height="10" rx="3" fill="#1A1A2A"/>
+        <rect x="4" y="4" width="14" height="8" rx="2" fill="#0A2A1A" opacity="0.8"/>
+        <!-- Power button -->
+        <circle cx="11" cy="22" r="4" fill="#E53935" opacity="0.9"/>
+        <!-- Direction pad -->
+        <circle cx="11" cy="33" r="5" fill="#444455"/>
+        <circle cx="11" cy="33" r="2" fill="#555566"/>
+        <!-- Small buttons row -->
+        <rect x="4" y="40" width="5" height="3" rx="1.5" fill="#555"/>
+        <rect x="11" y="40" width="5" height="3" rx="1.5" fill="#555"/>
+      </g>
+
+      <!-- OWL BODY -->
+      <ellipse cx="130" cy="112" rx="36" ry="42" fill="#5B4B8A"/>
+      <!-- Wing left -->
+      <ellipse cx="96" cy="120" rx="18" ry="28" fill="#4A3A75" transform="rotate(15 96 120)"/>
+      <!-- Wing right -->
+      <ellipse cx="164" cy="120" rx="18" ry="28" fill="#4A3A75" transform="rotate(-15 164 120)"/>
+
+      <!-- OWL HEAD -->
+      <ellipse cx="130" cy="76" rx="34" ry="32" fill="#5B4B8A"/>
+
+      <!-- EAR TUFTS (clearly owl ears) -->
+      <!-- Left ear -->
+      <polygon points="104,54 98,34 118,50" fill="#5B4B8A"/>
+      <polygon points="106,52 100,36 115,50" fill="#4A3A75"/>
+      <!-- Right ear -->
+      <polygon points="156,54 162,34 142,50" fill="#5B4B8A"/>
+      <polygon points="154,52 160,36 145,50" fill="#4A3A75"/>
+
+      <!-- Forehead patch / facial disc -->
+      <ellipse cx="130" cy="80" rx="26" ry="24" fill="#7B6BAA"/>
+
+      <!-- Eyes -->
+      <!-- Left eye -->
+      <circle cx="118" cy="76" r="11" fill="#1A1430"/>
+      <circle cx="118" cy="76" r="8.5" fill="#F0C040"/>
+      <circle cx="118" cy="76" r="5" fill="#1A1430"/>
+      <circle cx="115" cy="73" r="2" fill="white" opacity="0.9"/>
+      <!-- Right eye -->
+      <circle cx="142" cy="76" r="11" fill="#1A1430"/>
+      <circle cx="142" cy="76" r="8.5" fill="#F0C040"/>
+      <circle cx="142" cy="76" r="5" fill="#1A1430"/>
+      <circle cx="139" cy="73" r="2" fill="white" opacity="0.9"/>
+
+      <!-- Beak -->
+      <polygon points="130,84 124,92 136,92" fill="#C8922A"/>
+      <line x1="124" y1="88" x2="136" y2="88" stroke="#A07020" stroke-width="1"/>
+
+      <!-- POPCORN BUCKET - clearly popcorn -->
+      <g transform="translate(148, 78)">
+        <!-- Bucket -->
+        <path d="M4,22 L8,42 L28,42 L32,22 Z" fill="#E53935"/>
+        <!-- Stripes on bucket -->
+        <path d="M8,22 L10,42" stroke="white" stroke-width="3" stroke-opacity="0.6"/>
+        <path d="M18,22 L18,42" stroke="white" stroke-width="3" stroke-opacity="0.6"/>
+        <path d="M26,22 L28,42" stroke="white" stroke-width="3" stroke-opacity="0.6"/>
+        <!-- Bucket rim -->
+        <rect x="3" y="20" width="30" height="5" rx="2" fill="#C82020"/>
+        <!-- Popcorn kernels - fluffy white/yellow blobs -->
+        <!-- Bottom row -->
+        <ellipse cx="9" cy="18" rx="6" ry="5" fill="#FFF8DC"/>
+        <ellipse cx="18" cy="16" rx="6" ry="5" fill="#F5E090"/>
+        <ellipse cx="27" cy="18" rx="6" ry="5" fill="#FFF8DC"/>
+        <!-- Top row -->
+        <ellipse cx="5" cy="12" rx="5" ry="4.5" fill="#F5E090"/>
+        <ellipse cx="14" cy="9" rx="6" ry="5" fill="#FFF8DC"/>
+        <ellipse cx="23" cy="10" rx="6" ry="5" fill="#F5E090"/>
+        <ellipse cx="32" cy="12" rx="5" ry="4.5" fill="#FFF8DC"/>
+        <!-- Very top -->
+        <ellipse cx="10" cy="6" rx="4.5" ry="4" fill="#FFF8DC"/>
+        <ellipse cx="20" cy="3" rx="5" ry="4.5" fill="#F5E090"/>
+        <ellipse cx="29" cy="6" rx="4.5" ry="4" fill="#FFF8DC"/>
+        <!-- Popcorn texture dots -->
+        <circle cx="9" cy="17" r="1.5" fill="#E8C860" opacity="0.5"/>
+        <circle cx="18" cy="15" r="1.5" fill="#D4A830" opacity="0.5"/>
+      </g>
+
+      <!-- Owl feet peeking below body -->
+      <ellipse cx="118" cy="152" rx="10" ry="5" fill="#4A3A75"/>
+      <ellipse cx="142" cy="152" rx="10" ry="5" fill="#4A3A75"/>
+    </svg>
+
+    <div class="logo-text">
+      <span class="white">COUCH</span><span class="gold">OO</span>
+    </div>
+    <p class="tagline">Your Cinema. Your Couch.</p>
+  </div>
+</div>
+
+<!-- ==================== NAVBAR ==================== -->
+<div class="section">
+  <p class="section-label">КАК ИЗГЛЕЖДА В NAVBAR</p>
+  <div class="navbar">
+    <div class="brand">
+      <!-- Small navbar owl icon -->
+      <svg width="36" height="36" viewBox="0 0 36 36">
+        <rect width="36" height="36" rx="8" fill="#2D2460"/>
+        <!-- Ears -->
+        <polygon points="10,14 7,6 15,12" fill="#5B4B8A"/>
+        <polygon points="26,14 29,6 21,12" fill="#5B4B8A"/>
+        <!-- Head -->
+        <circle cx="18" cy="19" r="12" fill="#5B4B8A"/>
+        <circle cx="18" cy="19" r="9" fill="#7B6BAA"/>
+        <!-- Eyes -->
+        <circle cx="13" cy="18" r="4" fill="#F0C040"/>
+        <circle cx="13" cy="18" r="2" fill="#1A1430"/>
+        <circle cx="23" cy="18" r="4" fill="#F0C040"/>
+        <circle cx="23" cy="18" r="2" fill="#1A1430"/>
+        <!-- Beak -->
+        <polygon points="18,22 15,26 21,26" fill="#C8922A"/>
+      </svg>
+      <div class="logo-text-sm">
+        <span class="white">COUCH</span><span class="gold">OO</span>
+      </div>
+    </div>
+    <nav>
+      <span>Филми</span>
+      <span>Сериали</span>
+      <span>Топ 10</span>
+    </nav>
+    <div class="cta">▶ Гледай</div>
+  </div>
+</div>
+
+<!-- ==================== LOGO VARIANTS ==================== -->
+<div class="section">
+  <p class="section-label">ВАРИАНТИ</p>
+  <div class="variants-grid">
+
+    <!-- Dark variant -->
+    <div class="variant-card dark">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <!-- Ears -->
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <!-- Head -->
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <!-- Eyes -->
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <!-- Eye shine -->
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <!-- Beak -->
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <div class="logo-text-md"><span class="white">COUCH</span><span class="gold">OO</span></div>
+      <span class="label">ТЪМЕН</span>
+    </div>
+
+    <!-- Light variant -->
+    <div class="variant-card light">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#E8E0D0"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <div class="logo-text-md" style="color:#1A1828"><span style="color:#1A1828;font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:5px;">COUCH</span><span style="color:var(--gold-dark);font-family:'Bebas Neue',cursive;font-size:32px;letter-spacing:5px;">OO</span></div>
+      <span class="label">СВЕТЪЛ</span>
+    </div>
+
+    <!-- App Icon -->
+    <div class="variant-card icon-only">
+      <svg width="70" height="70" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span class="label">APP ICON</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== ICON SIZES ==================== -->
+<div class="section">
+  <p class="section-label">ICON SIZES — FAVICON / APP / STORE</p>
+  <div class="icons-row">
+    <!-- 16x16 favicon -->
+    <div class="icon-item">
+      <svg width="16" height="16" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span>16px Favicon</span>
+    </div>
+    <!-- 32px -->
+    <div class="icon-item">
+      <svg width="32" height="32" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span>32px</span>
+    </div>
+    <!-- 48px -->
+    <div class="icon-item">
+      <svg width="48" height="48" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span>48px</span>
+    </div>
+    <!-- 72px App Store -->
+    <div class="icon-item">
+      <svg width="72" height="72" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span>72px Store</span>
+    </div>
+    <!-- 120px -->
+    <div class="icon-item">
+      <svg width="120" height="120" viewBox="0 0 70 70">
+        <rect width="70" height="70" rx="16" fill="#2D2460"/>
+        <polygon points="18,24 13,8 26,20" fill="#5B4B8A"/>
+        <polygon points="52,24 57,8 44,20" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="22" fill="#5B4B8A"/>
+        <circle cx="35" cy="38" r="17" fill="#7B6BAA"/>
+        <circle cx="26" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="26" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="44" cy="36" r="7" fill="#F0C040"/>
+        <circle cx="44" cy="36" r="4" fill="#1A1430"/>
+        <circle cx="24" cy="33" r="2" fill="white" opacity="0.8"/>
+        <circle cx="42" cy="33" r="2" fill="white" opacity="0.8"/>
+        <polygon points="35,42 29,50 41,50" fill="#C8922A"/>
+      </svg>
+      <span>120px App</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TEXT ONLY LOGO ==================== -->
+<div class="section">
+  <p class="section-label">САМО ТЕКСТ</p>
+  <div style="text-align:center;">
+    <div style="font-family:'Bebas Neue',cursive;font-size:80px;letter-spacing:14px;">
+      <span style="color:white">COUCH</span><span style="color:#F0C040">OO</span>
+    </div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:48px;letter-spacing:10px;margin-top:10px;">
+      <span style="color:white">COUCH</span><span style="color:#F0C040">OO</span>
+    </div>
+    <div style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:6px;margin-top:10px;">
+      <span style="color:white">COUCH</span><span style="color:#F0C040">OO</span>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== COLOR PALETTE ==================== -->
+<div class="section">
+  <p class="section-label">ЦВЕТОВА ПАЛИТРА</p>
+  <div class="colors-grid">
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#0F0E17;border:1px solid #2A2845;"></div>
+      <div class="swatch-info"><div class="swatch-name">Midnight</div><div class="swatch-hex">#0F0E17</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#1A1828;"></div>
+      <div class="swatch-info"><div class="swatch-name">Deep Night</div><div class="swatch-hex">#1A1828</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#2D2460;"></div>
+      <div class="swatch-info"><div class="swatch-name">Royal Purple</div><div class="swatch-hex">#2D2460</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#5B4B8A;"></div>
+      <div class="swatch-info"><div class="swatch-name">Owl Purple</div><div class="swatch-hex">#5B4B8A</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#7B6BAA;"></div>
+      <div class="swatch-info"><div class="swatch-name">Soft Lavender</div><div class="swatch-hex">#7B6BAA</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#F0C040;"></div>
+      <div class="swatch-info"><div class="swatch-name">Cinema Gold</div><div class="swatch-hex">#F0C040</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#C8922A;"></div>
+      <div class="swatch-info"><div class="swatch-name">Deep Gold</div><div class="swatch-hex">#C8922A</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#E53935;"></div>
+      <div class="swatch-info"><div class="swatch-name">Play Red</div><div class="swatch-hex">#E53935</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#F5F0E8;"></div>
+      <div class="swatch-info"><div class="swatch-name">Warm Cream</div><div class="swatch-hex">#F5F0E8</div></div>
+    </div>
+    <div class="color-swatch">
+      <div class="swatch-block" style="background:#5C3D22;"></div>
+      <div class="swatch-info"><div class="swatch-name">Couch Brown</div><div class="swatch-hex">#5C3D22</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== TYPOGRAPHY ==================== -->
+<div class="section">
+  <p class="section-label">ТИПОГРАФИЯ</p>
+  <div class="type-showcase">
+    <div class="type-row">
+      <div class="type-meta">DISPLAY<br>Bebas Neue<br>Bold / All-Caps</div>
+      <div class="type-sample" style="font-family:'Bebas Neue',cursive;font-size:52px;letter-spacing:6px;line-height:1;">COUCHOO</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">HEADING<br>Bebas Neue<br>Regular</div>
+      <div class="type-sample" style="font-family:'Bebas Neue',cursive;font-size:28px;letter-spacing:4px;">Филми · Сериали · Топ 10</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">BODY<br>Nunito<br>Regular 400</div>
+      <div class="type-sample" style="font-size:15px;line-height:1.7;color:rgba(255,255,255,0.8);">Вашето кино е тук — в уюта на дивана ви. Гледайте хиляди филми и сериали.</div>
+    </div>
+    <div class="type-row">
+      <div class="type-meta">UI / LABELS<br>Nunito<br>Bold 700</div>
+      <div class="type-sample" style="font-size:12px;letter-spacing:4px;font-weight:700;text-transform:uppercase;color:rgba(255,255,255,0.5);">YOUR CINEMA. YOUR COUCH.</div>
+    </div>
+    <div class="type-row" style="border-bottom:none;padding-bottom:0">
+      <div class="type-meta">BUTTON / CTA<br>Nunito<br>Bold 700</div>
+      <div class="type-sample">
+        <span style="background:#E53935;padding:10px 24px;border-radius:8px;font-weight:700;font-size:15px;">▶ Гледай сега</span>
+        &nbsp;&nbsp;
+        <span style="background:transparent;border:1.5px solid rgba(255,255,255,0.3);padding:10px 24px;border-radius:8px;font-weight:700;font-size:15px;">Разгледай</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ==================== CSS VARIABLES EXPORT ==================== -->
+<div class="section">
+  <p class="section-label">CSS VARIABLES — КОПИРАЙ В ПРОЕКТА</p>
+  <div style="background:#1A1828;border-radius:16px;padding:30px;font-family:monospace;font-size:13px;line-height:2;color:#7B9AFF;border:1px solid #2A2845;">
+<pre style="color:inherit;white-space:pre-wrap;">:root {
+  /* Backgrounds */
+  --color-bg:           #0F0E17;
+  --color-bg-card:      #1A1828;
+  --color-bg-light:     #F5F0E8;
+
+  /* Brand Purple */
+  --color-purple-deep:  #2D2460;
+  --color-purple-mid:   #5B4B8A;
+  --color-purple-light: #7B6BAA;
+
+  /* Accent */
+  --color-gold:         #F0C040;
+  --color-gold-dark:    #C8922A;
+  --color-red:          #E53935;
+
+  /* Neutral */
+  --color-couch:        #5C3D22;
+  --color-text:         #FFFFFF;
+  --color-text-muted:   #7B7B9A;
+
+  /* Fonts */
+  --font-display: 'Bebas Neue', cursive;
+  --font-body:    'Nunito', sans-serif;
+}</pre>
+  </div>
+</div>
+
+<p style="text-align:center;color:var(--text-muted);font-size:11px;letter-spacing:3px;font-family:'Bebas Neue',cursive;">COUCHOO © 2025 — YOUR CINEMA. YOUR COUCH.</p>
+
+</body>
+</html>

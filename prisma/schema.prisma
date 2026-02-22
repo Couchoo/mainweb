@@ -1,0 +1,493 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model account {
+  id                Int     @id @default(autoincrement())
+  userId            Int
+  type              String  @db.VarChar(50)
+  provider          String  @db.VarChar(50)
+  providerAccountId String  @db.VarChar(255)
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String? @db.VarChar(50)
+  scope             String? @db.Text
+  id_token          String? @db.Text
+  session_state     String? @db.Text
+  user              user    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Account_userId_fkey")
+
+  @@unique([provider, providerAccountId], map: "Account_provider_providerAccountId_key")
+  @@index([userId], map: "Account_userId_idx")
+}
+
+model analytics {
+  id        Int      @id @default(autoincrement())
+  movieId   Int?
+  userId    Int?
+  event     String   @db.VarChar(100)
+  metadata  String?  @db.Text
+  ip        String?  @db.VarChar(50)
+  userAgent String?  @db.Text
+  createdAt DateTime @default(now())
+
+  @@index([createdAt], map: "Analytics_createdAt_idx")
+  @@index([event], map: "Analytics_event_idx")
+  @@index([movieId], map: "Analytics_movieId_idx")
+  @@index([userId], map: "Analytics_userId_idx")
+}
+
+model category {
+  id            Int             @id @default(autoincrement())
+  name          String          @unique(map: "Category_name_key") @db.VarChar(100)
+  slug          String          @unique(map: "Category_slug_key") @db.VarChar(100)
+  nameEN        String?         @db.VarChar(100)
+  moviecategory moviecategory[]
+
+  @@index([slug], map: "Category_slug_idx")
+}
+
+model comment {
+  id        Int            @id @default(autoincrement())
+  content   String         @db.Text
+  rating    Int?
+  userId    Int
+  movieId   Int
+  parentId  Int?
+  createdAt DateTime       @default(now())
+  updatedAt DateTime       @updatedAt
+  movie     movie          @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "Comment_movieId_fkey")
+  parent    comment?       @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade, map: "Comment_parentId_fkey")
+  replies   comment[]      @relation("CommentReplies")
+  user      user           @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Comment_userId_fkey")
+  likes     comment_like[]
+
+  @@index([movieId], map: "Comment_movieId_idx")
+  @@index([userId], map: "Comment_userId_idx")
+  @@index([parentId], map: "Comment_parentId_idx")
+}
+
+model comment_like {
+  id        Int      @id @default(autoincrement())
+  commentId Int
+  userId    Int
+  createdAt DateTime @default(now())
+  comment   comment  @relation(fields: [commentId], references: [id], onDelete: Cascade, map: "CommentLike_commentId_fkey")
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CommentLike_userId_fkey")
+
+  @@unique([commentId, userId], map: "CommentLike_commentId_userId_key")
+  @@index([userId], map: "CommentLike_userId_fkey")
+}
+
+model episode {
+  id            Int           @id @default(autoincrement())
+  seasonId      Int
+  episodeNumber Int
+  title         String        @db.VarChar(255)
+  description   String?       @db.Text
+  duration      Int?
+  posterUrl     String?       @db.VarChar(1000)
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  season        season        @relation(fields: [seasonId], references: [id], onDelete: Cascade, map: "Episode_seasonId_fkey")
+  videoserver   videoserver[]
+
+  @@unique([seasonId, episodeNumber], map: "Episode_seasonId_episodeNumber_key")
+  @@index([seasonId], map: "Episode_seasonId_idx")
+}
+
+model movie {
+  id                    Int                     @id @default(autoincrement())
+  titleBG               String                  @db.VarChar(500)
+  titleEN               String                  @db.VarChar(500)
+  slug                  String                  @unique(map: "Movie_slug_key") @db.VarChar(500)
+  description           String                  @db.Text
+  year                  Int
+  duration              Int?
+  director              String?                 @db.VarChar(255)
+  cast                  String?                 @db.Text
+  videoUrl              String?                 @db.VarChar(1000)
+  trailerUrl            String?                 @db.VarChar(1000)
+  posterUrl             String                  @db.VarChar(1000)
+  backdropUrl           String?                 @db.VarChar(1000)
+  isHD                  Boolean                 @default(true)
+  rating                Float?
+  imdbLink              String?                 @db.VarChar(500)
+  views                 Int                     @default(0)
+  featured              Boolean                 @default(false)
+  published             Boolean                 @default(true)
+  createdAt             DateTime                @default(now())
+  updatedAt             DateTime                @updatedAt
+  tmdbId                Int?                    @unique(map: "Movie_tmdbId_key")
+  imdbId                String?                 @unique(map: "Movie_imdbId_key") @db.VarChar(20)
+  isSeries              Boolean                 @default(false)
+  descriptionEN         String?                 @db.Text
+  healthStatus          String                  @default("UNKNOWN") @db.VarChar(20)
+  lastChecked           DateTime?
+  collectionId          Int?
+  broken_servers        broken_servers[]
+  cinema_library        cinema_library?
+  cinema_schedule       cinema_schedule[]
+  comment               comment[]
+  critical_movies       critical_movies[]
+  fixed_movies_review   fixed_movies_review[]
+  collection            collection?             @relation(fields: [collectionId], references: [id], map: "Movie_collectionId_fkey")
+  movie_fix_log         movie_fix_log[]
+  moviecategory         moviecategory[]
+  season                season[]
+  user_collection_movie user_collection_movie[]
+  videoserver           videoserver[]
+  watchhistory          watchhistory[]
+  watchlist             watchlist[]
+
+  @@index([featured], map: "Movie_featured_idx")
+  @@index([imdbId], map: "Movie_imdbId_idx")
+  @@index([isSeries], map: "Movie_isSeries_idx")
+  @@index([published], map: "Movie_published_idx")
+  @@index([slug], map: "Movie_slug_idx")
+  @@index([tmdbId], map: "Movie_tmdbId_idx")
+  @@index([year], map: "Movie_year_idx")
+  @@index([collectionId], map: "Movie_collectionId_idx")
+}
+
+model collection {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique(map: "Collection_name_key") @db.VarChar(255)
+  slug      String   @unique(map: "Collection_slug_key") @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  movies    movie[]
+
+  @@index([slug], map: "Collection_slug_idx")
+}
+
+model cinema_library {
+  id         Int      @id @default(autoincrement())
+  movieId    Int      @unique
+  videoPath  String   @db.VarChar(1000)
+  fileSize   BigInt?
+  uploadedAt DateTime @default(now())
+  movie      movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "CinemaLibrary_movieId_fkey")
+
+  @@index([movieId], map: "CinemaLibrary_movieId_idx")
+}
+
+model fixed_movies_review {
+  id             Int       @id @default(autoincrement())
+  movieId        Int
+  movieTitle     String    @db.VarChar(255)
+  movieSlug      String    @db.VarChar(500)
+  fixType        String    @db.VarChar(50)
+  serversRemoved Int       @default(0)
+  serversAdded   Int       @default(0)
+  fixedAt        DateTime  @default(now())
+  reviewStatus   String    @default("pending") @db.VarChar(20)
+  reviewedBy     String?   @db.VarChar(100)
+  reviewedAt     DateTime?
+  notes          String?   @db.Text
+  movie          movie     @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "FixedMoviesReview_movieId_fkey")
+
+  @@index([movieId], map: "FixedMoviesReview_movieId_idx")
+}
+
+model movie_fix_log {
+  id        Int      @id @default(autoincrement())
+  movieId   Int
+  action    String   @db.VarChar(100)
+  notes     String?  @db.Text
+  createdAt DateTime @default(now())
+  movie     movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "MovieFixLog_movieId_fkey")
+
+  @@index([movieId], map: "MovieFixLog_movieId_idx")
+}
+
+model broken_servers {
+  id         Int       @id @default(autoincrement())
+  movieId    Int
+  serverId   Int
+  serverName String    @db.VarChar(100)
+  url        String    @db.VarChar(1000)
+  statusCode Int?
+  error      String?   @db.Text
+  checkedAt  DateTime  @default(now())
+  fixed      Int       @default(0)
+  fixedAt    DateTime?
+  movie      movie     @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "BrokenServers_movieId_fkey")
+
+  @@unique([movieId, serverId], map: "BrokenServers_movieId_serverId_key")
+  @@index([movieId], map: "BrokenServers_movieId_idx")
+}
+
+model critical_movies {
+  id              Int       @id @default(autoincrement())
+  movieId         Int
+  imdbId          String    @db.VarChar(20)
+  title           String?   @db.VarChar(500)
+  reason          String?   @db.Text
+  previousServers String?   @db.Text
+  archivedAt      DateTime  @default(now())
+  resolvedAt      DateTime?
+  resolvedBy      Int?
+  notes           String?   @db.Text
+  movie           movie     @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "CriticalMovies_movieId_fkey")
+
+  @@index([movieId], map: "CriticalMovies_movieId_idx")
+  @@index([imdbId], map: "CriticalMovies_imdbId_idx")
+}
+
+model moviecategory {
+  movieId    Int
+  categoryId Int
+  category   category @relation(fields: [categoryId], references: [id], onDelete: Cascade, map: "MovieCategory_categoryId_fkey")
+  movie      movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "MovieCategory_movieId_fkey")
+
+  @@id([movieId, categoryId])
+  @@index([categoryId], map: "MovieCategory_categoryId_idx")
+  @@index([movieId], map: "MovieCategory_movieId_idx")
+}
+
+model season {
+  id           Int       @id @default(autoincrement())
+  movieId      Int
+  seasonNumber Int
+  title        String?   @db.VarChar(255)
+  description  String?   @db.Text
+  posterUrl    String?   @db.VarChar(1000)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  episode      episode[]
+  movie        movie     @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "Season_movieId_fkey")
+
+  @@unique([movieId, seasonNumber], map: "Season_movieId_seasonNumber_key")
+  @@index([movieId], map: "Season_movieId_idx")
+}
+
+model session {
+  id           Int      @id @default(autoincrement())
+  sessionToken String   @unique(map: "Session_sessionToken_key") @db.VarChar(255)
+  userId       Int
+  expires      DateTime
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Session_userId_fkey")
+
+  @@index([userId], map: "Session_userId_idx")
+}
+
+model subscription {
+  id                   String   @id @db.VarChar(36)
+  userId               Int      @unique(map: "Subscription_userId_key")
+  stripeCustomerId     String   @unique(map: "Subscription_stripeCustomerId_key") @db.VarChar(255)
+  stripeSubscriptionId String?  @unique(map: "Subscription_stripeSubscriptionId_key") @db.VarChar(255)
+  status               String   @default("ACTIVE") @db.VarChar(50)
+  priceId              String?  @db.VarChar(255)
+  currentPeriodEnd     DateTime
+  cancelAtPeriodEnd    Boolean  @default(false)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+  user                 user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Subscription_userId_fkey")
+
+  @@index([stripeCustomerId], map: "Subscription_stripeCustomerId_idx")
+  @@index([userId], map: "Subscription_userId_idx")
+}
+
+model user {
+  id               Int               @id @default(autoincrement())
+  email            String            @unique(map: "User_email_key") @db.VarChar(255)
+  password         String            @db.VarChar(255)
+  name             String?           @db.VarChar(255)
+  role             String            @default("FREE") @db.VarChar(50)
+  image            String?           @db.VarChar(500)
+  emailVerified    DateTime?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+  banned           Boolean           @default(false)
+  popcornBalance   Int               @default(0)
+  account          account[]
+  cinema_messages  cinema_message[]
+  cinema_presence  cinema_presence?
+  comment          comment[]
+  comment_likes    comment_like[]
+  popcorn_history  popcorn_transaction[]
+  session          session[]
+  subscription     subscription?
+  user_collections user_collection[]
+  received_gifts   user_gift[]       @relation("ReceivedGifts")
+  sent_gifts       user_gift[]       @relation("SentGifts")
+  watchhistory     watchhistory[]
+  watchlist        watchlist[]
+
+  @@index([email], map: "User_email_idx")
+  @@index([role], map: "User_role_idx")
+}
+
+model popcorn_transaction {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  type       String   @db.VarChar(50) // PURCHASE, GIFT_SENT, GIFT_RECEIVED, VIP_UPGRADE
+  amount     Int
+  targetName String?  @db.VarChar(255) // Name of recipient or item purchased
+  metadata   String?  @db.Text // JSON string for extra info
+  createdAt  DateTime @default(now())
+  user       user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "PopcornTransaction_userId_fkey")
+
+  @@index([userId], map: "PopcornTransaction_userId_idx")
+  @@index([createdAt], map: "PopcornTransaction_createdAt_idx")
+}
+
+model verificationtoken {
+  identifier String   @db.VarChar(255)
+  token      String   @unique(map: "VerificationToken_token_key") @db.VarChar(255)
+  expires    DateTime
+
+  @@unique([identifier, token], map: "VerificationToken_identifier_token_key")
+}
+
+model videoserver {
+  id        Int      @id @default(autoincrement())
+  movieId   Int?
+  name      String   @db.VarChar(100)
+  url       String   @db.VarChar(1000)
+  order     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  episodeId Int?
+  language  String   @default("en") @db.VarChar(10)
+  episode   episode? @relation(fields: [episodeId], references: [id], onDelete: Cascade, map: "VideoServer_episodeId_fkey")
+  movie     movie?   @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "VideoServer_movieId_fkey")
+
+  @@index([episodeId], map: "VideoServer_episodeId_idx")
+  @@index([language], map: "VideoServer_language_idx")
+  @@index([movieId], map: "VideoServer_movieId_idx")
+}
+
+model watchhistory {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  movieId      Int
+  lastPosition Int      @default(0)
+  updatedAt    DateTime @updatedAt
+  movie        movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "WatchHistory_movieId_fkey")
+  user         user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "WatchHistory_userId_fkey")
+
+  @@unique([userId, movieId], map: "WatchHistory_userId_movieId_key")
+  @@index([movieId], map: "WatchHistory_movieId_idx")
+  @@index([userId], map: "WatchHistory_userId_idx")
+}
+
+model watchlist {
+  userId  Int
+  movieId Int
+  movie   movie @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "Watchlist_movieId_fkey")
+  user    user  @relation(fields: [userId], references: [id], onDelete: Cascade, map: "Watchlist_userId_fkey")
+
+  @@id([userId, movieId])
+  @@index([movieId], map: "Watchlist_movieId_idx")
+  @@index([userId], map: "Watchlist_userId_idx")
+}
+
+model scraperjob {
+  id        String       @id @db.VarChar(100)
+  type      String       @db.VarChar(50)
+  status    String       @db.VarChar(50)
+  progress  String?      @db.LongText
+  startedAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  logs      scraperlog[]
+}
+
+model scraperlog {
+  id        Int        @id @default(autoincrement())
+  jobId     String     @db.VarChar(100)
+  level     String     @db.VarChar(20)
+  message   String     @db.Text
+  metadata  String?    @db.LongText
+  createdAt DateTime   @default(now())
+  job       scraperjob @relation(fields: [jobId], references: [id], onDelete: Cascade, map: "ScraperLog_jobId_fkey")
+
+  @@index([jobId], map: "ScraperLog_jobId_idx")
+}
+
+model user_collection {
+  id        Int                     @id @default(autoincrement())
+  name      String                  @db.VarChar(255)
+  slug      String                  @db.VarChar(255)
+  userId    Int
+  isPublic  Boolean                 @default(true)
+  createdAt DateTime                @default(now())
+  updatedAt DateTime                @updatedAt
+  user      user                    @relation(fields: [userId], references: [id], onDelete: Cascade, map: "UserCollection_userId_fkey")
+  movies    user_collection_movie[]
+
+  @@index([slug], map: "UserCollection_slug_idx")
+  @@index([userId], map: "UserCollection_userId_idx")
+}
+
+model user_collection_movie {
+  collectionId Int
+  movieId      Int
+  collection   user_collection @relation(fields: [collectionId], references: [id], onDelete: Cascade, map: "UserCollectionMovie_collectionId_fkey")
+  movie        movie           @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "UserCollectionMovie_movieId_fkey")
+
+  @@id([collectionId, movieId])
+  @@index([movieId], map: "UserCollectionMovie_movieId_fkey")
+}
+
+model gift {
+  id         Int         @id @default(autoincrement())
+  name       String      @db.VarChar(50)
+  icon       String      @db.VarChar(50)
+  price      Float
+  createdAt  DateTime    @default(now())
+  user_gifts user_gift[]
+}
+
+model user_gift {
+  id         Int      @id @default(autoincrement())
+  giftId     Int
+  senderId   Int
+  receiverId Int
+  message    String?  @db.Text
+  createdAt  DateTime @default(now())
+  gift       gift     @relation(fields: [giftId], references: [id], onDelete: Cascade, map: "UserGift_giftId_fkey")
+  receiver   user     @relation("ReceivedGifts", fields: [receiverId], references: [id], onDelete: Cascade, map: "UserGift_receiverId_fkey")
+  sender     user     @relation("SentGifts", fields: [senderId], references: [id], onDelete: Cascade, map: "UserGift_senderId_fkey")
+
+  @@index([giftId], map: "UserGift_giftId_fkey")
+  @@index([receiverId], map: "UserGift_receiverId_fkey")
+  @@index([senderId], map: "UserGift_senderId_fkey")
+}
+
+model cinema_schedule {
+  id        Int      @id @default(autoincrement())
+  movieId   Int
+  startTime DateTime
+  endTime   DateTime
+  createdAt DateTime @default(now())
+  movie     movie    @relation(fields: [movieId], references: [id], onDelete: Cascade, map: "CinemaSchedule_movieId_fkey")
+
+  @@index([movieId], map: "CinemaSchedule_movieId_idx")
+  @@index([startTime], map: "CinemaSchedule_startTime_idx")
+}
+
+model cinema_message {
+  id        Int      @id @default(autoincrement())
+  content   String   @db.Text
+  userId    Int
+  type      String   @default("text") @db.VarChar(20)
+  createdAt DateTime @default(now())
+  user      user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CinemaMessage_userId_fkey")
+
+  @@index([userId], map: "CinemaMessage_userId_idx")
+}
+
+model cinema_presence {
+  userId   Int      @id
+  lastSeen DateTime @default(now())
+  user     user     @relation(fields: [userId], references: [id], onDelete: Cascade, map: "CinemaPresence_userId_fkey")
+
+  @@index([lastSeen], map: "CinemaPresence_lastSeen_idx")
+}

@@ -1,26 +1,101 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@plugin "tailwindcss-animate";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme {
+  --color-background: hsl(245 25% 7%);
+  --color-foreground: hsl(210 40% 98%);
+
+  --color-card: hsl(250 25% 12%);
+  --color-card-foreground: hsl(210 40% 98%);
+
+  --color-popover: hsl(250 25% 12%);
+  --color-popover-foreground: hsl(210 40% 98%);
+
+  --color-primary: hsl(43 86% 60%);
+  --color-primary-foreground: hsl(222.2 47.4% 11.2%);
+
+  --color-secondary: hsl(255 30% 42%);
+  --color-secondary-foreground: hsl(210 40% 98%);
+
+  --color-muted: hsl(252 25% 18%);
+  --color-muted-foreground: hsl(215 20.2% 65.1%);
+
+  --color-accent: hsl(2 79% 55%);
+  --color-accent-foreground: hsl(210 40% 98%);
+
+  --color-destructive: hsl(0 62.8% 30.6%);
+  --color-destructive-foreground: hsl(210 40% 98%);
+
+  --color-border: hsl(252 25% 18%);
+  --color-input: hsl(252 25% 18%);
+  --color-ring: hsl(43 86% 60%);
+
+  --radius-lg: 1rem;
+  --radius-md: calc(1rem - 2px);
+  --radius-sm: calc(1rem - 4px);
+
+  /* Font Families */
+  --font-display: var(--font-bebas), "Bebas Neue", cursive;
+  --font-body: var(--font-nunito), "Nunito", sans-serif;
+
+  /* Brand Colors */
+  --color-brand-midnight: #0F0E17;
+  --color-brand-deepNight: #1A1828;
+  --color-brand-royalPurple: #2D2460;
+  --color-brand-owlPurple: #5B4B8A;
+  --color-brand-softLavender: #7B6BAA;
+  --color-brand-cinemaGold: #F0C040;
+  --color-brand-deepGold: #C8922A;
+  --color-brand-playRed: #E53935;
+  --color-brand-warmCream: #F5F0E8;
+  --color-brand-couchBrown: #5C3D22;
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@layer utilities {
+  @keyframes gradient-x {
+    0% {
+      background-position: 0% 50%;
+    }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    50% {
+      background-position: 100% 50%;
+    }
+
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  .animate-gradient-x {
+    background-size: 200% auto;
+    animation: gradient-x 3s ease infinite;
+  }
+
+  .glass-card {
+    background: rgba(26, 24, 40, 0.8);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-body;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-display tracking-wider;
+  }
 }

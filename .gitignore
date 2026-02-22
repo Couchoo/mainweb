@@ -39,3 +39,16 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+/src/generated/prisma
+*.log
+*.zip
+PREPARE_FOR_TRANSFER.bat
+*.txt
+!locales/*.json
+!README.md
+
+# Cinema-WS nested
+/cinema-ws/ws-server
+/cinema-ws/ws-server.exe
+/cinema-ws/cinema-ws.exe
