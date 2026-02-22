@@ -26,11 +26,12 @@ export async function POST(request: NextRequest) {
             update: { lastSeen: new Date() }
         });
 
-        // Cleanup stale presence (older than 30 seconds)
-        const thirtySecondsAgo = new Date(Date.now() - 30 * 1000);
+        // Cleanup stale presence (older than 120 seconds)
+        // We use a wider window to prevent flickering if connections are slow
+        const twoMinutesAgo = new Date(Date.now() - 120 * 1000);
         await (prisma as any).cinema_presence.deleteMany({
-            where: { lastSeen: { lt: thirtySecondsAgo } }
-        }).catch(() => { }); // Ignore concurrent delete errors
+            where: { lastSeen: { lt: twoMinutesAgo } }
+        }).catch(() => { });
 
         // Get current active viewers
         const viewers = await (prisma as any).cinema_presence.findMany({

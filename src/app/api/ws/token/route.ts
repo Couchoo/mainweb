@@ -22,7 +22,7 @@ export async function GET() {
         name: user?.name || 'Гост',
         role: user?.role || 'GUEST',
         image: user?.image || '',
-        exp: Date.now() + 60_000, // 60 second expiry
+        exp: Date.now() + 300_000, // 5 minute expiry (prevents clock drift issues)
     });
 
     const payloadB64 = Buffer.from(payload).toString('base64url');
