@@ -168,7 +168,7 @@ export default function PricingPage() {
                 {/* FAQ Hint */}
                 <div className="mt-24 text-center">
                     <div className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-brand-deepNight/40 border border-brand-royalPurple/20 backdrop-blur-xl">
-                        <img src="/brand/couchoo-mascot-footer.png" className="w-8 h-8 opacity-40 invert" alt="" />
+                        <img src="/brand/couchoo-mascot-transparent.png" className="w-8 h-8 opacity-40 invert" alt="" />
                         <span className="text-[11px] font-display tracking-widest uppercase text-brand-softLavender">
                             {locale === 'en' ? 'Need help? Chouchoo is here for you!' : 'Нужда от помощ? Chouchoo е тук за теб!'}
                         </span>

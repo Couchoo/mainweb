@@ -400,7 +400,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                             </>
                                         ) : (
                                             <div className="py-12 space-y-6">
-                                                <img src="/brand/couchoo-mascot-footer.png" className="w-24 h-24 mx-auto opacity-30 invert" alt="" />
+                                                <img src="/brand/couchoo-mascot-transparent.png" className="w-24 h-24 mx-auto opacity-30 invert" alt="" />
                                                 <div>
                                                     <h2 className="text-3xl font-display uppercase tracking-widest mb-2 text-brand-softLavender/30">{t('cinema_noShowings')}</h2>
                                                     <p className="text-brand-softLavender/20 text-[11px] uppercase font-display tracking-[0.3em]">{t('cinema_adminWillAdd')}</p>
@@ -570,7 +570,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                         >
                             <div className="w-full bg-brand-deepNight/95 rounded-t-[3.5rem] border-t border-brand-royalPurple/20 p-10 space-y-8 shadow-2xl relative overflow-hidden">
                                 {/* Decorative Host */}
-                                <img src="/brand/couchoo-mascot-footer.png" className="absolute -top-10 -left-10 w-40 h-40 opacity-5 -rotate-12" alt="" />
+                                <img src="/brand/couchoo-mascot-transparent.png" className="absolute -top-10 -left-10 w-40 h-40 opacity-5 -rotate-12" alt="" />
 
                                 <div className="flex justify-between items-start relative z-10">
                                     <div className="flex items-center gap-6">
