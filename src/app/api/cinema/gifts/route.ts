@@ -33,10 +33,13 @@ export async function POST(request: NextRequest) {
                 throw new Error('Insufficient balance');
             }
 
-            // Deduct from sender
+            // Deduct from sender, increment XP
             await (tx as any).user.update({
                 where: { id: senderId },
-                data: { popcornBalance: { decrement: amount } }
+                data: {
+                    popcornBalance: { decrement: amount },
+                    giftXP: { increment: amount }
+                }
             });
 
             let receiver = null;

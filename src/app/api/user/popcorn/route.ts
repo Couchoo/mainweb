@@ -13,10 +13,13 @@ export async function GET(request: NextRequest) {
         const userId = parseInt((session.user as any).id);
         const user = await prisma.user.findUnique({
             where: { id: userId },
-            select: { popcornBalance: true }
+            select: { popcornBalance: true, giftXP: true }
         });
 
-        return NextResponse.json({ balance: user?.popcornBalance || 0 });
+        return NextResponse.json({
+            balance: user?.popcornBalance || 0,
+            giftXP: user?.giftXP || 0
+        });
     } catch (error) {
         console.error('Popcorn Balance API Error:', error);
         return NextResponse.json({ message: 'Error' }, { status: 500 });

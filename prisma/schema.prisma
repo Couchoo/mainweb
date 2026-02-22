@@ -306,6 +306,7 @@ model user {
   updatedAt        DateTime          @updatedAt
   banned           Boolean           @default(false)
   popcornBalance   Int               @default(0)
+  giftXP           Int               @default(0)
   account          account[]
   cinema_messages  cinema_message[]
   cinema_presence  cinema_presence?

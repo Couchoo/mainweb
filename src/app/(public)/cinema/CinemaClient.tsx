@@ -88,6 +88,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
     const [schedule, setSchedule] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [popcornBalance, setPopcornBalance] = useState(0);
+    const [giftXP, setGiftXP] = useState(0);
     const [viewers, setViewers] = useState<any[]>([]);
     const [playbackOffset, setPlaybackOffset] = useState(0);
     const [cinemaVideoUrl, setCinemaVideoUrl] = useState<string | null>(null);
@@ -259,6 +260,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
             if (res.ok) {
                 const data = await res.json();
                 setPopcornBalance(data.balance);
+                setGiftXP(data.giftXP || 0);
             }
         } catch (error) { }
     }
@@ -652,34 +654,78 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                     </Button>
                                 </div>
 
+                                <div className="p-8 rounded-[2.5rem] bg-brand-royalPurple/5 border border-brand-royalPurple/20 relative overflow-hidden group/xp">
+                                    <div className="flex justify-between items-end mb-4 relative z-10">
+                                        <div className="space-y-1">
+                                            <p className="text-[10px] font-display uppercase tracking-[0.3em] text-brand-cinemaGold/60">Gifting Level</p>
+                                            <h3 className="text-2xl font-display tracking-widest text-white uppercase italic">
+                                                {giftXP >= 10000 ? 'Level 3: Legend' : giftXP >= 2000 ? 'Level 2: Supporter' : 'Level 1: Newbie'}
+                                            </h3>
+                                        </div>
+                                        <div className="text-right">
+                                            <p className="text-[10px] font-display uppercase tracking-[0.3em] text-brand-softLavender/40">Progress to Next Level</p>
+                                            <p className="text-sm font-display text-brand-softLavender tracking-widest uppercase">{giftXP} / {giftXP >= 10000 ? '∞' : giftXP >= 2000 ? '10000' : '2000'} XP</p>
+                                        </div>
+                                    </div>
+                                    <div className="h-4 w-full bg-brand-midnight/60 rounded-full border border-brand-royalPurple/20 p-1 relative z-10">
+                                        <div
+                                            className="h-full bg-gradient-to-r from-brand-cinemaGold to-amber-400 rounded-full transition-all duration-1000 shadow-[0_0_20px_rgba(240,192,64,0.3)]"
+                                            style={{ width: `${Math.min(100, (giftXP / (giftXP >= 10000 ? giftXP : giftXP >= 2000 ? 10000 : 2000)) * 100)}%` }}
+                                        />
+                                    </div>
+                                    {/* Decoration */}
+                                    <div className="absolute top-0 right-0 w-32 h-32 bg-brand-cinemaGold/5 blur-3xl rounded-full -mr-10 -mt-10 group-hover/xp:bg-brand-cinemaGold/10 transition-colors" />
+                                </div>
+
                                 <div className="grid grid-cols-4 gap-4 pb-4 relative z-10">
                                     {[
-                                        { type: t('cinema_juice') + ' 🥤', amount: 50 },
-                                        { type: t('cinema_popcorn') + ' 🍿', amount: 100 },
-                                        { type: t('cinema_rose') + ' 🌹', amount: 500 },
-                                        { type: t('cinema_chocolate') + ' 🍫', amount: 1000 },
-                                        { type: t('cinema_ring') + ' 💍', amount: 5000 },
-                                        { type: t('cinema_supercar') + ' 🏎️', amount: 15000 },
-                                        { type: t('cinema_helicopter') + ' 🚁', amount: 30000 },
-                                    ].map((gift) => (
-                                        <button
-                                            key={gift.type}
-                                            onClick={() => sendGift(gift.type, gift.amount)}
-                                            className="group relative flex flex-col items-center p-5 rounded-[2.5rem] bg-brand-midnight/40 border border-brand-royalPurple/20 hover:border-brand-cinemaGold/40 hover:bg-brand-royalPurple/10 transition-all active:scale-95 shadow-lg"
-                                        >
-                                            <div className="text-4xl mb-3 transition-transform group-hover:scale-110 drop-shadow-lg">{gift.type.split(' ')[1]}</div>
-                                            <div className="text-[10px] font-display tracking-widest uppercase text-brand-softLavender/60 mb-1.5">{gift.type.split(' ')[0]}</div>
-                                            <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-cinemaGold/10">
-                                                <Star className="w-3 h-3 fill-brand-cinemaGold text-brand-cinemaGold" />
-                                                <span className="text-[11px] font-display tracking-widest text-brand-cinemaGold">{gift.amount}</span>
-                                            </div>
-                                            {popcornBalance < gift.amount && (
-                                                <div className="absolute inset-0 bg-brand-midnight/60 flex items-center justify-center backdrop-blur-[2px] rounded-[2.5rem]">
-                                                    <Clock className="w-7 h-7 text-white/20" />
+                                        { type: t('cinema_juice') + ' 🥤', amount: 50, level: 1 },
+                                        { type: t('cinema_popcorn') + ' 🍿', amount: 100, level: 1 },
+                                        { type: t('cinema_rose') + ' 🌹', amount: 500, level: 1 },
+                                        { type: t('cinema_chocolate') + ' 🍫', amount: 1000, level: 2 },
+                                        { type: t('cinema_ring') + ' 💍', amount: 5000, level: 2 },
+                                        { type: t('cinema_supercar') + ' 🏎️', amount: 15000, level: 3 },
+                                        { type: t('cinema_helicopter') + ' 🚁', amount: 30000, level: 3 },
+                                    ].map((gift) => {
+                                        const userLevel = giftXP >= 10000 ? 3 : giftXP >= 2000 ? 2 : 1;
+                                        const isLocked = userLevel < gift.level;
+                                        const isInsufficient = popcornBalance < gift.amount;
+
+                                        return (
+                                            <button
+                                                key={gift.type}
+                                                disabled={isLocked}
+                                                onClick={() => sendGift(gift.type, gift.amount)}
+                                                className={`group relative flex flex-col items-center p-5 rounded-[2.5rem] bg-brand-midnight/40 border transition-all active:scale-95 shadow-lg ${isLocked
+                                                        ? 'opacity-40 border-brand-royalPurple/10 cursor-not-allowed scale-95'
+                                                        : 'border-brand-royalPurple/20 hover:border-brand-cinemaGold/40 hover:bg-brand-royalPurple/10'
+                                                    }`}
+                                            >
+                                                <div className={`text-4xl mb-3 transition-transform drop-shadow-lg ${isLocked ? 'grayscale opacity-30 group-hover:scale-100' : 'group-hover:scale-110'}`}>
+                                                    {gift.type.split(' ')[1]}
                                                 </div>
-                                            )}
-                                        </button>
-                                    ))}
+                                                <div className="text-[10px] font-display tracking-widest uppercase text-brand-softLavender/60 mb-1.5">{gift.type.split(' ')[0]}</div>
+
+                                                {isLocked ? (
+                                                    <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-playRed/10 border border-brand-playRed/20">
+                                                        <Users className="w-3 h-3 text-brand-playRed" />
+                                                        <span className="text-[11px] font-display tracking-widest text-brand-playRed italic">LVL {gift.level}</span>
+                                                    </div>
+                                                ) : (
+                                                    <div className={`flex items-center gap-1.5 px-3 py-1 rounded-full ${isInsufficient ? 'bg-brand-playRed/10' : 'bg-brand-cinemaGold/10'}`}>
+                                                        <Star className={`w-3 h-3 ${isInsufficient ? 'text-brand-playRed' : 'text-brand-cinemaGold fill-brand-cinemaGold'}`} />
+                                                        <span className={`text-[11px] font-display tracking-widest ${isInsufficient ? 'text-brand-playRed' : 'text-brand-cinemaGold'}`}>{gift.amount}</span>
+                                                    </div>
+                                                )}
+
+                                                {(isInsufficient && !isLocked) && (
+                                                    <div className="absolute inset-x-2 bottom-2 text-center opacity-0 group-hover:opacity-100 transition-opacity">
+                                                        <span className="text-[8px] font-display text-brand-playRed tracking-widest uppercase">No Popcorn</span>
+                                                    </div>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         </div>
