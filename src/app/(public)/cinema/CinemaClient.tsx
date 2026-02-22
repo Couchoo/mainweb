@@ -84,30 +84,57 @@ function CountdownTimer({ targetDate, locale }: { targetDate: Date, locale: Loca
     );
 }
 
-// 🚀 Memoized Viewer Item for high FPS list
-const ViewerItem = memo(({ viewer, onClick, t }: { viewer: any; onClick: () => void; t: any }) => (
+// 🚀 Memoized Viewer Item for high FPS list - COMPLETELY REDESIGNED
+const ViewerItem = memo(({ viewer, onClick, t, index }: { viewer: any; onClick: () => void; t: any; index: number }) => (
     <motion.div
         layout
-        initial={{ opacity: 0, x: -20 }}
-        animate={{ opacity: 1, x: 0 }}
+        initial={{ opacity: 0, scale: 0.9, y: 30 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        transition={{
+            delay: index * 0.05,
+            type: 'spring',
+            damping: 20,
+            stiffness: 200
+        }}
+        whileHover={{ x: 5, scale: 1.02 }}
         onClick={onClick}
-        className="flex items-center justify-between p-4 rounded-[1.8rem] bg-brand-royalPurple/[0.03] hover:bg-white/[0.08] transition-all duration-300 group cursor-pointer border border-brand-royalPurple/5 hover:border-brand-cinemaGold/30 shadow-sm active:scale-[0.98]"
+        className="relative group cursor-pointer"
     >
-        <div className="flex items-center gap-4">
-            <Avatar className="h-12 w-12 border-2 border-brand-midnight group-hover:ring-2 group-hover:ring-brand-cinemaGold/40 transition-all duration-300">
-                <AvatarImage src={viewer.image} />
-                <AvatarFallback className="bg-brand-royalPurple text-xs font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
-            </Avatar>
-            <div className="flex flex-col">
-                <h4 className={`text-base font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                        viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
-                    }`}>{viewer.name}</h4>
-                <p className="text-[9px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</p>
+        <div className="flex items-center justify-between p-5 rounded-[2.5rem] bg-brand-midnight/40 border border-brand-royalPurple/10 backdrop-blur-xl transition-all duration-300 group-hover:bg-brand-royalPurple/10 group-hover:border-brand-cinemaGold/30">
+            <div className="flex items-center gap-5">
+                <div className="relative">
+                    <Avatar className="h-16 w-16 border-4 border-brand-midnight group-hover:border-brand-cinemaGold/40 transition-all shadow-2xl">
+                        <AvatarImage src={viewer.image} />
+                        <AvatarFallback className="bg-brand-royalPurple text-lg font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
+                    </Avatar>
+                    <div className={`absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-4 border-brand-midnight ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'bg-brand-playRed' :
+                            viewer.role === 'VIP' ? 'bg-brand-cinemaGold' : 'bg-emerald-500'
+                        }`} />
+                </div>
+                <div>
+                    <h4 className={`text-xl font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
+                            viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
+                        }`}>{viewer.name}</h4>
+                    <div className="flex items-center gap-2 mt-1">
+                        <span className="text-[10px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</span>
+                        <div className="w-1 h-1 rounded-full bg-brand-royalPurple/40" />
+                        <span className="text-[9px] text-brand-cinemaGold/60 font-display uppercase italic">Online</span>
+                    </div>
+                </div>
             </div>
+
+            <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.9 }}
+                className="flex items-center gap-3 px-6 py-2.5 rounded-2xl bg-brand-cinemaGold/5 border border-brand-cinemaGold/20 text-brand-cinemaGold font-display uppercase tracking-widest text-[11px] hover:bg-brand-cinemaGold hover:text-brand-midnight transition-colors group-hover:shadow-[0_0_20px_rgba(240,192,64,0.2)]"
+            >
+                {t('cinema_gift')} 🎁
+            </motion.div>
         </div>
-        <Button size="sm" variant="ghost" className="rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 bg-brand-cinemaGold/10 text-brand-cinemaGold hover:bg-brand-cinemaGold hover:text-brand-midnight font-display uppercase tracking-widest text-[9px] px-5 h-8">
-            {t('cinema_gift')} 🎁
-        </Button>
+        {/* Glow behind admin */}
+        {(viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN') && (
+            <div className="absolute -inset-1 bg-brand-playRed/5 blur-2xl rounded-[3rem] -z-10 group-hover:bg-brand-playRed/10 transition-colors" />
+        )}
     </motion.div>
 ));
 ViewerItem.displayName = 'ViewerItem';
@@ -145,9 +172,13 @@ export default function CinemaClient({ locale }: CinemaClientProps) {
         return [...viewList]
             .filter((v, index, self) => v && v.id && self.findIndex(t => t.id === v.id) === index) // Unique by ID
             .sort((a, b) => {
-                // Secondary sort by name if ID is somehow identical (fallback)
-                if (a.id !== b.id) return a.id - b.id;
-                return (a.name || '').localeCompare(b.name || '');
+                // Primary: A-Z Alphabetical
+                const nameA = (a.name || '').toLowerCase();
+                const nameB = (b.name || '').toLowerCase();
+                if (nameA < nameB) return -1;
+                if (nameA > nameB) return 1;
+                // Secondary: ID
+                return a.id - b.id;
             });
     }, []);
 
@@ -874,39 +905,61 @@ export default function CinemaClient({ locale }: CinemaClientProps) {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                             exit={{ opacity: 0 }}
-                            className="fixed inset-0 bg-brand-midnight/90 backdrop-blur-2xl z-[100] flex items-center justify-center p-6"
+                            className="fixed inset-0 bg-brand-midnight/90 backdrop-blur-[40px] z-[100] flex items-center justify-center p-6"
                             onClick={(e) => { if (e.target === e.currentTarget) setShowViewersModal(false); }}
                         >
                             <motion.div
-                                initial={{ scale: 0.9, y: 20, opacity: 0 }}
-                                animate={{ scale: 1, y: 0, opacity: 1 }}
-                                exit={{ scale: 0.9, y: 20, opacity: 0 }}
-                                transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                                className="w-full max-w-xl bg-brand-deepNight/90 rounded-[3.5rem] border border-brand-royalPurple/20 shadow-2xl overflow-hidden flex flex-col max-h-[85vh] relative text-brand-warmCream"
+                                initial={{ scale: 0.8, rotateX: 20, opacity: 0 }}
+                                animate={{ scale: 1, rotateX: 0, opacity: 1 }}
+                                exit={{ scale: 0.8, rotateX: -20, opacity: 0 }}
+                                transition={{ type: 'spring', damping: 20, stiffness: 200 }}
+                                className="w-full max-w-2xl bg-brand-deepNight/90 rounded-[4rem] border border-brand-royalPurple/20 shadow-[0_0_100px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col max-h-[85vh] relative text-brand-warmCream"
                             >
-                                <div className="p-10 border-b border-brand-royalPurple/20 flex justify-between items-center bg-brand-royalPurple/10">
-                                    <div className="flex items-center gap-5">
-                                        <div className="p-4 rounded-[1.5rem] bg-brand-cinemaGold/10 text-brand-cinemaGold shadow-lg shadow-brand-cinemaGold/5">
-                                            <Users className="w-7 h-7" />
-                                        </div>
-                                        <div>
-                                            <h2 className="text-2xl font-display tracking-widest uppercase">{t('cinema_viewersInHall')}</h2>
-                                            <p className="text-[11px] text-brand-softLavender/60 uppercase font-display tracking-[0.2em] mt-1">
-                                                <span className="text-brand-cinemaGold mr-2">{activeViewers}</span> {t('cinema_peopleTotal')}
-                                            </p>
-                                        </div>
-                                    </div>
-                                    <Button variant="ghost" size="icon" onClick={() => setShowViewersModal(false)} className="rounded-2xl hover:bg-brand-royalPurple/20 w-12 h-12 transition-all">
-                                        <X className="w-6 h-6" />
-                                    </Button>
+                                {/* 🦉 Background Mascot Decoration - Surprised Owl */}
+                                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-full pointer-events-none opacity-[0.03] overflow-hidden">
+                                    <img
+                                        src="/brand/couchoo-mascot-transparent.png"
+                                        className="w-[80%] h-auto object-contain grayscale animate-pulse rotate-12 scale-150"
+                                        alt=""
+                                    />
                                 </div>
 
-                                <ScrollArea className="flex-1 p-6">
-                                    <div className="space-y-3 px-4">
-                                        {viewers.map((viewer) => (
+                                <div className="p-12 border-b border-brand-royalPurple/10 flex justify-between items-center bg-brand-royalPurple/5 backdrop-blur-md relative z-10">
+                                    <div className="flex items-center gap-6">
+                                        <div className="relative">
+                                            <div className="p-5 rounded-[2rem] bg-brand-cinemaGold/10 text-brand-cinemaGold shadow-2xl relative z-10">
+                                                <Users className="w-8 h-8" />
+                                            </div>
+                                            <div className="absolute -inset-2 bg-brand-cinemaGold/20 blur-xl rounded-full" />
+                                        </div>
+                                        <div>
+                                            <h2 className="text-3xl font-display tracking-[0.2em] uppercase italic text-brand-warmCream">{t('cinema_viewersInHall')}</h2>
+                                            <div className="flex items-center gap-3 mt-2">
+                                                <div className="flex items-center gap-2 px-3 py-1 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/20">
+                                                    <span className="w-2 h-2 rounded-full bg-brand-cinemaGold animate-pulse" />
+                                                    <span className="text-[11px] text-brand-cinemaGold font-display tracking-widest uppercase">{activeViewers} ONLINE</span>
+                                                </div>
+                                                <span className="text-[10px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{t('cinema_peopleTotal')}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <motion.button
+                                        whileHover={{ rotate: 90, scale: 1.1 }}
+                                        whileTap={{ scale: 0.9 }}
+                                        onClick={() => setShowViewersModal(false)}
+                                        className="rounded-[1.5rem] bg-brand-royalPurple/10 border border-brand-royalPurple/20 w-14 h-14 flex items-center justify-center hover:bg-brand-playRed/20 hover:border-brand-playRed/40 group transition-all"
+                                    >
+                                        <X className="w-7 h-7 text-brand-softLavender group-hover:text-white" />
+                                    </motion.button>
+                                </div>
+
+                                <ScrollArea className="flex-1 p-8 relative z-10">
+                                    <div className="space-y-4 px-2 pb-10">
+                                        {viewers.map((viewer, idx) => (
                                             <ViewerItem
                                                 key={viewer.id}
                                                 viewer={viewer}
+                                                index={idx}
                                                 t={t}
                                                 onClick={() => {
                                                     setGiftingTo(viewer);
@@ -916,6 +969,11 @@ export default function CinemaClient({ locale }: CinemaClientProps) {
                                         ))}
                                     </div>
                                 </ScrollArea>
+
+                                {/* Modal Footer Decoration */}
+                                <div className="p-6 bg-brand-midnight/40 text-center border-t border-brand-royalPurple/10 relative z-10">
+                                    <p className="text-[10px] font-display tracking-[0.3em] uppercase text-brand-softLavender/30">Couchoo Cinema Experience • Real-time Hall Presence</p>
+                                </div>
                             </motion.div>
                         </motion.div>
                     )}

@@ -40,8 +40,8 @@ Whenever a change is made locally:
 - `db-check.js`: Diagnostic tool to verify DB counts and table integrity.
 
 ## 🎨 Design Philosophy
-- **Aesthetics**: Premium, dark-mode, cinematic feel.
-- **Animations**: Use Framer Motion and Lucide-react icons for micro-interactions.
+- **Presence Management**: Do NOT re-implement `status: 'leaving'` on tab unmount. It causes session conflicts for multi-tab users. Trust the 45s heartbeat timeout and the WebSocket disconnect handlers for user removal.
+- **UI Performance**: Always memoize viewer list items and use spring-based animations for the modal to maintain smoothness.
 - **User Experience**: Real-time presence and chat are core to the "Cinema" experience.
 
 ## 🎬 Cinema Synchronization Logic
