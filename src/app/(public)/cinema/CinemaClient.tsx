@@ -214,12 +214,19 @@ export function CinemaClient({ locale }: CinemaClientProps) {
 
             // Notify server we are leaving
             if (session) {
-                fetch('/api/cinema/heartbeat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ status: 'leaving' }),
-                    keepalive: true
-                }).catch(() => { });
+                const body = JSON.stringify({ status: 'leaving' });
+                const blob = new Blob([body], { type: 'application/json' });
+
+                if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
+                    navigator.sendBeacon('/api/cinema/heartbeat', blob);
+                } else {
+                    fetch('/api/cinema/heartbeat', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body,
+                        keepalive: true
+                    }).catch(() => { });
+                }
             }
         };
     }, [session]);

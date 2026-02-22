@@ -1,16 +1,49 @@
 package main
 
 import (
+	"bufio"
 	"log"
 	"net/http"
 	"os"
+	"strings"
 )
 
+func loadEnv() {
+	file, err := os.Open("../.env")
+	if err != nil {
+		log.Println("No .env file found in parent directory, using environment variables")
+		return
+	}
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.HasPrefix(line, "WS_INTERNAL_SECRET=") || strings.HasPrefix(line, "WS_PORT=") {
+			parts := strings.SplitN(line, "=", 2)
+			if len(parts) == 2 {
+				key := parts[0]
+				val := strings.Trim(parts[1], `"' `) // Strip quotes and spaces
+				os.Setenv(key, val)
+			}
+		}
+	}
+}
+
 func main() {
+	loadEnv()
 	secret := os.Getenv("WS_INTERNAL_SECRET")
 	if secret == "" {
 		secret = "cinema-ws-secret-change-in-production"
 	}
+
+	// Safe debug log (first 3 chars)
+	secLen := len(secret)
+	mask := "***"
+	if secLen > 3 {
+		mask = secret[:3] + "..."
+	}
+	log.Printf("🔑 Secret loaded: %s (len: %d)", mask, secLen)
 
 	hub := newHub()
 	go hub.run()
