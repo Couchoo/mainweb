@@ -209,6 +209,8 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                 setSchedule(data.schedule);
                 setPlaybackOffset(data.playbackOffset || 0);
                 setCinemaVideoUrl(data.cinemaVideoUrl || null);
+                if (data.activeViewers !== undefined) setActiveViewers(data.activeViewers);
+                if (data.viewers) setViewers(data.viewers);
             }
         } catch (error) {
             console.error('Cinema status error');
@@ -455,12 +457,12 @@ export function CinemaClient({ locale }: CinemaClientProps) {
 
                                     return (
                                         <div key={i} className={`flex gap-4 group animate-in fade-in slide-in-from-bottom-2 p-3 rounded-3xl transition-all ${isAdmin ? 'bg-brand-playRed/5 border border-brand-playRed/10 shadow-[0_0_20px_rgba(229,57,53,0.05)]' :
-                                                isVIP ? 'bg-brand-cinemaGold/5 border border-brand-cinemaGold/10 shadow-[0_0_20px_rgba(240,192,64,0.05)]' :
-                                                    'hover:bg-white/5'
+                                            isVIP ? 'bg-brand-cinemaGold/5 border border-brand-cinemaGold/10 shadow-[0_0_20px_rgba(240,192,64,0.05)]' :
+                                                'hover:bg-white/5'
                                             }`}>
                                             <Avatar
                                                 className={`h-11 w-11 shrink-0 ring-2 cursor-pointer hover:ring-brand-cinemaGold/50 transition-all ${isAdmin ? 'ring-brand-playRed/30' :
-                                                        isVIP ? 'ring-brand-cinemaGold/30' : 'ring-white/5'
+                                                    isVIP ? 'ring-brand-cinemaGold/30' : 'ring-white/5'
                                                     }`}
                                                 onClick={() => msg.user && setGiftingTo(msg.user)}
                                             >
@@ -472,7 +474,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                                     <span
                                                         onClick={() => msg.user && setGiftingTo(msg.user)}
                                                         className={`text-[12px] font-display tracking-widest uppercase cursor-pointer hover:text-brand-cinemaGold transition-all duration-300 ${isAdmin ? 'text-brand-playRed' :
-                                                                isVIP ? 'text-brand-cinemaGold' : 'text-brand-softLavender'
+                                                            isVIP ? 'text-brand-cinemaGold' : 'text-brand-softLavender'
                                                             }`}
                                                     >
                                                         {msg.user?.name || 'User'}
@@ -552,7 +554,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                         </Avatar>
                                         <div>
                                             <h2 className={`text-3xl font-display tracking-widest uppercase ${giftingTo.role === 'ADMIN' || giftingTo.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                                                    giftingTo.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-brand-warmCream'
+                                                giftingTo.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-brand-warmCream'
                                                 }`}>{giftingTo.name}</h2>
                                             <p className="text-[11px] text-brand-softLavender/40 uppercase font-display tracking-[0.3em] mt-1">{giftingTo.role || 'User'}</p>
                                         </div>
@@ -730,7 +732,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                                 </Avatar>
                                                 <div>
                                                     <h4 className={`text-lg font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                                                            viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
+                                                        viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
                                                         }`}>{viewer.name}</h4>
                                                     <p className="text-[10px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em] mt-0.5">{viewer.role || 'User'}</p>
                                                 </div>

@@ -62,17 +62,33 @@ func serveWs(hub *Hub, cinema *CinemaSync, w http.ResponseWriter, r *http.Reques
 
 	hub.register <- client
 
-	// Send current cinema state immediately so the new client syncs right away
+	// Send current presence and cinema state immediately so the new client syncs right away
 	go func() {
-		time.Sleep(80 * time.Millisecond) // small delay so register completes first
+		time.Sleep(100 * time.Millisecond) // small delay so register completes first
 		state := cinema.GetState()
+		pres := hub.Presence()
+
+		// 1. Always send presence first
+		presMsg := WSMessage{
+			Type: "presence:update",
+			Payload: map[string]interface{}{
+				"count":   pres.Count,
+				"viewers": pres.Viewers,
+			},
+		}
+		presData, _ := json.Marshal(presMsg)
+		select {
+		case client.send <- presData:
+		default:
+		}
+
+		// 2. If a movie is live, send sync info
 		if state.IsLive && state.MovieID != 0 {
 			offsetSeconds := time.Since(state.StartTime).Seconds()
 			if offsetSeconds < 0 {
 				offsetSeconds = 0
 			}
-			pres := hub.Presence()
-			msg := WSMessage{
+			syncMsg := WSMessage{
 				Type: "cinema:sync",
 				Payload: map[string]interface{}{
 					"movieId":       state.MovieID,
@@ -86,9 +102,9 @@ func serveWs(hub *Hub, cinema *CinemaSync, w http.ResponseWriter, r *http.Reques
 					"viewers":       pres.Viewers,
 				},
 			}
-			data, _ := json.Marshal(msg)
+			syncData, _ := json.Marshal(syncMsg)
 			select {
-			case client.send <- data:
+			case client.send <- syncData:
 			default:
 			}
 		}
