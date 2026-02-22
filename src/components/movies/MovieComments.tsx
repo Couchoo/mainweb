@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useSession } from 'next-auth/react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -10,8 +10,7 @@ import { Star, Send, MessageSquare } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 
-import { getTranslation, Locale } from '@/lib/i18n';
-import { usePathname } from 'next/navigation';
+import { getTranslation, Locale, TranslationKey } from '@/lib/i18n';
 
 interface Comment {
     id: number;
@@ -24,21 +23,18 @@ interface Comment {
         email: string;
         role: string;
     };
-    replies?: any[];
-    likes?: any[];
+    replies?: Comment[];
+    likes?: { userId: string }[];
     _count: {
         likes: number;
         replies: number;
     };
 }
 
-export function MovieComments({ movieId }: { movieId: number }) {
+export function MovieComments({ movieId, locale }: { movieId: number, locale: Locale }) {
     const { data: session } = useSession();
     const { toast } = useToast();
-    const pathname = usePathname();
-    const segment = pathname?.split('/')[1];
-    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
-    const t = (key: any) => getTranslation(key, locale);
+    const t = (key: TranslationKey) => getTranslation(key, locale);
 
     const [comments, setComments] = useState<Comment[]>([]);
     const [newComment, setNewComment] = useState('');
@@ -47,22 +43,22 @@ export function MovieComments({ movieId }: { movieId: number }) {
     const [replyingTo, setReplyingTo] = useState<number | null>(null);
     const [replyContent, setReplyContent] = useState('');
 
-    useEffect(() => {
-        fetchComments();
-    }, [movieId]);
-
-    async function fetchComments() {
+    const fetchComments = useCallback(async () => {
         const res = await fetch(`/api/movies/${movieId}/comments`);
         if (res.ok) {
             const data = await res.json();
             setComments(data);
         }
-    }
+    }, [movieId]);
+
+    useEffect(() => {
+        fetchComments();
+    }, [fetchComments]);
 
     async function handleSubmit(e: React.FormEvent, parentId: number | null = null) {
         e.preventDefault();
         const content = parentId ? replyContent : newComment;
-        if (!session) {
+        if (!session || !session.user) {
             toast({
                 title: t('login_required') || 'Влезте в профила си',
                 description: t('login_to_comment') || 'Трябва да сте влезли, за да коментирате.',
@@ -100,7 +96,7 @@ export function MovieComments({ movieId }: { movieId: number }) {
                         : (t('comment_added_success') || 'Вашият коментар беше добавен.')
                 });
             }
-        } catch (error) {
+        } catch {
             toast({
                 title: t('error') || 'Грешка',
                 description: t('operation_failed') || 'Неуспешна операция.',
@@ -125,7 +121,7 @@ export function MovieComments({ movieId }: { movieId: number }) {
             if (res.ok) {
                 fetchComments(); // Refresh state
             }
-        } catch (error) {
+        } catch {
             console.error('Like error');
         }
     }

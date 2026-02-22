@@ -6,6 +6,8 @@ const DynamicVideoPlayer = dynamic(() => import('@/components/movies/VideoPlayer
     ssr: false,
 });
 
+import { Locale } from '@/lib/i18n';
+
 interface VideoServer {
     id: number;
     name: string;
@@ -20,14 +22,16 @@ interface MoviePlayerWrapperProps {
     initialPosition?: number;
     posterUrl?: string;
     backdropUrl?: string;
+    locale: Locale;
 }
 
-export function MoviePlayerWrapper({ movieId, videoUrl, videoServers, posterUrl, backdropUrl }: MoviePlayerWrapperProps) {
+export function MoviePlayerWrapper({ movieId, videoUrl, videoServers, posterUrl, backdropUrl, locale }: MoviePlayerWrapperProps) {
     return <DynamicVideoPlayer
         movieId={movieId}
         videoUrl={videoUrl}
         videoServers={videoServers}
         posterUrl={posterUrl}
         backdropUrl={backdropUrl}
+        locale={locale}
     />;
 }

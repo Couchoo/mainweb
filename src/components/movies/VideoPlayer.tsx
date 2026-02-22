@@ -3,11 +3,10 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Gem, AlertCircle, Tv, Volume2, VolumeX } from 'lucide-react';
+import { Play, Gem, AlertCircle, Volume2, VolumeX } from 'lucide-react';
 import Link from 'next/link';
 import { useAnalytics } from '@/hooks/use-analytics';
-import { getTranslation, Locale } from '@/lib/i18n';
-import { usePathname } from 'next/navigation';
+import { getTranslation, Locale, TranslationKey } from '@/lib/i18n';
 
 interface VideoServer {
     id: number;
@@ -108,7 +107,8 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
         if (isPaused) {
             if (!video.paused) {
                 video.pause();
-                setIsLocallyPaused(true);
+                // Wrap in setTimeout to avoid synchronous setState during render/effect
+                setTimeout(() => setIsLocallyPaused(true), 0);
             }
         } else {
             // 🛡️ GUARD: If the user is locally paused, DON'T let the server sync pulses
@@ -121,7 +121,8 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
                     console.log('[CINEMA] Autoplay prevented:', err);
                     setIsAutoplayBlocked(true);
                 });
-                setIsLocallyPaused(false);
+                // Wrap in setTimeout to avoid synchronous setState
+                setTimeout(() => setIsLocallyPaused(false), 0);
             }
         }
     }, [isPaused, cinemaMode, offset, isLocallyPaused]);
@@ -275,6 +276,7 @@ interface VideoPlayerProps {
     onEnded?: () => void;      // Callback when movie finishes
     posterUrl?: string;
     backdropUrl?: string;
+    locale: Locale;
 }
 
 // ─────────────────────────────────────────────
@@ -290,12 +292,10 @@ export function VideoPlayer({
     onEnded,
     posterUrl,
     backdropUrl,
+    locale,
 }: VideoPlayerProps) {
     const { data: session } = useSession();
-    const pathname = usePathname();
-    const segment = pathname?.split('/')[1];
-    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
-    const t = (key: any) => getTranslation(key, locale);
+    const t = (key: TranslationKey) => getTranslation(key, locale);
 
     const [showVideo, setShowVideo] = useState(false);
     const [adStep, setAdStep] = useState(0);
@@ -303,13 +303,13 @@ export function VideoPlayer({
     const [selectedServerIndex, setSelectedServerIndex] = useState(0);
     const { track: trackEvent } = useAnalytics();
 
-    const role = (session?.user as any)?.role;
+    const role = (session?.user as { role?: string })?.role;
     const isVIP = role === 'VIP' || role === 'ADMIN' || role === 'SUPER_ADMIN';
 
     // Auto-play immediately in cinema mode
     useEffect(() => {
         if (isCinemaMode && !showVideo && (videoServers?.length || videoUrl)) {
-            setShowVideo(true);
+            setTimeout(() => setShowVideo(true), 0);
         }
     }, [isCinemaMode, videoServers, videoUrl, showVideo]);
 
@@ -350,8 +350,14 @@ export function VideoPlayer({
         if (adStep > 0 && adStep <= 3 && countdown > 0) {
             timer = setTimeout(() => setCountdown(c => c - 1), 1000);
         } else if (adStep > 0 && adStep <= 3 && countdown === 0) {
-            if (adStep === 3) setShowVideo(true);
-            else { setAdStep(s => s + 1); setCountdown(5); }
+            if (adStep === 3) {
+                // Wrap in setTimeout to avoid synchronous setState
+                setTimeout(() => setShowVideo(true), 0);
+            }
+            else {
+                setAdStep(s => s + 1);
+                setCountdown(5);
+            }
         }
         return () => clearTimeout(timer);
     }, [adStep, countdown]);
@@ -361,7 +367,7 @@ export function VideoPlayer({
         else setAdStep(1);
     }, [isVIP]);
 
-    const isVIPOnly = (videoServers as any)?.[0]?.isVIPOnly || false;
+    const isVIPOnly = (videoServers as { isVIPOnly?: boolean }[])?.[0]?.isVIPOnly || false;
 
     if (isVIPOnly && !isVIP) {
         return (

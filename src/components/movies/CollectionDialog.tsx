@@ -6,8 +6,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Input } from '@/components/ui/input';
 import { Plus, Bookmark, Loader2, Check, FolderOpen, Layers } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { getTranslation, Locale } from '@/lib/i18n';
-import { usePathname } from 'next/navigation';
+import { getTranslation, Locale, TranslationKey } from '@/lib/i18n';
 
 interface Collection {
     id: number;
@@ -15,11 +14,8 @@ interface Collection {
     _count: { movies: number };
 }
 
-export function CollectionDialog({ movieId, trigger }: { movieId: number, trigger?: React.ReactNode }) {
-    const pathname = usePathname();
-    const segment = pathname?.split('/')[1];
-    const locale = (segment === 'en' || segment === 'bg' ? segment : 'bg') as Locale;
-    const t = (key: any) => getTranslation(key, locale);
+export function CollectionDialog({ movieId, locale, trigger }: { movieId: number, locale: Locale, trigger?: React.ReactNode }) {
+    const t = (key: TranslationKey) => getTranslation(key, locale);
 
     const [collections, setCollections] = useState<Collection[]>([]);
     const [loading, setLoading] = useState(false);
@@ -57,7 +53,7 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
                 fetchCollections();
                 toast({ title: t('collection_created') || 'Колекцията е създадена!' });
             }
-        } catch (error) {
+        } catch {
             toast({ title: t('error_creating') || 'Грешка при създаване', variant: 'destructive' });
         }
     }
@@ -75,7 +71,7 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
             } else {
                 toast({ title: t('already_in_collection') || 'Вече е в тази колекция', variant: 'destructive' });
             }
-        } catch (error) {
+        } catch {
             toast({ title: t('error') || 'Грешка', variant: 'destructive' });
         }
     }
@@ -96,14 +92,14 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-black uppercase italic tracking-tighter flex items-center gap-2">
                         <FolderOpen className="w-6 h-6 text-primary" />
-                        Моите Колекции
+                        {t('my_collections') || "Моите Колекции"}
                     </DialogTitle>
                 </DialogHeader>
 
                 <div className="space-y-6 pt-4">
                     <div className="flex gap-2">
                         <Input
-                            placeholder="Име на нова колекция..."
+                            placeholder={t('new_collection_placeholder') || "Име на нова колекция..."}
                             value={newCollectionName}
                             onChange={(e) => setNewCollectionName(e.target.value)}
                             className="bg-secondary/20 border-secondary focus:border-primary rounded-xl"
@@ -127,13 +123,17 @@ export function CollectionDialog({ movieId, trigger }: { movieId: number, trigge
                                 >
                                     <div>
                                         <p className="font-bold text-white group-hover:text-primary transition-colors">{col.name}</p>
-                                        <p className="text-xs text-muted-foreground uppercase font-black">{col._count.movies} филма</p>
+                                        <p className="text-xs text-muted-foreground uppercase font-black">
+                                            {col._count.movies} {t('moviesCount') || 'филма'}
+                                        </p>
                                     </div>
                                     <Plus className="w-5 h-5 text-muted-foreground group-hover:text-primary transition-all opacity-0 group-hover:opacity-100 rotate-45 group-hover:rotate-0" />
                                 </button>
                             ))
                         ) : (
-                            <p className="text-center py-8 text-muted-foreground italic">Все още нямате колекции.</p>
+                            <p className="text-center py-8 text-muted-foreground italic">
+                                {t('no_collections_yet') || "Все още нямате колекции."}
+                            </p>
                         )}
                     </div>
                 </div>

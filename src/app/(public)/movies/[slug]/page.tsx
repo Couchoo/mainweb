@@ -26,7 +26,9 @@ export async function generateMetadata(
     const headersList = await headers();
     const locale = (headersList.get('x-locale') || 'bg') as Locale;
 
-    const movie = await (prisma.movie as any).findUnique({
+    const movie = await (prisma.movie as unknown as {
+        findUnique: (args: any) => Promise<any>
+    }).findUnique({
         where: { slug },
         include: {
             moviecategory: {
@@ -48,9 +50,11 @@ export default async function MoviePage({
     const { slug } = await params;
     const headersList = await headers();
     const locale = (headersList.get('x-locale') || 'bg') as Locale;
-    const t = (key: any) => getTranslation(key, locale);
+    const t = (key: TranslationKey) => getTranslation(key, locale);
 
-    const movie = await (prisma.movie as any).findUnique({
+    const movie = await (prisma.movie as unknown as {
+        findUnique: (args: any) => Promise<any>
+    }).findUnique({
         where: { slug },
         include: {
             moviecategory: {
@@ -76,14 +80,14 @@ export default async function MoviePage({
     const movieData = getLocalizedMovie(movie, locale);
 
     // Get movies from the same collection (filtered)
-    const collectionMovies = movie.collection?.movies.filter((m: any) => m.id !== movie.id) || [];
+    const collectionMovies = movie.collection?.movies.filter((m: { id: number }) => m.id !== movie.id) || [];
+    const categoryIds = movie.moviecategory.map((mc: { categoryId: number, category: { name: string, nameEN: string | null } }) => mc.categoryId);
+    const collectionMovieIds = collectionMovies.map((m: { id: number }) => m.id);
 
-    // Get related movies from same categories (exclude collection movies)
-    const categoryIds = movie.moviecategory.map((mc: any) => mc.categoryId);
-    const collectionMovieIds = collectionMovies.map((m: any) => m.id);
-
-    let relatedMovies = categoryIds.length > 0
-        ? await (prisma.movie as any).findMany({
+    const relatedMovies = categoryIds.length > 0
+        ? await (prisma.movie as unknown as {
+            findMany: (args: any) => Promise<any[]>
+        }).findMany({
             where: {
                 id: { notIn: [movie.id, ...collectionMovieIds] },
                 published: true,
@@ -93,18 +97,13 @@ export default async function MoviePage({
                     },
                 },
             },
-            take: 24, // Fetch more to shuffle
+            take: 6,
             orderBy: [
                 { views: 'desc' },
                 { createdAt: 'desc' }
             ]
         })
         : [];
-
-    // Shuffle and take 6 to make it dynamic and diverse
-    relatedMovies = relatedMovies
-        .sort(() => Math.random() - 0.5)
-        .slice(0, 6);
 
     return (
         <div suppressHydrationWarning className="min-h-screen bg-brand-midnight text-brand-warmCream">
@@ -144,7 +143,7 @@ export default async function MoviePage({
                             <div className="flex-1 text-center md:text-left space-y-6">
                                 <div className="space-y-3">
                                     <div className="flex flex-wrap justify-center md:justify-start gap-2 mb-4">
-                                        {movie.moviecategory.map((mc: any) => (
+                                        {movie.moviecategory.map((mc: { categoryId: number, category: { name: string, nameEN: string | null } }) => (
                                             <div key={mc.categoryId} className="px-4 py-1.5 bg-brand-royalPurple/20 hover:bg-brand-royalPurple/40 border border-brand-royalPurple/30 text-brand-cinemaGold text-xs font-bold uppercase tracking-widest rounded-xl transition-all font-display">
                                                 {locale === 'en' ? (mc.category.nameEN || mc.category.name) : mc.category.name}
                                             </div>
@@ -185,9 +184,9 @@ export default async function MoviePage({
                                             <span className="relative z-10">{t('watch_online') || 'ГЛЕДАЙ'}</span>
                                         </a>
                                         <div className="flex items-center gap-4 bg-brand-deepNight/50 p-2.5 rounded-[2.5rem] border border-brand-royalPurple/20 backdrop-blur-md shadow-2xl">
-                                            <WatchlistButton movieId={movie.id} />
+                                            <WatchlistButton movieId={movie.id} locale={locale} />
                                             <div className="w-[1px] h-8 bg-brand-royalPurple/30 mx-1" />
-                                            <CollectionDialog movieId={movie.id} />
+                                            <CollectionDialog movieId={movie.id} locale={locale} />
                                         </div>
                                     </div>
                                 </div>
@@ -223,6 +222,7 @@ export default async function MoviePage({
                         videoServers={movie.videoserver && movie.videoserver.length > 0 ? movie.videoserver : undefined}
                         posterUrl={movie.posterUrl}
                         backdropUrl={movie.backdropUrl || undefined}
+                        locale={locale}
                     />
                     <AdBanner slot="movie_under_player" />
                 </section>
@@ -270,7 +270,7 @@ export default async function MoviePage({
                         </section>
 
                         <section aria-label="Comments">
-                            <MovieComments movieId={movie.id} />
+                            <MovieComments movieId={movie.id} locale={locale} />
                         </section>
                     </div>
 
@@ -287,7 +287,7 @@ export default async function MoviePage({
                                     </h3>
                                 </div>
                                 <div className="space-y-5">
-                                    {collectionMovies.map((relatedMovie: any) => (
+                                    {collectionMovies.map((relatedMovie: { id: number, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
                                         <div key={relatedMovie.id} className="relative group">
                                             <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl blur opacity-25 group-hover:opacity-100 transition duration-1000 group-hover:duration-200" />
                                             <MovieCard movie={relatedMovie} locale={locale} />
@@ -316,7 +316,7 @@ export default async function MoviePage({
                         <div className="h-[2px] flex-1 bg-gradient-to-r from-brand-cinemaGold/30 to-transparent ml-6" />
                     </div>
                     <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-8">
-                        {relatedMovies.map((m: any) => (
+                        {relatedMovies.map((m: { id: number, titleBG: string, titleEN: string, posterUrl: string, year: number, rating: number | null }) => (
                             <MovieCard key={m.id} movie={getLocalizedMovie(m, locale)} locale={locale} />
                         ))}
                     </div>
