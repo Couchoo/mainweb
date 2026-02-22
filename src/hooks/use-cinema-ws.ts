@@ -80,7 +80,10 @@ export function useCinemaWS(options: UseCinemaWSOptions = {}) {
             }
             const { token } = await tokenRes.json();
 
-            const wsUrl = `${process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080'}/ws?token=${token}`;
+            const baseUrl = process.env.NEXT_PUBLIC_WS_URL || 'ws://localhost:8080';
+            const wsUrl = baseUrl.endsWith('/ws')
+                ? `${baseUrl}?token=${token}`
+                : `${baseUrl}/ws?token=${token}`;
             const ws = new WebSocket(wsUrl);
             wsRef.current = ws;
 
