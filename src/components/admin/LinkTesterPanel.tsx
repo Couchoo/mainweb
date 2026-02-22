@@ -79,9 +79,7 @@ export default function LinkTesterPanel() {
             setProgress(prev => Math.min(prev + 5, 95));
 
             // Continue if still running
-            if (status !== 'PAUSED') {
-                setTimeout(() => runBatch(data.nextOffset), 500);
-            }
+            setTimeout(() => runBatch(data.nextOffset), 500);
         } catch (error: any) {
             setStatus('ERROR');
             toast({ title: 'Scan Error', description: error.message, variant: 'destructive' });
