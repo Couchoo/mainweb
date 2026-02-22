@@ -115,7 +115,13 @@ export function CinemaClient({ locale }: CinemaClientProps) {
 
     const updateViewers = useCallback((rawViewers: any[], totalCount?: number) => {
         const sorted = stableSortViewers(rawViewers);
-        setViewers(sorted);
+
+        // ⚡ Flicker Prevention: Only update if the data actually changed
+        setViewers(prev => {
+            const isIdentical = JSON.stringify(prev) === JSON.stringify(sorted);
+            return isIdentical ? prev : sorted;
+        });
+
         if (totalCount !== undefined) {
             setActiveViewers(totalCount);
         } else {
@@ -863,7 +869,7 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                             </div>
 
                             <ScrollArea className="flex-1 p-6">
-                                <div className="space-y-3">
+                                <div className="space-y-3 px-4">
                                     {viewers.map((viewer) => (
                                         <div
                                             key={viewer.id}
@@ -871,21 +877,21 @@ export function CinemaClient({ locale }: CinemaClientProps) {
                                                 setGiftingTo(viewer);
                                                 setShowViewersModal(false);
                                             }}
-                                            className="flex items-center justify-between p-5 rounded-[2rem] hover:bg-white/5 transition-all group cursor-pointer border border-transparent hover:border-brand-royalPurple/20 shadow-sm hover:shadow-xl"
+                                            className="flex items-center justify-between p-4 rounded-[1.8rem] bg-brand-royalPurple/[0.03] hover:bg-white/[0.08] transition-all duration-300 group cursor-pointer border border-brand-royalPurple/5 hover:border-brand-cinemaGold/30 shadow-sm active:scale-[0.98]"
                                         >
-                                            <div className="flex items-center gap-5">
-                                                <Avatar className="h-14 w-14 border-4 border-brand-midnight group-hover:ring-4 group-hover:ring-brand-cinemaGold/20 transition-all">
+                                            <div className="flex items-center gap-4">
+                                                <Avatar className="h-12 w-12 border-2 border-brand-midnight group-hover:ring-2 group-hover:ring-brand-cinemaGold/40 transition-all duration-300">
                                                     <AvatarImage src={viewer.image} />
-                                                    <AvatarFallback className="bg-brand-royalPurple text-sm font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
+                                                    <AvatarFallback className="bg-brand-royalPurple text-xs font-display uppercase">{viewer.name?.[0]}</AvatarFallback>
                                                 </Avatar>
-                                                <div>
-                                                    <h4 className={`text-lg font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
-                                                        viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
+                                                <div className="flex flex-col">
+                                                    <h4 className={`text-base font-display tracking-widest uppercase transition-colors ${viewer.role === 'ADMIN' || viewer.role === 'SUPER_ADMIN' ? 'text-brand-playRed' :
+                                                            viewer.role === 'VIP' ? 'text-brand-cinemaGold' : 'text-white'
                                                         }`}>{viewer.name}</h4>
-                                                    <p className="text-[10px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em] mt-0.5">{viewer.role || 'User'}</p>
+                                                    <p className="text-[9px] text-brand-softLavender/40 uppercase font-display tracking-[0.2em]">{viewer.role || 'User'}</p>
                                                 </div>
                                             </div>
-                                            <Button size="sm" variant="ghost" className="rounded-xl opacity-0 group-hover:opacity-100 transition-all bg-brand-cinemaGold/10 text-brand-cinemaGold hover:bg-brand-cinemaGold hover:text-brand-midnight font-display uppercase tracking-widest text-[10px] px-6 h-9">
+                                            <Button size="sm" variant="ghost" className="rounded-xl opacity-0 group-hover:opacity-100 transition-all duration-300 bg-brand-cinemaGold/10 text-brand-cinemaGold hover:bg-brand-cinemaGold hover:text-brand-midnight font-display uppercase tracking-widest text-[9px] px-5 h-8">
                                                 {t('cinema_gift')} 🎁
                                             </Button>
                                         </div>

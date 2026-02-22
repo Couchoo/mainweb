@@ -87,59 +87,95 @@ export function UltimateGiftOverlay({ gift, currentUserId, locale = 'bg' }: Ulti
 
     return (
         <div className="fixed inset-0 pointer-events-none z-[100] flex items-center justify-center overflow-hidden">
-            {/* 🎥 Full Screen Flash for Tier 3 */}
+            {/* 🎥 Epic Effects for Tier 3 */}
             {tier === 3 && (
-                <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: [0, 0.5, 0] }}
-                    className="absolute inset-0 bg-white"
-                    transition={{ duration: 0.5 }}
-                />
+                <>
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: [0, 0.4, 0] }}
+                        className="absolute inset-0 bg-white"
+                        transition={{ duration: 0.5 }}
+                    />
+                    {/* ☀️ Background Rotating Rays */}
+                    <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+                        className="absolute w-[150vw] h-[150vw] bg-gradient-to-t from-brand-cinemaGold/20 via-transparent to-brand-cinemaGold/20 opacity-30 blur-3xl pointer-events-none"
+                        style={{ clipPath: 'polygon(50% 50%, 0% 0%, 100% 0%, 50% 50%, 100% 100%, 0% 100%)' }}
+                    />
+                </>
             )}
 
             <AnimatePresence>
                 <motion.div
                     initial={{ scale: 0, y: 100, opacity: 0 }}
                     animate={{
-                        scale: 1,
+                        scale: [0, 1.1, 1],
                         y: 0,
                         opacity: 1,
-                        rotate: tier === 3 ? [0, -2, 2, -2, 2, 0] : 0
+                        x: tier === 3 ? [0, -5, 5, -5, 5, 0] : 0, // 📳 Shake effect for Tier 3
                     }}
-                    exit={{ scale: 1.5, opacity: 0, filter: 'blur(20px)' }}
+                    exit={{ scale: 1.5, opacity: 0, filter: 'blur(40px)' }}
                     transition={{
                         type: 'spring',
-                        damping: 12,
-                        rotate: tier === 3 ? { repeat: Infinity, duration: 0.2 } : {}
+                        damping: 15,
+                        x: tier === 3 ? { repeat: Infinity, duration: 0.1 } : {}
                     }}
                     className="relative flex flex-col items-center"
                 >
                     {/* 🌟 Aura Glow behind the gift */}
-                    <div className={`absolute inset-0 rounded-full blur-[120px] opacity-60 ${tier === 3 ? 'bg-brand-cinemaGold animate-pulse' :
+                    <div className={`absolute inset-0 rounded-full blur-[140px] opacity-70 ${tier === 3 ? 'bg-brand-cinemaGold animate-pulse' :
                         tier === 2 ? 'bg-brand-royalPurple' : 'bg-brand-softLavender/30'
                         }`} />
 
-                    {/* 🎁 Gift Icon */}
-                    <motion.div
-                        animate={tier >= 2 ? {
-                            scale: [1, 1.2, 1],
-                            rotate: [0, 10, -10, 0]
-                        } : {}}
-                        transition={{ repeat: Infinity, duration: 2 }}
-                        className={`text-[130px] md:text-[220px] filter drop-shadow-[0_40px_80px_rgba(0,0,0,0.8)] ${tier === 3 ? 'scale-110 drop-shadow-[0_0_100px_rgba(240,192,64,0.6)]' : ''
-                            }`}
-                    >
-                        {gift.giftType.split(' ')[1] || gift.giftType}
-                    </motion.div>
+                    {/* 🎁 Gift Icon & Floating Emojis */}
+                    <div className="relative">
+                        {tier === 3 && (
+                            <>
+                                <motion.span
+                                    animate={{ y: [-20, -100, -20], opacity: [0, 1, 0], x: [-50, -80, -50] }}
+                                    transition={{ duration: 3, repeat: Infinity }}
+                                    className="absolute text-6xl top-0 left-0"
+                                >
+                                    🔥
+                                </motion.span>
+                                <motion.span
+                                    animate={{ y: [-20, -120, -20], opacity: [0, 1, 0], x: [50, 80, 50] }}
+                                    transition={{ duration: 2.5, repeat: Infinity, delay: 0.5 }}
+                                    className="absolute text-6xl top-0 right-0"
+                                >
+                                    🚀
+                                </motion.span>
+                                <motion.span
+                                    animate={{ y: [0, -150, 0], opacity: [0, 1, 0] }}
+                                    transition={{ duration: 4, repeat: Infinity, delay: 1 }}
+                                    className="absolute text-5xl bottom-0 left-1/2 -translate-x-1/2"
+                                >
+                                    ✨
+                                </motion.span>
+                            </>
+                        )}
+                        <motion.div
+                            animate={tier >= 2 ? {
+                                scale: [1, 1.15, 1],
+                                rotate: [0, 5, -5, 0]
+                            } : {}}
+                            transition={{ repeat: Infinity, duration: 1.5 }}
+                            className={`text-[140px] md:text-[240px] filter drop-shadow-[0_40px_80px_rgba(0,0,0,0.8)] ${tier === 3 ? 'scale-110 drop-shadow-[0_0_120px_rgba(240,192,64,0.7)]' : ''
+                                }`}
+                        >
+                            {gift.giftType.split(' ')[1] || gift.giftType}
+                        </motion.div>
+                    </div>
 
                     {/* 📝 Text Information */}
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3 }}
-                        className="text-center mt-[-30px] relative z-10"
+                        className="text-center mt-[-40px] relative z-10"
                     >
-                        <h2 className={`text-5xl md:text-8xl font-display tracking-[0.1em] uppercase ${tier === 3 ? 'text-brand-cinemaGold drop-shadow-[0_0_30px_rgba(240,192,64,0.8)]' : 'text-white'
+                        <h2 className={`text-6xl md:text-9xl font-display tracking-[0.1em] uppercase italic ${tier === 3 ? 'text-brand-cinemaGold drop-shadow-[0_0_40px_rgba(240,192,64,1)]' : 'text-white'
                             }`}>
                             {isSender ? t('gift_you_sent') : isReceiver ? t('gift_you_received') : `${gift.from.name} ${t('gift_sent_message')}`}
                         </h2>
