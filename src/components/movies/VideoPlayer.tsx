@@ -3,7 +3,7 @@
 import { useSession } from 'next-auth/react';
 import { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Play, Gem, AlertCircle, Volume2, VolumeX } from 'lucide-react';
+import { Play, Gem, AlertCircle, Volume2, VolumeX, Maximize } from 'lucide-react';
 import Link from 'next/link';
 import { useAnalytics } from '@/hooks/use-analytics';
 import { getTranslation, Locale, TranslationKey } from '@/lib/i18n';
@@ -73,6 +73,18 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
     const [isLocallyPaused, setIsLocallyPaused] = useState(false);
     const [isAutoplayBlocked, setIsAutoplayBlocked] = useState(false);
     const [isBuffering, setIsBuffering] = useState(true);
+    const playerRef = useRef<HTMLDivElement>(null);
+
+    const toggleFullscreen = () => {
+        if (!playerRef.current) return;
+        if (!document.fullscreenElement) {
+            playerRef.current.requestFullscreen().catch(err => {
+                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
+            });
+        } else {
+            document.exitFullscreen();
+        }
+    };
 
     // Initial seek and periodic drift compensation
     useEffect(() => {
@@ -176,7 +188,7 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
     }, [volume, isMuted]);
 
     return (
-        <div className="relative w-full h-full group/player overflow-hidden">
+        <div ref={playerRef} className="relative w-full h-full group/player overflow-hidden bg-black">
             <video
                 ref={videoRef}
                 src={url}
@@ -259,6 +271,16 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
                                 }}
                             />
                         </div>
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleFullscreen();
+                            }}
+                            className="p-1.5 hover:bg-white/10 rounded-xl transition-colors text-white/70 hover:text-white"
+                            title="Fullscreen"
+                        >
+                            <Maximize className="w-5 h-5" />
+                        </button>
                     </div>
                 </>
             )}
@@ -410,6 +432,10 @@ export function VideoPlayer({
                             src={buildYouTubeEmbedUrl(url, playbackOffset, isCinemaMode)}
                             className="w-full h-full"
                             allowFullScreen
+                            // @ts-ignore - legacy support
+                            webkitallowfullscreen="true"
+                            // @ts-ignore - legacy support
+                            mozallowfullscreen="true"
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
                         />
                     ) : (
@@ -420,6 +446,10 @@ export function VideoPlayer({
                             src={buildGenericEmbedUrl(url, playbackOffset)}
                             className="w-full h-full"
                             allowFullScreen
+                            // @ts-ignore - legacy support
+                            webkitallowfullscreen="true"
+                            // @ts-ignore - legacy support
+                            mozallowfullscreen="true"
                             allow="autoplay; fullscreen"
                         />
                     )}
