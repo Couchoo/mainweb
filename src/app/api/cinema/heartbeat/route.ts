@@ -9,10 +9,13 @@ import { authOptions } from '@/lib/auth';
  */
 export async function POST(request: NextRequest) {
     try {
+        console.log('[HEARTBEAT] Request received');
         const session = await getServerSession(authOptions);
         if (!session?.user) {
+            console.log('[HEARTBEAT] Unauthorized access');
             return NextResponse.json({ message: 'Unauthorized' }, { status: 401 });
         }
+        console.log('[HEARTBEAT] Updating presence for user:', (session.user as any).id);
 
         const userId = parseInt((session.user as any).id);
 
