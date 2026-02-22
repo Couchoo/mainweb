@@ -38,7 +38,7 @@ export function Header({ locale = 'bg' }: HeaderProps) {
     const [searchQuery, setSearchQuery] = useState('');
     const [searchResults, setSearchResults] = useState<any[]>([]);
     const [showResults, setShowResults] = useState(false);
-    const [categories, setCategories] = useState<{ id: number; name: string; slug: string; _count?: { movies: number } }[]>([]);
+    const [categories, setCategories] = useState<{ id: number; name: string; slug: string; _count?: { moviecategory: number } }[]>([]);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [isScrolled, setIsScrolled] = useState(false);
@@ -134,13 +134,13 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                     }`}>
 
                     {/* Left: Logo & Mobile Menu Trigger */}
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1 sm:gap-4 flex-shrink-0">
                         <div className="xl:hidden">
                             {mounted && (
                                 <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
                                     <SheetTrigger asChild>
-                                        <Button variant="ghost" size="icon" className="text-brand-warmCream rounded-full hover:bg-brand-royalPurple/20">
-                                            <Menu className="h-6 w-6" />
+                                        <Button variant="ghost" size="icon" className="h-8 w-8 text-brand-warmCream rounded-full hover:bg-brand-royalPurple/20">
+                                            <Menu className="h-5 w-5" />
                                         </Button>
                                     </SheetTrigger>
                                     <SheetContent side="left" className="w-[300px] border-brand-royalPurple/20 bg-brand-midnight p-0 overflow-hidden">
@@ -192,7 +192,7 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                             <motion.img
                                 whileHover={{ scale: 1.05 }}
                                 src="/brand/couchoo-wordmark-dark.png"
-                                className="h-8 md:h-9 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_20px_rgba(240,192,64,0.6)] brightness-0 invert"
+                                className="h-6 sm:h-8 md:h-9 w-auto object-contain transition-all duration-300 group-hover:drop-shadow-[0_0_20px_rgba(240,192,64,0.6)] brightness-0 invert"
                                 alt="Couchoo"
                             />
                         </Link>
@@ -228,26 +228,26 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                             let accentColor = "from-brand-royalPurple/20";
                                             let tagline = "Explore Movies";
 
-                                            if (name.includes('Action')) { CategoryIcon = Sword; accentColor = "from-red-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Animation')) { CategoryIcon = Sparkles; accentColor = "from-amber-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Biography')) { CategoryIcon = User; accentColor = "from-blue-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Comedy')) { CategoryIcon = Smile; accentColor = "from-yellow-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Crime')) { CategoryIcon = Shield; accentColor = "from-zinc-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Documentary')) { CategoryIcon = Monitor; accentColor = "from-emerald-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Drama')) { CategoryIcon = Heart; accentColor = "from-indigo-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Family')) { CategoryIcon = Users; accentColor = "from-orange-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Fantasy')) { CategoryIcon = Zap; accentColor = "from-purple-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('History')) { CategoryIcon = History; accentColor = "from-stone-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Horror')) { CategoryIcon = Ghost; accentColor = "from-slate-700/30"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Music')) { CategoryIcon = Music; accentColor = "from-pink-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Musical')) { CategoryIcon = Mic2; accentColor = "from-fuchsia-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Mystery')) { CategoryIcon = Compass; accentColor = "from-teal-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Romance')) { CategoryIcon = Flame; accentColor = "from-rose-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Sci-Fi')) { CategoryIcon = Rocket; accentColor = "from-cyan-400/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Sport')) { CategoryIcon = Trophy; accentColor = "from-green-500/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Thriller')) { CategoryIcon = Waves; accentColor = "from-blue-600/20"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('War')) { CategoryIcon = Skull; accentColor = "from-gray-700/30"; tagline = `${cat._count?.movies || 0} movies`; }
-                                            else if (name.includes('Western')) { CategoryIcon = Clapperboard; accentColor = "from-orange-600/20"; tagline = `${cat._count?.movies || 0} movies`; }
+                                            if (name.includes('Action')) { CategoryIcon = Sword; accentColor = "from-red-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Animation')) { CategoryIcon = Sparkles; accentColor = "from-amber-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Biography')) { CategoryIcon = User; accentColor = "from-blue-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Comedy')) { CategoryIcon = Smile; accentColor = "from-yellow-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Crime')) { CategoryIcon = Shield; accentColor = "from-zinc-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Documentary')) { CategoryIcon = Monitor; accentColor = "from-emerald-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Drama')) { CategoryIcon = Heart; accentColor = "from-indigo-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Family')) { CategoryIcon = Users; accentColor = "from-orange-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Fantasy')) { CategoryIcon = Zap; accentColor = "from-purple-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('History')) { CategoryIcon = History; accentColor = "from-stone-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Horror')) { CategoryIcon = Ghost; accentColor = "from-slate-700/30"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Music')) { CategoryIcon = Music; accentColor = "from-pink-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Musical')) { CategoryIcon = Mic2; accentColor = "from-fuchsia-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Mystery')) { CategoryIcon = Compass; accentColor = "from-teal-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Romance')) { CategoryIcon = Flame; accentColor = "from-rose-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Sci-Fi')) { CategoryIcon = Rocket; accentColor = "from-cyan-400/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Sport')) { CategoryIcon = Trophy; accentColor = "from-green-500/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Thriller')) { CategoryIcon = Waves; accentColor = "from-blue-600/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('War')) { CategoryIcon = Skull; accentColor = "from-gray-700/30"; tagline = `${cat._count?.moviecategory || 0} movies`; }
+                                            else if (name.includes('Western')) { CategoryIcon = Clapperboard; accentColor = "from-orange-600/20"; tagline = `${cat._count?.moviecategory || 0} movies`; }
 
                                             return (
                                                 <DropdownMenuItem key={cat.slug} asChild className="rounded-[2rem] focus:bg-brand-royalPurple/20 p-2 cursor-pointer group/cat border border-white/5 hover:border-brand-royalPurple/40 transition-all active:scale-[0.98] relative overflow-hidden">
