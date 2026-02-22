@@ -4,16 +4,23 @@ import { prisma } from '@/lib/db';
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const baseUrl = process.env.NEXT_PUBLIC_BASE_URL || 'http://localhost:3000';
 
-    // Get all published movies
-    const movies = await prisma.movie.findMany({
-        where: { published: true },
-        select: { slug: true, updatedAt: true }
-    });
+    let movies: any[] = [];
+    let categories: any[] = [];
 
-    // Get all categories
-    const categories = await prisma.category.findMany({
-        select: { slug: true }
-    });
+    try {
+        // Get all published movies
+        movies = await prisma.movie.findMany({
+            where: { published: true },
+            select: { slug: true, updatedAt: true }
+        });
+
+        // Get all categories
+        categories = await prisma.category.findMany({
+            select: { slug: true }
+        });
+    } catch (error) {
+        console.warn('⚠️ Sitemap: Database not ready or tables missing. Skipping dynamic routes during build.');
+    }
 
     // Static pages
     const staticPages = [
