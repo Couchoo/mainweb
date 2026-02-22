@@ -512,18 +512,12 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                                 </DropdownMenuItem>
                                             </div>
 
-                                            <div className="px-3 space-y-1">
-                                                <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                    <Link href="/settings" className="flex items-center gap-3 w-full h-9 px-4 rounded-xl hover:bg-white/5 text-brand-softLavender/50 group/line transition-all">
-                                                        <Settings className="w-3.5 h-3.5 group-hover/line:rotate-90 transition-transform" />
-                                                        <span className="text-[10px] font-bold">{t('settings')}</span>
-                                                    </Link>
-                                                </DropdownMenuItem>
+                                            <div className="px-3 pb-2">
                                                 <DropdownMenuItem
                                                     onClick={() => signOut()}
-                                                    className="flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-brand-playRed/10 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all cursor-pointer font-black text-[9px] uppercase tracking-widest border border-brand-playRed/10"
+                                                    className="flex items-center justify-center gap-2 w-full h-11 rounded-xl bg-brand-playRed/10 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all cursor-pointer font-black text-[10px] uppercase tracking-widest border border-brand-playRed/10"
                                                 >
-                                                    <LogOut className="w-3.5 h-3.5" />
+                                                    <LogOut className="w-4 h-4" />
                                                     {t('logout')}
                                                 </DropdownMenuItem>
                                             </div>
