@@ -11,7 +11,7 @@ import crypto from 'crypto';
 export async function GET() {
     const session = await getServerSession(authOptions);
     const secretRaw = process.env.WS_INTERNAL_SECRET!;
-    const secret = secretRaw?.replace(/^["']|["']$/g, '');
+    const secret = secretRaw?.trim().replace(/^["']|["']$/g, '');
     if (!secret) {
         return NextResponse.json({ error: 'WS not configured' }, { status: 500 });
     }
@@ -20,10 +20,10 @@ export async function GET() {
 
     const payload = JSON.stringify({
         userId: user ? parseInt(user.id) : 0,
-        name: user?.name || 'Гост',
+        name: user?.name || 'Guest',
         role: user?.role || 'GUEST',
         image: user?.image || '',
-        exp: Date.now() + 300_000, // 5 minute expiry (prevents clock drift issues)
+        exp: Date.now() + 300_000,
     });
 
     const payloadB64 = Buffer.from(payload).toString('base64url');

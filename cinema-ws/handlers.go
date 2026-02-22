@@ -217,7 +217,14 @@ func verifyToken(token, secret string) (*tokenInfo, error) {
 	mac := hmac.New(sha256.New, []byte(secret))
 	mac.Write(payloadBytes)
 	expectedSig := fmt.Sprintf("%x", mac.Sum(nil))
+
 	if !hmac.Equal([]byte(parts[1]), []byte(expectedSig)) {
+		// Log detailed mismatch for debugging (only in this diagnostic phase)
+		log.Printf("❌ Auth Sig Mismatch!")
+		log.Printf("   Payload: %s", string(payloadBytes))
+		log.Printf("   Secret prefix: %s...", secret[:2])
+		log.Printf("   Expected hex: %s", expectedSig)
+		log.Printf("   Provided hex: %s", parts[1])
 		return nil, fmt.Errorf("invalid signature")
 	}
 
