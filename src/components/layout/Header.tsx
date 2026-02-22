@@ -328,7 +328,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
 
                     {/* Right: Actions (Cinema, Search, User) */}
                     <div className="flex items-center gap-1.5 sm:gap-2 ml-auto lg:ml-0">
-                        {/* Cinema Button - Hidden on mobile, shown on large screens */}
+                        {/* Cinema Button */}
                         <Link
                             href="/cinema"
                             className="hidden lg:flex items-center gap-2 px-5 py-2 rounded-full bg-brand-playRed/10 border border-brand-playRed/20 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all duration-300 group active:scale-95 shadow-lg shadow-brand-playRed/5"
@@ -340,14 +340,12 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                             <span className="text-[11px] font-bold font-display tracking-widest uppercase">Cinema</span>
                         </Link>
 
-                        {/* Mobile Cinema Icon - Compact for small screens */}
                         <Link href="/cinema" className="flex lg:hidden">
                             <Button variant="ghost" size="icon" className="w-9 h-9 rounded-full bg-brand-playRed/10 border border-brand-playRed/20 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all scale-90 sm:scale-100">
                                 <Play className="w-4 h-4 fill-current" />
                             </Button>
                         </Link>
 
-                        {/* Search Bar - Cinematic Expansion */}
                         <div className="relative group/search hidden md:block">
                             <form onSubmit={handleSearch} className="relative z-10">
                                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-brand-softLavender group-focus-within/search:text-brand-cinemaGold transition-colors" />
@@ -361,8 +359,6 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                     onBlur={() => setTimeout(() => setShowResults(false), 200)}
                                 />
                             </form>
-
-                            {/* Search Results Dropdown */}
                             <AnimatePresence>
                                 {showResults && searchResults.length > 0 && (
                                     <motion.div
@@ -416,9 +412,8 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
 
                         <div className="w-[1px] h-6 bg-brand-royalPurple/10 mx-1 hidden sm:block" />
 
-                        <LanguageSwitcher currentLocale={locale} />
+                        <LanguageSwitcher currentLocale={locale as Locale} />
 
-                        {/* User Profile / Login */}
                         {session ? (
                             <DropdownMenu>
                                 <DropdownMenuTrigger asChild>
@@ -433,7 +428,7 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                             <span className="text-[10px] font-bold text-brand-warmCream max-w-[80px] truncate">
                                                 {session.user?.name || session.user?.email?.split('@')[0]}
                                             </span>
-                                            {['VIP', 'ADMIN', 'SUPER_ADMIN'].includes((session.user as any)?.role) && (
+                                            {userStats?.role === 'VIP' && (
                                                 <span className="text-[8px] uppercase tracking-tighter text-brand-cinemaGold font-bold">Premium</span>
                                             )}
                                         </div>
@@ -441,119 +436,95 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    sideOffset={20}
-                                    className="w-85 p-0 border-none bg-transparent shadow-none"
+                                    sideOffset={15}
+                                    className="w-[280px] p-0 border-none bg-transparent shadow-none"
                                 >
                                     <motion.div
-                                        initial={{ opacity: 0, y: 30, scale: 0.9 }}
+                                        initial={{ opacity: 0, y: 15, scale: 0.95 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        className="relative pt-12 overflow-visible"
+                                        className="relative"
                                     >
-                                        {/* Virtual Couch/Shelf for Mascot */}
-                                        <div className="absolute top-8 left-0 right-0 h-16 bg-brand-midnight rounded-t-[3rem] border-t border-x border-white/10 z-0" />
-
-                                        {/* Mascot Owl Sitting on Couch */}
-                                        <motion.div
-                                            className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 z-20 pointer-events-none"
-                                            initial={{ y: 20, opacity: 0 }}
-                                            animate={{ y: 0, opacity: 1 }}
-                                            transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
-                                        >
-                                            <img
+                                        {/* Mascot Area */}
+                                        <div className="absolute -top-10 left-0 right-0 h-10 flex justify-center z-20 pointer-events-none">
+                                            <motion.img
                                                 src="/brand/couchoo-mascot-transparent.png"
                                                 alt="Mascot"
-                                                className="w-full h-full object-contain filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)]"
+                                                className="w-20 h-20 object-contain drop-shadow-[0_5px_10px_rgba(0,0,0,0.5)]"
+                                                initial={{ y: 5 }}
+                                                animate={{ y: 0 }}
+                                                transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
                                             />
-                                        </motion.div>
+                                        </div>
 
-                                        <div className="relative z-10 overflow-hidden bg-brand-midnight/98 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.7)] p-6">
-                                            {/* Header & Avatar */}
-                                            <div className="text-center mt-4 mb-6">
+                                        <div className="relative overflow-hidden bg-[#0F0F11]/98 backdrop-blur-3xl border border-white/10 rounded-[1.75rem] shadow-[0_20px_60px_rgba(0,0,0,0.9)] pb-3">
+                                            <div className="h-20 w-full bg-gradient-to-b from-brand-royalPurple/20 to-transparent absolute top-0 left-0" />
+
+                                            <div className="relative z-10 p-5 pt-7 text-center border-b border-white/5">
                                                 <div className="relative inline-block mb-3">
-                                                    <motion.div
-                                                        className="absolute inset-0 bg-brand-cinemaGold/20 blur-xl rounded-full"
-                                                        animate={{ scale: [1, 1.2, 1] }}
-                                                        transition={{ duration: 3, repeat: Infinity }}
-                                                    />
-                                                    <Avatar className="h-20 w-20 border-4 border-brand-midnight relative z-10 shadow-2xl">
+                                                    <Avatar className="h-16 w-16 border-2 border-brand-cinemaGold/30 shadow-2xl">
                                                         <AvatarImage src={session.user?.image || undefined} />
-                                                        <AvatarFallback className="bg-brand-royalPurple text-brand-cinemaGold font-black text-2xl">
+                                                        <AvatarFallback className="bg-brand-royalPurple text-brand-cinemaGold font-bold text-xl">
                                                             {session.user?.email?.[0].toUpperCase()}
                                                         </AvatarFallback>
                                                     </Avatar>
                                                     {userStats?.role === 'VIP' && (
-                                                        <div className="absolute -bottom-1 -right-1 bg-brand-cinemaGold p-1.5 rounded-full shadow-lg border-2 border-brand-midnight z-20">
-                                                            <Star className="w-3.5 h-3.5 text-brand-midnight fill-brand-midnight" />
+                                                        <div className="absolute -bottom-1 -right-1 bg-brand-cinemaGold p-1 rounded-full shadow-lg border-2 border-[#0F0F11]">
+                                                            <Star className="w-2.5 h-2.5 text-brand-midnight fill-brand-midnight" />
                                                         </div>
                                                     )}
                                                 </div>
-                                                <h4 className="font-display font-black text-2xl text-brand-warmCream truncate px-4">
+                                                <h4 className="font-display font-black text-lg text-brand-warmCream truncate px-2 leading-none">
                                                     {session.user?.name || session.user?.email?.split('@')[0]}
                                                 </h4>
-                                                <div className="flex justify-center mt-2">
-                                                    <span className="px-4 py-1.5 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/20 text-[10px] font-black uppercase text-brand-cinemaGold tracking-[0.2em] shadow-inner">
-                                                        {userStats?.role || (session.user as any)?.role || 'Standard'} Member
-                                                    </span>
-                                                </div>
+                                                <span className="inline-block mt-2 px-3 py-0.5 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/15 text-[8px] font-black uppercase text-brand-cinemaGold tracking-[0.2em]">
+                                                    {userStats?.role || 'Member'}
+                                                </span>
                                             </div>
 
-                                            {/* Stats Bubbles */}
-                                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                            <div className="grid grid-cols-3 gap-2 px-3 py-4">
                                                 {[
-                                                    { label: 'Gledani', val: userStats?.watched, icon: History, color: 'brand-cinemaGold' },
-                                                    { label: 'Spisuk', val: userStats?.watchlist, icon: Bookmark, color: 'brand-warmCream' },
-                                                    { label: 'Popcorn', val: userStats?.popcorn, icon: Sparkles, color: 'brand-royalPurple' }
+                                                    { label: t('watched_stats'), val: userStats?.watched, icon: History, color: 'text-brand-cinemaGold' },
+                                                    { label: t('watchlist_stats'), val: userStats?.watchlist, icon: Bookmark, color: 'text-brand-warmCream' },
+                                                    { label: t('popcorn_stats'), val: userStats?.popcorn, icon: Sparkles, color: 'text-brand-royalPurple' }
                                                 ].map((s, i) => (
-                                                    <motion.div
-                                                        key={i}
-                                                        whileHover={{ y: -5, scale: 1.05 }}
-                                                        className="flex flex-col items-center p-3 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all cursor-default"
-                                                    >
-                                                        <div className={`p-2 rounded-2xl bg-brand-midnight shadow-inner mb-2`}>
-                                                            <s.icon className={`w-4 h-4 text-${s.color}`} />
-                                                        </div>
-                                                        <span className="text-lg font-display font-black text-brand-warmCream">{s.val || 0}</span>
-                                                        <span className="text-[7px] font-black uppercase text-brand-softLavender/40 tracking-widest">{s.label}</span>
-                                                    </motion.div>
+                                                    <div key={i} className="flex flex-col items-center p-2 rounded-xl bg-white/[0.02] border border-white/[0.04]">
+                                                        <s.icon className={`w-3 h-3 ${s.color} mb-1 opacity-70`} />
+                                                        <span className="text-xs font-display font-black text-brand-warmCream">{s.val || 0}</span>
+                                                        <span className="text-[6px] font-bold uppercase text-brand-softLavender/30 tracking-tight">{s.label}</span>
+                                                    </div>
                                                 ))}
                                             </div>
 
-                                            {/* Interactive Grid Menu */}
-                                            <div className="grid grid-cols-2 gap-2 mb-6">
+                                            <div className="px-3 pb-2 grid grid-cols-2 gap-2">
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                    <Link href="/profile" className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-3xl bg-brand-royalPurple/5 hover:bg-brand-royalPurple/20 border border-brand-royalPurple/10 transition-all text-brand-softLavender group/mitem">
-                                                        <User className="w-5 h-5 group-hover/mitem:scale-110 group-hover/mitem:text-brand-cinemaGold transition-all" />
-                                                        <span className="text-[11px] font-black uppercase tracking-wider">{t('profile')}</span>
+                                                    <Link href="/profile" className="flex flex-col items-center justify-center h-14 rounded-xl bg-brand-royalPurple/5 border border-brand-royalPurple/10 hover:bg-brand-royalPurple/20 transition-all group/btn">
+                                                        <User className="w-3.5 h-3.5 mb-1 text-brand-royalPurple group-hover/btn:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/70">{t('profile')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                    <Link href="/collections" className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-3xl bg-brand-playRed/5 hover:bg-brand-playRed/20 border border-brand-playRed/10 transition-all text-brand-softLavender group/mitem">
-                                                        <Library className="w-5 h-5 group-hover/mitem:scale-110 group-hover/mitem:text-brand-cinemaGold transition-all" />
-                                                        <span className="text-[11px] font-black uppercase tracking-wider">Kolekcii</span>
+                                                    <Link href="/collections" className="flex flex-col items-center justify-center h-14 rounded-xl bg-brand-playRed/5 border border-brand-playRed/10 hover:bg-brand-playRed/20 transition-all group/btn">
+                                                        <Library className="w-3.5 h-3.5 mb-1 text-brand-playRed group-hover/btn:text-brand-cinemaGold transition-colors" />
+                                                        <span className="text-[9px] font-black uppercase tracking-wider text-brand-softLavender/70">{t('collections')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
                                             </div>
 
-                                            {/* Settings & Logout */}
-                                            <div className="flex flex-col gap-2 relative z-10">
+                                            <div className="px-3 space-y-1">
                                                 <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                    <Link href="/settings" className="flex items-center gap-3 w-full h-11 px-5 rounded-2xl bg-white/5 hover:bg-white/10 text-brand-softLavender/70 transition-all group/sublink">
-                                                        <Settings className="w-4 h-4 group-hover/sublink:rotate-90 transition-transform" />
-                                                        <span className="text-[12px] font-bold">Nastroiki</span>
+                                                    <Link href="/settings" className="flex items-center gap-3 w-full h-9 px-4 rounded-xl hover:bg-white/5 text-brand-softLavender/50 group/line transition-all">
+                                                        <Settings className="w-3 h-3 group-hover/line:rotate-90 transition-transform" />
+                                                        <span className="text-[10px] font-bold">{t('settings')}</span>
                                                     </Link>
                                                 </DropdownMenuItem>
-
                                                 <DropdownMenuItem
                                                     onClick={() => signOut()}
-                                                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-brand-playRed/10 hover:bg-brand-playRed text-brand-playRed hover:text-white transition-all cursor-pointer font-black uppercase tracking-widest text-[11px] border border-brand-playRed/20"
+                                                    className="flex items-center justify-center gap-2 w-full h-9 rounded-xl bg-brand-playRed/10 text-brand-playRed hover:bg-brand-playRed hover:text-white transition-all cursor-pointer font-black text-[9px] uppercase tracking-widest border border-brand-playRed/10"
                                                 >
-                                                    <LogOut className="w-4 h-4" />
+                                                    <LogOut className="w-3 h-3" />
                                                     {t('logout')}
                                                 </DropdownMenuItem>
                                             </div>
-
-                                            {/* Animated Background Glow */}
-                                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-royalPurple/10 blur-[60px] rounded-full -mr-10 -mt-10" />
                                         </div>
                                     </motion.div>
                                 </DropdownMenuContent>

@@ -152,5 +152,10 @@
     "hero_title_at_home": "У ДОМА",
     "hero_sub_text": "Настани се удобно на дивана и се наслади на най-добрите филми с Chouchoo.",
     "hero_watch_now": "ГЛЕДАЙ СЕГА",
-    "hero_my_list": "МОЯТ СПИСЪК"
+    "hero_my_list": "МОЯТ СПИСЪК",
+    "collections": "Колекции",
+    "settings": "Настройки",
+    "watched_stats": "Гледани",
+    "watchlist_stats": "Списък",
+    "popcorn_stats": "Пуканки"
 }
