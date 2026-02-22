@@ -55,12 +55,18 @@ export default async function CategoryPage({
     const filterRating = rating ? parseFloat(rating) : undefined;
     const sortBy = sort || 'newest';
 
+    // Normalize slug to lowercase for consistent lookup
+    const searchSlug = slug.toLowerCase();
+
     const where: any = {
         published: true,
         moviecategory: {
             some: {
                 category: {
-                    slug: slug
+                    OR: [
+                        { slug: searchSlug },
+                        { name: searchSlug }
+                    ]
                 }
             }
         }
@@ -74,8 +80,13 @@ export default async function CategoryPage({
     if (sortBy === 'highestRated') orderBy = { rating: 'desc' };
     if (sortBy === 'popular') orderBy = { views: 'desc' };
 
-    const categoryData = await prisma.category.findUnique({
-        where: { slug: slug },
+    const categoryData = await prisma.category.findFirst({
+        where: {
+            OR: [
+                { slug: searchSlug },
+                { name: searchSlug }
+            ]
+        },
     });
 
     if (!categoryData) notFound();

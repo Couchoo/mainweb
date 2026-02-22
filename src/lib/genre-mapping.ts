@@ -41,6 +41,14 @@ export const NAVBAR_ORDER = [
 ];
 
 /**
+ * Returns the English key for a Bulgarian genre name.
+ */
+export function getEnglishGenre(bulgarianName: string): string {
+    const entry = Object.entries(GENRE_MAPPING).find(([en, bg]) => bg === bulgarianName);
+    return entry ? entry[0] : bulgarianName;
+}
+
+/**
  * Returns the Bulgarian name for an English IMDB genre.
  * Falls back to the original name if no mapping exists.
  */
