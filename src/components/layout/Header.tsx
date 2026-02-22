@@ -50,7 +50,6 @@ export function Header({ locale = 'bg' }: HeaderProps) {
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
 
-    // ... (keep fetchCategories and autocomplete search logic)
     useEffect(() => {
         async function fetchCategories() {
             try {

@@ -8,6 +8,8 @@ import { getTrendingMoviesFromIMDB, getTrendingMoviesLocal } from '@/lib/scraper
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { Clock, Sparkles, Play, Star } from 'lucide-react';
+import { Hero } from '@/components/home/Hero';
+
 
 async function getTrending(limit: number = 6) {
     let trending = await getTrendingMoviesFromIMDB();
@@ -130,9 +132,7 @@ async function getCategoriesWithMovies() {
     });
 }
 
-import { Hero } from '@/components/home/Hero';
 
-// ... (keep previous functions)
 
 export default async function HomePage() {
     const headersList = await headers();
@@ -160,7 +160,7 @@ export default async function HomePage() {
 
     return (
         <div suppressHydrationWarning className="pb-16 space-y-16">
-            <Hero t={t} />
+            <Hero locale={locale} />
 
             <div className="container space-y-16">
                 <AdBanner slot="home_top" />

@@ -4,11 +4,14 @@ import { motion } from 'framer-motion';
 import { Sparkles, Play, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 
+import { getTranslation, Locale } from '@/lib/i18n';
+
 interface HeroProps {
-    t: (key: string) => string;
+    locale: Locale;
 }
 
-export function Hero({ t }: HeroProps) {
+export function Hero({ locale }: HeroProps) {
+    const t = (key: any) => getTranslation(key, locale);
     return (
         <section className="relative min-h-[500px] md:min-h-[650px] w-full overflow-hidden flex items-center">
             {/* Cinematic Background Layers */}
