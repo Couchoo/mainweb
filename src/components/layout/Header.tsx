@@ -441,110 +441,120 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
                                 </DropdownMenuTrigger>
                                 <DropdownMenuContent
                                     align="end"
-                                    sideOffset={12}
-                                    className="w-80 p-0 border-none bg-transparent shadow-none"
+                                    sideOffset={20}
+                                    className="w-85 p-0 border-none bg-transparent shadow-none"
                                 >
                                     <motion.div
-                                        initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                                        initial={{ opacity: 0, y: 30, scale: 0.9 }}
                                         animate={{ opacity: 1, y: 0, scale: 1 }}
-                                        className="relative overflow-hidden bg-brand-midnight/95 backdrop-blur-2xl border border-white/10 rounded-[2.5rem] shadow-[0_20px_50px_rgba(0,0,0,0.5)]"
+                                        className="relative pt-12 overflow-visible"
                                     >
-                                        {/* Mascot Owl Peeking */}
-                                        <motion.img
-                                            src="/brand/couchoo-mascot-transparent.png"
-                                            alt="Mascot"
-                                            className="absolute -right-6 -top-4 w-24 h-24 opacity-40 grayscale group-hover:grayscale-0 transition-all duration-700 pointer-events-none"
-                                            initial={{ rotate: 10, x: 20 }}
-                                            animate={{ rotate: 0, x: 0 }}
-                                            transition={{ delay: 0.2, type: "spring" }}
-                                        />
+                                        {/* Virtual Couch/Shelf for Mascot */}
+                                        <div className="absolute top-8 left-0 right-0 h-16 bg-brand-midnight rounded-t-[3rem] border-t border-x border-white/10 z-0" />
 
-                                        {/* Header Section */}
-                                        <div className="p-6 pb-4 relative z-10">
-                                            <div className="flex items-center gap-4 mb-4">
-                                                <Avatar className="h-14 w-14 border-2 border-brand-cinemaGold/30">
-                                                    <AvatarImage src={session.user?.image || undefined} />
-                                                    <AvatarFallback className="bg-brand-royalPurple text-brand-cinemaGold font-bold text-lg">
-                                                        {session.user?.email?.[0].toUpperCase()}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                                <div className="flex-1 min-w-0">
-                                                    <h4 className="font-display font-black text-brand-warmCream truncate text-lg tracking-tight">
-                                                        {session.user?.name || session.user?.email?.split('@')[0]}
-                                                    </h4>
-                                                    <div className="flex items-center gap-2 mt-0.5">
-                                                        <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/20">
-                                                            <Crown className="w-3 h-3 text-brand-cinemaGold" />
-                                                            <span className="text-[10px] font-black uppercase text-brand-cinemaGold tracking-widest">
-                                                                {userStats?.role || (session.user as any)?.role || 'Standard'}
-                                                            </span>
+                                        {/* Mascot Owl Sitting on Couch */}
+                                        <motion.div
+                                            className="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-32 z-20 pointer-events-none"
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            transition={{ delay: 0.3, type: "spring", stiffness: 100 }}
+                                        >
+                                            <img
+                                                src="/brand/couchoo-mascot-transparent.png"
+                                                alt="Mascot"
+                                                className="w-full h-full object-contain filter drop-shadow-[0_10px_15px_rgba(0,0,0,0.8)]"
+                                            />
+                                        </motion.div>
+
+                                        <div className="relative z-10 overflow-hidden bg-brand-midnight/98 backdrop-blur-3xl border border-white/10 rounded-[2.5rem] shadow-[0_25px_60px_rgba(0,0,0,0.7)] p-6">
+                                            {/* Header & Avatar */}
+                                            <div className="text-center mt-4 mb-6">
+                                                <div className="relative inline-block mb-3">
+                                                    <motion.div
+                                                        className="absolute inset-0 bg-brand-cinemaGold/20 blur-xl rounded-full"
+                                                        animate={{ scale: [1, 1.2, 1] }}
+                                                        transition={{ duration: 3, repeat: Infinity }}
+                                                    />
+                                                    <Avatar className="h-20 w-20 border-4 border-brand-midnight relative z-10 shadow-2xl">
+                                                        <AvatarImage src={session.user?.image || undefined} />
+                                                        <AvatarFallback className="bg-brand-royalPurple text-brand-cinemaGold font-black text-2xl">
+                                                            {session.user?.email?.[0].toUpperCase()}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                    {userStats?.role === 'VIP' && (
+                                                        <div className="absolute -bottom-1 -right-1 bg-brand-cinemaGold p-1.5 rounded-full shadow-lg border-2 border-brand-midnight z-20">
+                                                            <Star className="w-3.5 h-3.5 text-brand-midnight fill-brand-midnight" />
                                                         </div>
-                                                    </div>
+                                                    )}
+                                                </div>
+                                                <h4 className="font-display font-black text-2xl text-brand-warmCream truncate px-4">
+                                                    {session.user?.name || session.user?.email?.split('@')[0]}
+                                                </h4>
+                                                <div className="flex justify-center mt-2">
+                                                    <span className="px-4 py-1.5 rounded-full bg-brand-cinemaGold/10 border border-brand-cinemaGold/20 text-[10px] font-black uppercase text-brand-cinemaGold tracking-[0.2em] shadow-inner">
+                                                        {userStats?.role || (session.user as any)?.role || 'Standard'} Member
+                                                    </span>
                                                 </div>
                                             </div>
 
-                                            {/* Stats Grid */}
-                                            <div className="grid grid-cols-3 gap-2 py-4 border-y border-white/5">
-                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
-                                                    <p className="text-xl font-display font-black text-brand-cinemaGold">{userStats?.watched || 0}</p>
-                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Gledani</p>
-                                                </div>
-                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
-                                                    <p className="text-xl font-display font-black text-brand-warmCream">{userStats?.watchlist || 0}</p>
-                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Spisuk</p>
-                                                </div>
-                                                <div className="text-center p-2 rounded-2xl bg-white/5 hover:bg-white/10 transition-colors">
-                                                    <p className="text-xl font-display font-black text-brand-royalPurple">{userStats?.popcorn || 0}</p>
-                                                    <p className="text-[8px] font-bold text-brand-softLavender/60 uppercase tracking-widest mt-1">Popcorn</p>
-                                                </div>
+                                            {/* Stats Bubbles */}
+                                            <div className="grid grid-cols-3 gap-3 mb-6">
+                                                {[
+                                                    { label: 'Gledani', val: userStats?.watched, icon: History, color: 'brand-cinemaGold' },
+                                                    { label: 'Spisuk', val: userStats?.watchlist, icon: Bookmark, color: 'brand-warmCream' },
+                                                    { label: 'Popcorn', val: userStats?.popcorn, icon: Sparkles, color: 'brand-royalPurple' }
+                                                ].map((s, i) => (
+                                                    <motion.div
+                                                        key={i}
+                                                        whileHover={{ y: -5, scale: 1.05 }}
+                                                        className="flex flex-col items-center p-3 rounded-3xl bg-white/5 border border-white/5 hover:bg-white/10 hover:border-white/10 transition-all cursor-default"
+                                                    >
+                                                        <div className={`p-2 rounded-2xl bg-brand-midnight shadow-inner mb-2`}>
+                                                            <s.icon className={`w-4 h-4 text-${s.color}`} />
+                                                        </div>
+                                                        <span className="text-lg font-display font-black text-brand-warmCream">{s.val || 0}</span>
+                                                        <span className="text-[7px] font-black uppercase text-brand-softLavender/40 tracking-widest">{s.label}</span>
+                                                    </motion.div>
+                                                ))}
                                             </div>
+
+                                            {/* Interactive Grid Menu */}
+                                            <div className="grid grid-cols-2 gap-2 mb-6">
+                                                <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                    <Link href="/profile" className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-3xl bg-brand-royalPurple/5 hover:bg-brand-royalPurple/20 border border-brand-royalPurple/10 transition-all text-brand-softLavender group/mitem">
+                                                        <User className="w-5 h-5 group-hover/mitem:scale-110 group-hover/mitem:text-brand-cinemaGold transition-all" />
+                                                        <span className="text-[11px] font-black uppercase tracking-wider">{t('profile')}</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                                <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                    <Link href="/collections" className="flex flex-col items-center justify-center gap-1.5 p-4 rounded-3xl bg-brand-playRed/5 hover:bg-brand-playRed/20 border border-brand-playRed/10 transition-all text-brand-softLavender group/mitem">
+                                                        <Library className="w-5 h-5 group-hover/mitem:scale-110 group-hover/mitem:text-brand-cinemaGold transition-all" />
+                                                        <span className="text-[11px] font-black uppercase tracking-wider">Kolekcii</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+                                            </div>
+
+                                            {/* Settings & Logout */}
+                                            <div className="flex flex-col gap-2 relative z-10">
+                                                <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
+                                                    <Link href="/settings" className="flex items-center gap-3 w-full h-11 px-5 rounded-2xl bg-white/5 hover:bg-white/10 text-brand-softLavender/70 transition-all group/sublink">
+                                                        <Settings className="w-4 h-4 group-hover/sublink:rotate-90 transition-transform" />
+                                                        <span className="text-[12px] font-bold">Nastroiki</span>
+                                                    </Link>
+                                                </DropdownMenuItem>
+
+                                                <DropdownMenuItem
+                                                    onClick={() => signOut()}
+                                                    className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl bg-brand-playRed/10 hover:bg-brand-playRed text-brand-playRed hover:text-white transition-all cursor-pointer font-black uppercase tracking-widest text-[11px] border border-brand-playRed/20"
+                                                >
+                                                    <LogOut className="w-4 h-4" />
+                                                    {t('logout')}
+                                                </DropdownMenuItem>
+                                            </div>
+
+                                            {/* Animated Background Glow */}
+                                            <div className="absolute top-0 right-0 w-32 h-32 bg-brand-royalPurple/10 blur-[60px] rounded-full -mr-10 -mt-10" />
                                         </div>
-
-                                        {/* Menu Items */}
-                                        <div className="p-3 pt-0 flex flex-col gap-1 relative z-10">
-                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                <Link href="/profile" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
-                                                    <div className="flex items-center gap-3">
-                                                        <User className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
-                                                        <span className="text-[13px] font-bold">{t('profile')}</span>
-                                                    </div>
-                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                <Link href="/watchlist" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
-                                                    <div className="flex items-center gap-3">
-                                                        <Bookmark className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
-                                                        <span className="text-[13px] font-bold">{t('watchlist')}</span>
-                                                    </div>
-                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            <DropdownMenuItem asChild className="p-0 bg-transparent focus:bg-transparent">
-                                                <Link href="/collections" className="flex items-center justify-between w-full h-12 px-4 rounded-[1.25rem] bg-white/5 hover:bg-brand-royalPurple/20 transition-all text-brand-softLavender group/link">
-                                                    <div className="flex items-center gap-3">
-                                                        <Library className="w-4 h-4 group-hover/link:text-brand-cinemaGold transition-colors" />
-                                                        <span className="text-[13px] font-bold">Kolekcii</span>
-                                                    </div>
-                                                    <ChevronDown className="w-4 h-4 -rotate-90 opacity-40" />
-                                                </Link>
-                                            </DropdownMenuItem>
-
-                                            <div className="h-[1px] bg-white/5 my-2 mx-4" />
-
-                                            <DropdownMenuItem
-                                                onClick={() => signOut()}
-                                                className="flex items-center gap-3 w-full h-12 px-4 rounded-[1.25rem] hover:bg-brand-playRed/10 text-brand-playRed transition-all cursor-pointer group/logout"
-                                            >
-                                                <LogOut className="w-4 h-4 group-hover/logout:translate-x-1 transition-transform" />
-                                                <span className="text-[11px] font-black uppercase tracking-widest">{t('logout')}</span>
-                                            </DropdownMenuItem>
-                                        </div>
-
-                                        {/* Decorative Elements */}
-                                        <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-brand-royalPurple via-brand-cinemaGold to-brand-playRed opacity-20" />
                                     </motion.div>
                                 </DropdownMenuContent>
                             </DropdownMenu>
