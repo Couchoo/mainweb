@@ -20,7 +20,7 @@ import {
 } from '@/components/ui/sheet';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
-import { Menu, Search, LogOut, Bookmark, User, Play, Star, Sword, Ghost, Heart, Smile, Rocket, Zap, Music, Skull, Clapperboard, Shield, History, Film, Trophy, Users, Monitor, Sparkles } from 'lucide-react';
+import { Menu, Search, LogOut, Bookmark, User, Play, Star, Sword, Ghost, Heart, Smile, Rocket, Zap, Music, Skull, Clapperboard, Shield, History, Film, Trophy, Users, Monitor, Sparkles, Mic2, Compass, Waves, Flame, Camera } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { NAVBAR_ORDER, GENRE_MAPPING } from '@/lib/genre-mapping';
 import { getTranslation, Locale } from '@/lib/i18n';
@@ -221,39 +221,53 @@ export function Header({ locale = 'bg' }: HeaderProps) {
                                     {otherCategories
                                         .sort((a, b) => getCategoryDisplayName(a).localeCompare(getCategoryDisplayName(b)))
                                         .map((cat) => {
-                                            // Rich thematic icon mapping
-                                            let CategoryIcon = Film;
                                             const name = (cat as any).nameEN || cat.name;
-                                            if (name.includes('Action')) CategoryIcon = Sword;
-                                            if (name.includes('Animation')) CategoryIcon = Sparkles;
-                                            if (name.includes('Comedy')) CategoryIcon = Smile;
-                                            if (name.includes('Crime')) CategoryIcon = Shield;
-                                            if (name.includes('Documentary')) CategoryIcon = Monitor;
-                                            if (name.includes('Drama')) CategoryIcon = Heart;
-                                            if (name.includes('Family')) CategoryIcon = Users;
-                                            if (name.includes('Fantasy')) CategoryIcon = Zap;
-                                            if (name.includes('History')) CategoryIcon = History;
-                                            if (name.includes('Horror')) CategoryIcon = Ghost;
-                                            if (name.includes('Music')) CategoryIcon = Music;
-                                            if (name.includes('Mystery')) CategoryIcon = Search;
-                                            if (name.includes('Romance')) CategoryIcon = Heart;
-                                            if (name.includes('Sci-Fi')) CategoryIcon = Rocket;
-                                            if (name.includes('Sport')) CategoryIcon = Trophy;
-                                            if (name.includes('Thriller')) CategoryIcon = Zap;
-                                            if (name.includes('War')) CategoryIcon = Skull;
-                                            if (name.includes('Western')) CategoryIcon = Clapperboard;
+
+                                            // 1. Creative Icon Mapping (Unique for every genre)
+                                            let CategoryIcon = Film;
+                                            let accentColor = "from-brand-royalPurple/20";
+                                            let tagline = "Explore Movies";
+
+                                            if (name.includes('Action')) { CategoryIcon = Sword; accentColor = "from-red-500/20"; tagline = "Adrenaline Rush"; }
+                                            else if (name.includes('Animation')) { CategoryIcon = Sparkles; accentColor = "from-amber-400/20"; tagline = "Animated Magic"; }
+                                            else if (name.includes('Biography')) { CategoryIcon = User; accentColor = "from-blue-400/20"; tagline = "True Stories"; }
+                                            else if (name.includes('Comedy')) { CategoryIcon = Smile; accentColor = "from-yellow-400/20"; tagline = "Pure Laughs"; }
+                                            else if (name.includes('Crime')) { CategoryIcon = Shield; accentColor = "from-zinc-500/20"; tagline = "Gritty Reality"; }
+                                            else if (name.includes('Documentary')) { CategoryIcon = Monitor; accentColor = "from-emerald-400/20"; tagline = "The Real World"; }
+                                            else if (name.includes('Drama')) { CategoryIcon = Heart; accentColor = "from-indigo-400/20"; tagline = "Deep Emotions"; }
+                                            else if (name.includes('Family')) { CategoryIcon = Users; accentColor = "from-orange-400/20"; tagline = "All Generations"; }
+                                            else if (name.includes('Fantasy')) { CategoryIcon = Zap; accentColor = "from-purple-400/20"; tagline = "Magic & Myth"; }
+                                            else if (name.includes('History')) { CategoryIcon = History; accentColor = "from-stone-500/20"; tagline = "Relive the Past"; }
+                                            else if (name.includes('Horror')) { CategoryIcon = Ghost; accentColor = "from-slate-700/30"; tagline = "Dark Shadows"; }
+                                            else if (name.includes('Music')) { CategoryIcon = Music; accentColor = "from-pink-400/20"; tagline = "Epic Soundtracks"; }
+                                            else if (name.includes('Musical')) { CategoryIcon = Mic2; accentColor = "from-fuchsia-400/20"; tagline = "Song & Dance"; }
+                                            else if (name.includes('Mystery')) { CategoryIcon = Compass; accentColor = "from-teal-500/20"; tagline = "Solve the Puzzle"; }
+                                            else if (name.includes('Romance')) { CategoryIcon = Flame; accentColor = "from-rose-500/20"; tagline = "Love is Real"; }
+                                            else if (name.includes('Sci-Fi')) { CategoryIcon = Rocket; accentColor = "from-cyan-400/20"; tagline = "Beyond Stars"; }
+                                            else if (name.includes('Sport')) { CategoryIcon = Trophy; accentColor = "from-green-500/20"; tagline = "Champions Arena"; }
+                                            else if (name.includes('Thriller')) { CategoryIcon = Waves; accentColor = "from-blue-600/20"; tagline = "Edge of Seat"; }
+                                            else if (name.includes('War')) { CategoryIcon = Skull; accentColor = "from-gray-700/30"; tagline = "War and Peace"; }
+                                            else if (name.includes('Western')) { CategoryIcon = Clapperboard; accentColor = "from-orange-600/20"; tagline = "Wild Frontier"; }
 
                                             return (
-                                                <DropdownMenuItem key={cat.slug} asChild className="rounded-[1.5rem] focus:bg-brand-royalPurple/20 p-1.5 cursor-pointer group/cat border border-transparent hover:border-brand-royalPurple/20 transition-all active:scale-[0.98]">
-                                                    <Link href={`/category/${cat.slug}`} className="flex items-center gap-4">
-                                                        <div className="w-11 h-11 rounded-2xl bg-brand-royalPurple/10 flex items-center justify-center text-brand-softLavender group-hover/cat:text-brand-cinemaGold group-hover/cat:bg-brand-royalPurple/30 transition-all shadow-inner border border-white/5">
-                                                            <CategoryIcon className="w-5 h-5" />
+                                                <DropdownMenuItem key={cat.slug} asChild className="rounded-[2rem] focus:bg-brand-royalPurple/20 p-2 cursor-pointer group/cat border border-white/5 hover:border-brand-royalPurple/40 transition-all active:scale-[0.98] relative overflow-hidden">
+                                                    <Link href={`/category/${cat.slug}`} className="flex items-center gap-5 relative z-10 w-full">
+                                                        {/* Innovative Banner Background Glow */}
+                                                        <div className={`absolute inset-0 bg-gradient-to-br ${accentColor} to-transparent opacity-0 group-hover/cat:opacity-100 transition-opacity duration-500`} />
+
+                                                        <div className="w-12 h-12 rounded-2xl bg-brand-royalPurple/10 flex items-center justify-center text-brand-softLavender group-hover/cat:text-brand-cinemaGold group-hover/cat:bg-brand-royalPurple/30 transition-all shadow-xl border border-white/5 relative z-20">
+                                                            <CategoryIcon className="w-6 h-6 drop-shadow-[0_0_8px_rgba(255,255,255,0.2)]" />
                                                         </div>
-                                                        <div className="flex flex-col">
-                                                            <span className="font-display tracking-widest uppercase text-[10px] font-bold text-brand-warmCream/90 group-hover/cat:text-white transition-colors">
+                                                        <div className="flex flex-col relative z-20">
+                                                            <span className="font-display tracking-[0.15em] uppercase text-[11px] font-black text-brand-warmCream group-hover/cat:text-white transition-colors">
                                                                 {getCategoryDisplayName(cat)}
                                                             </span>
-                                                            <span className="text-[8px] text-brand-softLavender/40 uppercase tracking-tighter mt-0.5">Explore Movies</span>
+                                                            <span className="text-[9px] font-bold text-brand-softLavender/50 uppercase tracking-widest mt-1 group-hover/cat:text-brand-cinemaGold/70 transition-colors">
+                                                                {tagline}
+                                                            </span>
+                                                        </div>
+                                                        <div className="ml-auto opacity-0 group-hover/cat:opacity-100 -translate-x-2 group-hover/cat:translate-x-0 transition-all">
+                                                            <Sparkles className="w-3.5 h-3.5 text-brand-cinemaGold/40 animate-pulse" />
                                                         </div>
                                                     </Link>
                                                 </DropdownMenuItem>
