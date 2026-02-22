@@ -177,26 +177,28 @@ export function CinemaClient({ locale }: CinemaClientProps) {
         fetchMessages();
 
         // Presence heartbeat
-        const heartbeat = setInterval(async () => {
-            console.log('[CINEMA-WS] Heartbeat check. Session:', !!session);
-            if (session) {
-                try {
-                    console.log('[CINEMA-WS] Sending heartbeat...');
-                    const res = await fetch('/api/cinema/heartbeat', { method: 'POST' });
-                    console.log('[CINEMA-WS] Heartbeat status:', res.status);
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data.viewers) {
-                            const sortedViewers = [...data.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
-                            setViewers(sortedViewers);
-                            setActiveViewers(data.viewers.length);
-                        }
+        const performHeartbeat = async () => {
+            if (!session) return;
+            try {
+                console.log('[CINEMA-WS] Sending heartbeat...');
+                const res = await fetch('/api/cinema/heartbeat', { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data.viewers) {
+                        const sortedViewers = [...data.viewers].sort((a, b) => (a.id || 0) - (b.id || 0));
+                        setViewers(sortedViewers);
+                        setActiveViewers(data.viewers.length);
                     }
-                } catch (e) {
-                    console.error('[CINEMA-WS] Heartbeat fetch failed:', e);
                 }
+            } catch (e) {
+                console.error('[CINEMA-WS] Heartbeat fetch failed:', e);
             }
-        }, 15000);
+        };
+
+        // Run immediately
+        performHeartbeat();
+
+        const heartbeat = setInterval(performHeartbeat, 7000); // Every 7 seconds for a better real-time feel
 
         const scheduleInterval = setInterval(fetchCinemaData, 30000);
         return () => {
