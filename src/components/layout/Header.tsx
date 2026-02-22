@@ -150,12 +150,12 @@ export function Header({ locale: initialLocale = 'bg' }: HeaderProps) {
     return (
         <header
             className={`sticky top-0 z-50 w-full transition-all duration-500 ${isScrolled
-                ? 'py-2'
-                : 'py-4'
+                ? 'py-1'
+                : 'py-2'
                 }`}
         >
             <div className="container px-4">
-                <nav className={`relative flex items-center justify-between transition-all duration-500 px-6 py-2.5 rounded-[2.5rem] border ${isScrolled
+                <nav className={`relative flex items-center justify-between transition-all duration-500 px-4 py-1.5 rounded-[2.5rem] border ${isScrolled
                     ? 'bg-brand-midnight/90 backdrop-blur-2xl border-brand-royalPurple/40 shadow-[0_0_40px_rgba(0,0,0,0.5)]'
                     : 'bg-brand-midnight/40 backdrop-blur-lg border-brand-royalPurple/10'
                     }`}>

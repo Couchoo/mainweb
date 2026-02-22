@@ -60,7 +60,7 @@ export function Hero({ locale }: { locale: string }) {
             style={{
                 position: 'relative',
                 width: '100%',
-                minHeight: '100svh',
+                minHeight: '85svh',
                 background: 'var(--hero-bg)',
                 overflow: 'hidden',
                 display: 'flex',
@@ -102,7 +102,7 @@ export function Hero({ locale }: { locale: string }) {
                     gridTemplateColumns: '1fr 1fr',
                     alignItems: 'center',
                     gap: '40px',
-                    minHeight: '100svh',
+                    minHeight: '85svh',
                 }}
             >
                 {/* LEFT — Text */}
