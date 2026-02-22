@@ -66,12 +66,8 @@ export const authOptions: NextAuthOptions = {
             }
 
             // Handle session update
-            if (trigger === 'update' && (session?.image || session?.name)) {
-                // If we have data passed to update(), use it
-                if (session.image) token.image = session.image;
-                if (session.name) token.name = session.name;
-
-                // Also good to refetch from DB to be sure
+            if (trigger === 'update') {
+                // Prefer DB as source of truth for updates
                 const dbUser = await prisma.user.findUnique({
                     where: { id: parseInt(token.id as string) }
                 });
@@ -79,6 +75,10 @@ export const authOptions: NextAuthOptions = {
                     token.image = dbUser.image;
                     token.name = dbUser.name;
                     token.role = dbUser.role;
+                } else if (session?.image || session?.name) {
+                    // Fallback to passed data if DB fetch fails for some reason
+                    if (session.image) token.image = session.image;
+                    if (session.name) token.name = session.name;
                 }
             }
             return token;

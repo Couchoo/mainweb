@@ -87,9 +87,9 @@ func (cs *CinemaSync) GetState() CinemaState {
 	return cs.state
 }
 
-// run is the sync ticker — broadcasts exact playback position every 500ms.
+// run is the sync ticker — broadcasts exact playback position every 5s.
 func (cs *CinemaSync) run() {
-	ticker := time.NewTicker(500 * time.Millisecond)
+	ticker := time.NewTicker(5 * time.Second)
 	defer ticker.Stop()
 
 	for t := range ticker.C {

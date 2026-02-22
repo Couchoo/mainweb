@@ -173,7 +173,11 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
                 controls={!cinemaMode}
                 playsInline
                 onEnded={onEnded}
-                onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
+                onLoadedMetadata={(e) => {
+                    setDuration(e.currentTarget.duration);
+                    // 🎬 Instant sync once metadata is here
+                    if (offset > 0) e.currentTarget.currentTime = offset;
+                }}
                 style={cinemaMode ? { pointerEvents: 'none' } : {}}
             />
 
@@ -354,8 +358,9 @@ export function VideoPlayer({
                         />
                     ) : isYouTubeUrl(url) ? (
                         // 📺 YouTube — ?start= approximate sync
+                        // FIX: Remove playbackOffset from key to prevent reload every sync pulse
                         <iframe
-                            key={`yt-${selectedServerIndex}-${playbackOffset}`}
+                            key={`yt-${selectedServerIndex}`}
                             src={buildYouTubeEmbedUrl(url, playbackOffset, isCinemaMode)}
                             className="w-full h-full"
                             allowFullScreen
@@ -363,6 +368,7 @@ export function VideoPlayer({
                         />
                     ) : (
                         // 🌐 Generic embed
+                        // FIX: Remove playbackOffset from key
                         <iframe
                             key={`gen-${selectedServerIndex}`}
                             src={buildGenericEmbedUrl(url, playbackOffset)}
