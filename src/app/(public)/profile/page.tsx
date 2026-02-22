@@ -499,7 +499,7 @@ export default function ProfilePage() {
                             </div>
                         ) : (
                             <div className="flex flex-col items-center justify-center py-24 px-6 text-center bg-brand-deepNight/40 rounded-[3rem] border-2 border-dashed border-brand-royalPurple/20 backdrop-blur-xl">
-                                <img src="/brand/couchoo-mascot-footer.png" className="w-32 h-32 mb-8 opacity-20 invert" alt="Chouchoo" />
+                                <img src="/brand/couchoo-mascot-transparent.png" className="w-32 h-32 mb-8 opacity-20 invert" alt="Chouchoo" />
                                 <h2 className="text-3xl font-display tracking-widest text-brand-softLavender/40 uppercase mb-4">
                                     {locale === 'en' ? 'No collections found' : 'Нямате колекции'}
                                 </h2>
