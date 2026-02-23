@@ -1,6 +1,6 @@
 import { prisma } from '@/lib/db';
 import { MovieCard } from '@/components/movies/MovieCard';
-import { SearchFilters } from '@/components/search/SearchFilters';
+import { FilterBarV2 } from '@/components/movies/FilterBarV2';
 import { Pagination } from '@/components/ui/pagination';
 import { Suspense } from 'react';
 import { headers } from 'next/headers';
@@ -156,21 +156,7 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
             <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-brand-cinemaGold/5 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
             <div className="container py-12 relative">
-                <div className="flex flex-col lg:flex-row gap-12">
-                    {/* Filters Sidebar */}
-                    <aside className="lg:w-80 shrink-0">
-                        <Suspense fallback={
-                            <div className="h-[600px] bg-brand-deepNight/20 rounded-[2rem] animate-pulse border border-brand-royalPurple/10" />
-                        }>
-                            <SearchFilters
-                                categories={categories}
-                                years={years}
-                                currentParams={params}
-                                locale={locale}
-                            />
-                        </Suspense>
-                    </aside>
-
+                <div className="flex flex-col gap-12">
                     {/* Results */}
                     <div className="flex-1">
                         <div className="mb-12">
@@ -192,6 +178,8 @@ export default async function SearchPage({ searchParams }: { searchParams: Promi
                                     : ` — Страница ${result.currentPage} от ${result.totalPages}`)}
                             </p>
                         </div>
+
+                        <FilterBarV2 locale={locale} categories={categories} />
 
                         {result.movies.length > 0 ? (
                             <div className="space-y-12">

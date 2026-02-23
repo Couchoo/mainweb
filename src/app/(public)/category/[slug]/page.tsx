@@ -4,7 +4,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { notFound } from 'next/navigation';
 import { headers } from 'next/headers';
 import { getTranslation, getLocalizedMovie, getLocalizedCategory, Locale } from '@/lib/i18n';
-import { FilterBar } from '@/components/movies/FilterBar';
+import { FilterBarV2 } from '@/components/movies/FilterBarV2';
 import { Metadata } from 'next';
 import { generateCategoryMetadata } from '@/lib/seo-utils';
 import { GENRE_MAPPING } from '@/lib/genre-mapping';
@@ -144,7 +144,7 @@ export default async function CategoryPage({
                     </p>
                 </div>
 
-                <FilterBar locale={locale} />
+                <FilterBarV2 locale={locale} />
 
                 {moviesData.length > 0 ? (
                     <div className="space-y-12">

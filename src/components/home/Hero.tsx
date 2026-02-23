@@ -118,7 +118,7 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        transform: `translateY(${-mascotOffset - 160}px)`, // Lifted even higher
+                        transform: `translateY(${-mascotOffset - 230}px)`, // Lifted even higher
                         transition: 'transform 0.1s linear',
                         animation: 'float 4s ease-in-out infinite',
                     }}
