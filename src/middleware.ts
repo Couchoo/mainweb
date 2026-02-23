@@ -35,11 +35,9 @@ export function middleware(request: NextRequest) {
         response.cookies.set('NEXT_LOCALE', locale, { path: '/' });
     }
 
-    // 4. Add security headers for Fullscreen and other features
-    response.headers.set(
-        'Permissions-Policy',
-        'fullscreen=*, autoplay=*, picture-in-picture=*, encrypted-media=*'
-    );
+    // 4. Add security headers for Fullscreen and other features (Multi-layered fix)
+    response.headers.set('Permissions-Policy', 'fullscreen=*, autoplay=*, picture-in-picture=*, encrypted-media=*');
+    response.headers.set('Feature-Policy', "fullscreen *; autoplay *; picture-in-picture *; encrypted-media *");
 
     return response;
 }

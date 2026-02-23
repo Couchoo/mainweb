@@ -50,6 +50,10 @@ const nextConfig: NextConfig = {
             key: 'Permissions-Policy',
             value: 'fullscreen=*, autoplay=*, picture-in-picture=*, encrypted-media=*',
           },
+          {
+            key: 'Feature-Policy',
+            value: "fullscreen *; autoplay *; picture-in-picture *; encrypted-media *",
+          },
         ],
       },
     ];

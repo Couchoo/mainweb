@@ -495,7 +495,7 @@ export function VideoPlayer({
                             webkitallowfullscreen="true"
                             // @ts-ignore
                             mozallowfullscreen="true"
-                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write;"
+                            allow="autoplay; fullscreen *; picture-in-picture *; encrypted-media *; gyroscope *; accelerometer *; clipboard-write *;"
                         />
                     ) : (
                         // 🌐 Generic embed
@@ -509,7 +509,7 @@ export function VideoPlayer({
                             webkitallowfullscreen="true"
                             // @ts-ignore - legacy support
                             mozallowfullscreen="true"
-                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write;"
+                            allow="autoplay; fullscreen *; picture-in-picture *; encrypted-media *; gyroscope *; accelerometer *; clipboard-write *;"
                         />
                     )}
 
@@ -627,6 +627,12 @@ export function VideoPlayer({
                         </p>
                         <div className="h-[2px] w-0 bg-brand-cinemaGold mx-auto mt-2 transition-all duration-500 group-hover/play:w-20" />
                     </div>
+                </div>
+                {/* 🐛 Debug Overlay (Temporary) */}
+                <div className="fixed top-4 right-4 p-4 rounded-2xl bg-black/80 border border-white/20 text-[10px] text-brand-cinemaGold z-[9999] pointer-events-none font-mono shadow-2xl backdrop-blur-xl">
+                    <p>FS: {typeof document !== 'undefined' ? (document.fullscreenEnabled ? '✅ ENABLED' : '❌ DISABLED') : 'SSR'}</p>
+                    <p>PROTO: {typeof window !== 'undefined' ? window.location.protocol.toUpperCase() : ''}</p>
+                    <p>SECURE: {typeof window !== 'undefined' ? (window.isSecureContext ? '✅ YES' : '❌ NO') : ''}</p>
                 </div>
             </div>
         </div>
