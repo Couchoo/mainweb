@@ -76,13 +76,23 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
     const playerRef = useRef<HTMLDivElement>(null);
 
     const toggleFullscreen = () => {
-        if (!playerRef.current) return;
-        if (!document.fullscreenElement) {
-            playerRef.current.requestFullscreen().catch(err => {
-                console.error(`Error attempting to enable full-screen mode: ${err.message} (${err.name})`);
-            });
+        const elem = playerRef.current;
+        if (!elem) return;
+
+        const rfs = (elem as any).requestFullscreen ||
+            (elem as any).webkitRequestFullscreen ||
+            (elem as any).mozRequestFullScreen ||
+            (elem as any).msRequestFullscreen;
+
+        if (!document.fullscreenElement && !(document as any).webkitFullscreenElement &&
+            !(document as any).mozFullScreenElement && !(document as any).msFullscreenElement) {
+            if (rfs) rfs.call(elem);
         } else {
-            document.exitFullscreen();
+            const efs = document.exitFullscreen ||
+                (document as any).webkitExitFullscreen ||
+                (document as any).mozCancelFullScreen ||
+                (document as any).msExitFullscreen;
+            if (efs) efs.call(document);
         }
     };
 
@@ -323,6 +333,28 @@ export function VideoPlayer({
     const [adStep, setAdStep] = useState(0);
     const [countdown, setCountdown] = useState(5);
     const [selectedServerIndex, setSelectedServerIndex] = useState(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    const toggleGlobalFullscreen = () => {
+        const elem = containerRef.current;
+        if (!elem) return;
+
+        const rfs = (elem as any).requestFullscreen ||
+            (elem as any).webkitRequestFullscreen ||
+            (elem as any).mozRequestFullScreen ||
+            (elem as any).msRequestFullscreen;
+
+        if (!document.fullscreenElement && !(document as any).webkitFullscreenElement &&
+            !(document as any).mozFullScreenElement && !(document as any).msFullscreenElement) {
+            if (rfs) rfs.call(elem);
+        } else {
+            const efs = document.exitFullscreen ||
+                (document as any).webkitExitFullscreen ||
+                (document as any).mozCancelFullScreen ||
+                (document as any).msExitFullscreen;
+            if (efs) efs.call(document);
+        }
+    };
     const { track: trackEvent } = useAnalytics();
 
     const role = (session?.user as { role?: string })?.role;
@@ -413,7 +445,20 @@ export function VideoPlayer({
 
         return (
             <div className="space-y-3 h-full">
-                <div className="aspect-video bg-black rounded-[3rem] overflow-hidden border border-brand-royalPurple/30 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative h-full">
+                <div ref={containerRef} className="aspect-video bg-black rounded-[3rem] overflow-hidden border border-brand-royalPurple/30 shadow-[0_40px_100px_rgba(0,0,0,0.8)] relative h-full group/mainplayer">
+                    {/* Fullscreen Button for No-Controls Mode / Cinema Mode */}
+                    {isCinemaMode && (
+                        <button
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                toggleGlobalFullscreen();
+                            }}
+                            className="absolute top-8 right-8 z-50 p-3 rounded-2xl bg-black/40 border border-white/10 backdrop-blur-xl opacity-0 group-hover/mainplayer:opacity-100 transition-all hover:bg-brand-cinemaGold hover:text-brand-midnight text-white"
+                            title="Fullscreen"
+                        >
+                            <Maximize className="w-6 h-6" />
+                        </button>
+                    )}
                     {isDirectVideoFile(url) ? (
                         // 🎬 Direct file — 100% precise seeking
                         <DirectVideoPlayer
@@ -432,11 +477,11 @@ export function VideoPlayer({
                             src={buildYouTubeEmbedUrl(url, playbackOffset, isCinemaMode)}
                             className="w-full h-full"
                             allowFullScreen
-                            // @ts-ignore - legacy support
+                            // @ts-ignore
                             webkitallowfullscreen="true"
-                            // @ts-ignore - legacy support
+                            // @ts-ignore
                             mozallowfullscreen="true"
-                            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+                            allow="autoplay; fullscreen"
                         />
                     ) : (
                         // 🌐 Generic embed
