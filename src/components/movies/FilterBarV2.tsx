@@ -45,6 +45,20 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
         router.push(`${pathname}?${params.toString()}`);
     };
 
+    // Batch version — sets multiple params in ONE push (avoids race conditions)
+    const handleBatchChange = (changes: Record<string, string>) => {
+        const params = new URLSearchParams(searchParams.toString());
+        for (const [key, value] of Object.entries(changes)) {
+            if (value === 'all' || value === '' || (key === 'sort' && value === 'newest')) {
+                params.delete(key);
+            } else {
+                params.set(key, value);
+            }
+        }
+        params.delete('page');
+        router.push(`${pathname}?${params.toString()}`);
+    };
+
     const clearFilters = () => {
         const query = searchParams.get('q');
         router.push(query ? `${pathname}?q=${query}` : pathname);
@@ -150,6 +164,7 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
                         currentCast={currentCast}
                         currentDirector={currentDirector}
                         onFilterChange={handleFilterChange}
+                        onBatchChange={handleBatchChange}
                         onClear={clearFilters}
                         hasFilters={hasFilters}
                     />

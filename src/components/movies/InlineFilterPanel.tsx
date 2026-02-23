@@ -25,6 +25,7 @@ interface InlineFilterPanelProps {
     currentCast: string;
     currentDirector: string;
     onFilterChange: (key: string, value: string) => void;
+    onBatchChange: (changes: Record<string, string>) => void;
     onClear: () => void;
     hasFilters: boolean;
 }
@@ -39,6 +40,7 @@ export function InlineFilterPanel({
     categories = [],
     currentCategory,
     onFilterChange,
+    onBatchChange,
     onClear,
     hasFilters,
 }: InlineFilterPanelProps) {
@@ -173,11 +175,13 @@ export function InlineFilterPanel({
                                         key={value}
                                         onClick={() => {
                                             if (isActive && hasDir) {
-                                                // flip direction
+                                                // already active → flip direction only
                                                 onFilterChange('order', isDesc ? 'asc' : 'desc');
+                                            } else if (hasDir) {
+                                                // activate + set default direction in ONE push
+                                                onBatchChange({ sort: value, order: 'desc' });
                                             } else {
                                                 onFilterChange('sort', value);
-                                                if (hasDir) onFilterChange('order', 'desc');
                                             }
                                         }}
                                         className={`
