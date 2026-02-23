@@ -54,6 +54,25 @@ async function fetchWikidataBG(imdbId: string) {
     return null;
 }
 
+/**
+ * Translate text using free MyMemory API
+ * Used as a fallback when no official Bulgarian title is found.
+ */
+async function translateToBG(text: string) {
+    if (!text || /[а-яА-Я]/.test(text)) return text;
+    try {
+        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|bg`;
+        const res = await fetch(url);
+        if (res.ok) {
+            const data = await res.json();
+            return data.responseData?.translatedText || text;
+        }
+    } catch (err) {
+        console.error('[Translation] Error:', err);
+    }
+    return text;
+}
+
 export async function scrapeMovieData(url: string) {
     const response = await fetch(url, {
         headers: {
@@ -262,7 +281,24 @@ export async function scrapeMovieData(url: string) {
             .replace(/^-+|-+$/g, '');
     }
 
-    // Fallback logic
+    // Final Fallback: If titleBG is still English or empty, Translate it!
+    if (!result.titleBG || !/[а-яА-Я]/.test(result.titleBG)) {
+        if (result.titleEN) {
+            console.log(`[Scraper] Using translation fallback for title: ${result.titleEN}`);
+            result.titleBG = await translateToBG(result.titleEN);
+        }
+    }
+
+    if (!result.description || !/[а-яА-Я]/.test(result.description)) {
+        if (result.description && result.description.length > 5) {
+            console.log(`[Scraper] Using translation fallback for description...`);
+            // Only translate first few hundred chars for speed
+            const toTranslate = result.description.substring(0, 500);
+            result.description = await translateToBG(toTranslate);
+        }
+    }
+
+    // Fallback logic: Ensure we never have empty fields
     if (!result.titleBG) result.titleBG = result.titleEN;
     if (!result.titleEN) result.titleEN = result.titleBG;
 
