@@ -210,7 +210,15 @@
         position: relative !important;
         left: auto !important;
         right: auto !important;
-        transform: none !important;
+        transform: translateY(-20px) !important;
+        /* Slight lift on mobile too */
+    }
+
+    .hero-badge {
+        display: flex !important;
+        /* Enable on mobile */
+        transform: scale(0.7) !important;
+        opacity: 0.9 !important;
     }
 
     .hero-text-block {
@@ -246,7 +254,17 @@
     }
 
     .hero-badge {
-        display: none !important;
+
+        /* Mobile specific positioning to avoid overlap */
+        &[style*="top"] {
+            top: 5% !important;
+            right: -5% !important;
+        }
+
+        &[style*="bottom"] {
+            bottom: 35% !important;
+            right: -5% !important;
+        }
     }
 
     .hero-separator-line {

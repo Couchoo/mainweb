@@ -62,12 +62,13 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                 position: 'relative',
                 width: '100%',
                 minHeight: '85svh',
-                background: 'var(--hero-bg)',
+                background: '#0A0A14', // Explicit dark background
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '-72px', // Pull up under fixed header
+                marginTop: '-72px', // Pull up under fixed header (mobile)
             }}
+            className="hero-section"
         >
             {/* Film grain + ambient particles */}
             <HeroBackground />
@@ -116,9 +117,9 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        transform: `translateY(${-mascotOffset}px)`,
+                        transform: `translateY(${-mascotOffset - 40}px)`, // Shifted up by 40px
                         transition: 'transform 0.1s linear',
-                        animation: 'mascotFloat 4s ease-in-out infinite',
+                        animation: 'float 4s ease-in-out infinite',
                     }}
                 >
                     <HeroMascot />

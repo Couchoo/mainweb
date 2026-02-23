@@ -11,14 +11,16 @@ export default function HeroBadges({ locale = 'bg' }: { locale?: Locale }) {
             label: t('hero_badge_uhd'),
             sublabel: t('hero_badge_4k'),
             delay: '1.8s',
-            position: { top: '18%', right: '6%' },
+            position: { top: '15%', right: '8%' }, // Adjusted
+            floatDelay: '0s'
         },
         {
             icon: '✦',
             label: t('hero_badge_atmosphere'),
             sublabel: t('hero_badge_ai'),
             delay: '2.1s',
-            position: { bottom: '22%', right: '10%' },
+            position: { bottom: '26%', right: '12%' }, // Adjusted
+            floatDelay: '1s'
         },
     ];
 
@@ -41,7 +43,7 @@ export default function HeroBadges({ locale = 'bg' }: { locale?: Locale }) {
                         border: '1px solid rgba(255,255,255,0.1)',
                         boxShadow: '0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)',
                         opacity: 0,
-                        animation: `badgeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${badge.delay} forwards`,
+                        animation: `badgeSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) ${badge.delay} forwards, float 5s ease-in-out ${badge.delay} infinite`,
                         zIndex: 5,
                         cursor: 'default',
                         transition: 'transform 0.3s ease, box-shadow 0.3s ease',
