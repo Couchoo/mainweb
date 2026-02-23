@@ -132,22 +132,7 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
                             </button>
                         </div>
                     )}
-                    {currentDirector !== '' && (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F0C040]/10 border border-[#F0C040]/30 text-[10px] font-display tracking-widest uppercase text-[#F0C040]">
-                            Dir: {currentDirector}
-                            <button onClick={() => handleFilterChange('director', '')} className="ml-1 hover:text-[#E53935] transition-colors">
-                                <X className="h-3 w-3" />
-                            </button>
-                        </div>
-                    )}
-                    {currentCast !== '' && (
-                        <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#F0C040]/10 border border-[#F0C040]/30 text-[10px] font-display tracking-widest uppercase text-[#F0C040]">
-                            Act: {currentCast}
-                            <button onClick={() => handleFilterChange('cast', '')} className="ml-1 hover:text-[#E53935] transition-colors">
-                                <X className="h-3 w-3" />
-                            </button>
-                        </div>
-                    )}
+
                 </div>
 
                 {/* Inline expandable panel */}
