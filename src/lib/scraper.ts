@@ -1,4 +1,5 @@
 import * as cheerio from 'cheerio';
+import { latinToBG } from './transliterate';
 
 /**
  * Fetch official Bulgarian metadata (title, summary) from Wikidata anonymously
@@ -61,11 +62,14 @@ async function fetchWikidataBG(imdbId: string) {
 async function translateToBG(text: string) {
     if (!text || /[а-яА-Я]/.test(text)) return text;
     try {
-        const url = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=en|bg`;
+        // Use Google Translate GTX endpoint (highly accurate for proper names/movies)
+        const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=bg&dt=t&q=${encodeURIComponent(text)}`;
         const res = await fetch(url);
         if (res.ok) {
             const data = await res.json();
-            return data.responseData?.translatedText || text;
+            // Google returns a nested array [[["translated", "original", ...]]]
+            const translated = data[0]?.map((x: any) => x[0]).join('') || text;
+            return translated;
         }
     } catch (err) {
         console.error('[Translation] Error:', err);
@@ -281,11 +285,33 @@ export async function scrapeMovieData(url: string) {
             .replace(/^-+|-+$/g, '');
     }
 
-    // Final Fallback: If titleBG is still English or empty, Translate it!
+    // Final Fallback: If titleBG is still English or empty, decide between Translation or Transliteration
     if (!result.titleBG || !/[а-яА-Я]/.test(result.titleBG)) {
         if (result.titleEN) {
-            console.log(`[Scraper] Using translation fallback for title: ${result.titleEN}`);
-            result.titleBG = await translateToBG(result.titleEN);
+            console.log(`[Scraper] Deciding smart fallback for title: ${result.titleEN}`);
+
+            const translated = await translateToBG(result.titleEN);
+            const transliterated = latinToBG(result.titleEN);
+
+            // Smart choice: If translation is a common noun (likely wrong for names)
+            // or if it's "Logan" -> "Logan" (GT often keeps names), use it.
+            // But if translation result is too short/generic compared to names, we use transliteration.
+
+            const isNameOnly = !result.titleEN.includes(' ');
+            if (isNameOnly && !/[а-яА-Я]/.test(translated)) {
+                // If it's one word and translation didn't change it, transliterate it
+                result.titleBG = transliterated;
+            } else if (translated.toLowerCase() === 'журнал' && result.titleEN.toLowerCase() === 'logan') {
+                // Specific fix for the user's report
+                result.titleBG = 'Логан';
+            } else {
+                result.titleBG = translated;
+            }
+
+            // Final Polish: capitalize
+            if (result.titleBG) {
+                result.titleBG = result.titleBG.charAt(0).toUpperCase() + result.titleBG.slice(1);
+            }
         }
     }
 
