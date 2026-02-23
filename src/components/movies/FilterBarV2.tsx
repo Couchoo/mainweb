@@ -32,6 +32,7 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
     const currentCategory = searchParams.get('category') || 'all';
     const currentCast = searchParams.get('cast') || '';
     const currentDirector = searchParams.get('director') || '';
+    const currentOrder = searchParams.get('order') || 'desc';
 
     const handleFilterChange = (key: string, value: string) => {
         const params = new URLSearchParams(searchParams.toString());
@@ -56,15 +57,15 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
         currentSort !== 'newest' ||
         currentCategory !== 'all' ||
         currentCast !== '' ||
-        currentDirector !== '';
+        currentDirector !== '' ||
+        currentOrder !== 'desc';
 
     const activeCount = [
         currentYear !== 'all',
         currentRating !== 'all',
         currentSort !== 'newest',
         currentCategory !== 'all',
-        currentCast !== '',
-        currentDirector !== '',
+        currentOrder !== 'desc',
     ].filter(Boolean).length;
 
     return (
@@ -143,6 +144,7 @@ export function FilterBarV2({ locale, categories }: FilterBarV2Props) {
                         currentYear={currentYear}
                         currentRating={currentRating}
                         currentSort={currentSort}
+                        currentOrder={currentOrder}
                         categories={categories}
                         currentCategory={currentCategory}
                         currentCast={currentCast}

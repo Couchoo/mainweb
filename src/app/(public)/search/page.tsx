@@ -16,6 +16,7 @@ async function getMovies(searchParams: any, locale: Locale) {
     const cast = searchParams.cast || '';
     const director = searchParams.director || '';
     const sortBy = searchParams.sort || 'newest';
+    const orderDir = searchParams.order === 'asc' ? 'asc' : 'desc';
     const page = parseInt(searchParams.page || '1');
     const skip = (page - 1) * MOVIES_PER_PAGE;
 
@@ -67,32 +68,13 @@ async function getMovies(searchParams: any, locale: Locale) {
     }
 
     // Sort
-    const orderBy: any = {};
-    const isEN = locale === 'en';
-
-    switch (sortBy) {
-        case 'newest':
-            orderBy.createdAt = 'desc';
-            break;
-        case 'oldest':
-            orderBy.createdAt = 'asc';
-            break;
-        case 'views':
-            orderBy.views = 'desc';
-            break;
-        case 'rating':
-            orderBy.rating = 'desc';
-            break;
-        case 'title':
-            if (isEN) {
-                orderBy.titleEN = 'asc';
-            } else {
-                orderBy.titleBG = 'asc';
-            }
-            break;
-        default:
-            orderBy.createdAt = 'desc';
-    }
+    // newest = highest release year first
+    const orderBy: any =
+        sortBy === 'newest' ? { year: 'desc' } :
+            sortBy === 'oldest' ? { year: 'asc' } :
+                sortBy === 'views' ? { views: orderDir } :
+                    sortBy === 'rating' ? { rating: orderDir } :
+                        { year: 'desc' };
 
     const [moviesData, total] = await Promise.all([
         (prisma.movie as any).findMany({

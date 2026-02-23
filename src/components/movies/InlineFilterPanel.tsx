@@ -1,16 +1,16 @@
 'use client';
 
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { RotateCcw, Calendar, Star, LayoutGrid, TrendingUp, Clock, Flame, Trophy, WholeWord } from 'lucide-react';
+import { RotateCcw, Calendar, Star, LayoutGrid, TrendingUp, Clock, Flame, Trophy, ArrowUp, ArrowDown } from 'lucide-react';
 import { getTranslation, Locale } from '@/lib/i18n';
 
 const CURRENT_YEAR = new Date().getFullYear();
 const MIN_YEAR = 1970;
 
 const SORT_OPTIONS = [
-    { value: 'newest', label: 'Нови', Icon: Clock },
-    { value: 'views', label: 'Популярни', Icon: Flame },
-    { value: 'rating', label: 'Рейтинг', Icon: Trophy },
+    { value: 'newest', label: 'Нови', Icon: Clock, hasDir: false },
+    { value: 'views', label: 'Популярни', Icon: Flame, hasDir: true },
+    { value: 'rating', label: 'Рейтинг', Icon: Trophy, hasDir: true },
 ];
 
 interface InlineFilterPanelProps {
@@ -19,6 +19,7 @@ interface InlineFilterPanelProps {
     currentYear: string;
     currentRating: string;
     currentSort: string;
+    currentOrder: string;
     categories?: { id: number; name: string; slug: string }[];
     currentCategory: string;
     currentCast: string;
@@ -34,6 +35,7 @@ export function InlineFilterPanel({
     currentYear,
     currentRating,
     currentSort,
+    currentOrder,
     categories = [],
     currentCategory,
     onFilterChange,
@@ -162,23 +164,38 @@ export function InlineFilterPanel({
                             <span className="text-[11px] font-display tracking-[0.3em] uppercase text-[#7B6BAA]">Сортиране</span>
                         </div>
                         <div className="grid grid-cols-3 gap-2">
-                            {SORT_OPTIONS.map(({ value, label, Icon }) => {
+                            {SORT_OPTIONS.map(({ value, label, Icon, hasDir }) => {
                                 const isActive = currentSort === value;
+                                const isDesc = currentOrder !== 'asc';
+                                const DirIcon = isDesc ? ArrowDown : ArrowUp;
                                 return (
                                     <button
                                         key={value}
-                                        onClick={() => onFilterChange('sort', value)}
+                                        onClick={() => {
+                                            if (isActive && hasDir) {
+                                                // flip direction
+                                                onFilterChange('order', isDesc ? 'asc' : 'desc');
+                                            } else {
+                                                onFilterChange('sort', value);
+                                                if (hasDir) onFilterChange('order', 'desc');
+                                            }
+                                        }}
                                         className={`
                                             flex flex-col items-center justify-center gap-2
                                             py-3 rounded-xl text-[10px] font-display tracking-widest uppercase
-                                            border transition-all duration-200
+                                            border transition-all duration-200 relative
                                             ${isActive
                                                 ? 'bg-[#F0C040]/10 border-[#F0C040]/50 text-[#F0C040] shadow-[0_0_16px_rgba(240,192,64,0.15)]'
                                                 : 'bg-[#1A1828] border-[#2D2460]/20 text-[#7B6BAA] hover:border-[#2D2460]/60 hover:text-[#F5F0E8]'
                                             }
                                         `}
                                     >
-                                        <Icon className="h-4 w-4" />
+                                        <div className="relative">
+                                            <Icon className="h-4 w-4" />
+                                            {isActive && hasDir && (
+                                                <DirIcon className="absolute -top-1.5 -right-2.5 h-3 w-3 text-[#F0C040]" />
+                                            )}
+                                        </div>
                                         {label}
                                     </button>
                                 );

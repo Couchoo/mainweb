@@ -55,6 +55,7 @@ export default async function CategoryPage({
     const filterYear = year ? parseInt(year) : undefined;
     const filterRating = rating ? parseFloat(rating) : undefined;
     const sortBy = sort || 'newest';
+    const orderDir = (await searchParams).order === 'asc' ? 'asc' : 'desc';
 
     // Normalize slug to lowercase for consistent lookup
     const searchSlug = slug.toLowerCase();
@@ -82,10 +83,11 @@ export default async function CategoryPage({
     if (filterYear) where.year = filterYear;
     if (filterRating) where.rating = { gte: filterRating };
 
-    let orderBy: any = { createdAt: 'desc' };
-    if (sortBy === 'oldest') orderBy = { createdAt: 'asc' };
-    if (sortBy === 'highestRated') orderBy = { rating: 'desc' };
-    if (sortBy === 'popular') orderBy = { views: 'desc' };
+    // newest = year desc (most recent release year first)
+    let orderBy: any = { year: 'desc' };
+    if (sortBy === 'oldest') orderBy = { year: 'asc' };
+    if (sortBy === 'rating') orderBy = { rating: orderDir };
+    if (sortBy === 'views') orderBy = { views: orderDir };
 
     const categoryData = await prisma.category.findFirst({
         where: {
