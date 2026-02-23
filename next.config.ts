@@ -41,6 +41,19 @@ const nextConfig: NextConfig = {
   compress: true,
   poweredByHeader: false,
   reactStrictMode: true,
+  async headers() {
+    return [
+      {
+        source: '/(.*)',
+        headers: [
+          {
+            key: 'Permissions-Policy',
+            value: 'fullscreen=*, autoplay=*, picture-in-picture=*, encrypted-media=*',
+          },
+        ],
+      },
+    ];
+  },
 };
 
 export default nextConfig;
