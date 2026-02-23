@@ -14,7 +14,7 @@ export default async function PublicLayout({
     return (
         <div className="flex min-h-screen flex-col">
             <Header locale={locale} />
-            <main className="flex-1 pt-[72px] lg:pt-[80px]">{children}</main>
+            <main className="flex-1">{children}</main>
             <Footer locale={locale} />
         </div>
     );

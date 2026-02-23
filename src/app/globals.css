@@ -5,7 +5,7 @@
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --color-background: hsl(245 25% 7%);
+  --color-background: #05050A;
   --color-foreground: hsl(210 40% 98%);
 
   --color-card: hsl(250 25% 12%);

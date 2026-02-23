@@ -11,7 +11,7 @@ export default function HeroBadges({ locale = 'bg' }: { locale?: Locale }) {
             label: t('hero_badge_atmosphere'),
             sublabel: t('hero_badge_ai'),
             delay: '2.1s',
-            position: { bottom: '45%', right: '12%' }, // Lifted much higher
+            position: { bottom: '58%', right: '12%' }, // Lifted much higher
             floatDelay: '1s'
         },
     ];

@@ -66,7 +66,6 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                 overflow: 'hidden',
                 display: 'flex',
                 alignItems: 'center',
-                marginTop: '-72px', // Pull up under fixed header (mobile)
                 userSelect: 'none', // Prevent text selection
                 WebkitUserSelect: 'none',
             }}
@@ -119,7 +118,7 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                         display: 'flex',
                         justifyContent: 'center',
                         alignItems: 'center',
-                        transform: `translateY(${-mascotOffset - 100}px)`, // Lifted even higher
+                        transform: `translateY(${-mascotOffset - 160}px)`, // Lifted even higher
                         transition: 'transform 0.1s linear',
                         animation: 'float 4s ease-in-out infinite',
                     }}
