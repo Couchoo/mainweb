@@ -147,8 +147,8 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                     alignItems: 'center',
                     gap: '8px',
                     animation: 'scrollBounce 2s ease-in-out infinite',
-                    zIndex: 4,
-                    cursor: 'pointer', // Changed to pointer
+                    zIndex: 20, // Increased to 20 to be above everything else
+                    cursor: 'pointer',
                 }}
             >
                 <span style={{
