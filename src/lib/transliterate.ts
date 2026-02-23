@@ -21,11 +21,15 @@ const BG_TO_EN: Record<string, string> = {
 };
 
 // Latin → Bulgarian Cyrillic (approximate phonetic reverse)
-// Longer sequences must come first (order matters)
+// Focus on phonetic movie title transliteration
 const EN_TO_BG_PAIRS: [string, string][] = [
     ['sht', 'щ'], ['zh', 'ж'], ['ts', 'ц'],
     ['ch', 'ч'], ['sh', 'ш'], ['yu', 'ю'],
     ['ya', 'я'], ['yo', 'йо'],
+    ['ea', 'и'], ['ie', 'и'], ['ee', 'и'],
+    ['oo', 'у'], ['ou', 'у'], ['au', 'о'],
+    ['sh', 'ш'], ['ch', 'ч'],
+    ['i', 'ай'], // Common in English titles (Spider -> Спайдър)
     ['a', 'а'], ['b', 'б'], ['v', 'в'],
     ['g', 'г'], ['d', 'д'], ['e', 'е'],
     ['z', 'з'], ['i', 'и'], ['y', 'й'],
@@ -33,8 +37,14 @@ const EN_TO_BG_PAIRS: [string, string][] = [
     ['n', 'н'], ['o', 'о'], ['p', 'п'],
     ['r', 'р'], ['s', 'с'], ['t', 'т'],
     ['u', 'у'], ['f', 'ф'], ['h', 'х'],
-    ['j', 'й'], ['w', 'в'], ['x', 'кс'],
+    ['j', 'дз'], ['w', 'в'], ['x', 'кс'],
     ['q', 'к'],
+];
+
+// Special replacements for common English suffixes in BG
+const EN_SPECIAL_SUFFIXES: [string, string][] = [
+    ['er', 'ър'], // Spider -> Спайдър
+    ['tion', 'шън'], // Action -> Екшън
 ];
 
 /** Returns true if the string contains Cyrillic characters */
@@ -50,6 +60,15 @@ export function bgToLatin(text: string): string {
 /** Transliterate Latin → Bulgarian Cyrillic (reverse, approximate) */
 export function latinToBG(text: string): string {
     let result = text.toLowerCase();
+
+    // Apply special movie-related suffixes first
+    for (const [en, bg] of EN_SPECIAL_SUFFIXES) {
+        if (result.endsWith(en)) {
+            result = result.substring(0, result.length - en.length) + bg;
+        }
+    }
+
+    // Apply phonetic pairs
     for (const [lat, cyrl] of EN_TO_BG_PAIRS) {
         result = result.replaceAll(lat, cyrl);
     }

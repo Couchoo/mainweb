@@ -133,6 +133,13 @@ export async function scrapeMovieData(url: string) {
             result.isSeries = true;
         }
 
+        // Try to find IMDb ID in TMDB HTML (External Links)
+        const imdbLink = $('a[href*="imdb.com/title/tt"]').attr('href');
+        if (imdbLink) {
+            const match = imdbLink.match(/tt\d+/);
+            if (match) result.imdbId = match[0];
+        }
+
         const enUrl = url.includes('?') ? url + '&language=en-US' : url + '?language=en-US';
         const enResponse = await fetch(enUrl, { headers: { 'Accept-Language': 'en-US' } });
         if (enResponse.ok) {
@@ -144,8 +151,21 @@ export async function scrapeMovieData(url: string) {
             } else {
                 result.titleEN = mainTitle;
             }
+
+            // If we didn't find IMDb ID in BG page, try EN page
+            if (!result.imdbId) {
+                const enImdbLink = $en('a[href*="imdb.com/title/tt"]').attr('href');
+                if (enImdbLink) {
+                    const match = enImdbLink.match(/tt\d+/);
+                    if (match) result.imdbId = match[0];
+                }
+            }
         }
     } else if (isIMDB) {
+        // Extract IMDb ID from URL if possible
+        const urlMatch = url.match(/tt\d+/);
+        if (urlMatch) result.imdbId = urlMatch[0];
+
         const jsonLdScript = $('script[type="application/ld+json"]').first().html();
         if (jsonLdScript) {
             try {
@@ -203,14 +223,23 @@ export async function scrapeMovieData(url: string) {
         }
     }
 
-    // ── NEW: Official Bulgarian Metadata Hook ──
-    const imdbIdMatch = url.match(/tt\d+/);
-    if (imdbIdMatch || result.imdbId) {
-        const id = imdbIdMatch ? imdbIdMatch[0] : result.imdbId;
-        const wikidata = await fetchWikidataBG(id);
-        if (wikidata?.titleBG && wikidata.titleBG !== result.titleEN) {
+    // ── Official Bulgarian Metadata Hook (Wikidata) ──
+    const finalImdbId = result.imdbId || (url.match(/tt\d+/) ? url.match(/tt\d+/)?.[0] : null);
+
+    if (finalImdbId) {
+        console.log(`[Scraper] Attempting Wikidata fetch for ${finalImdbId}...`);
+        const wikidata = await fetchWikidataBG(finalImdbId);
+
+        if (wikidata?.titleBG) {
+            console.log(`[Scraper] Found official BG title: ${wikidata.titleBG}`);
             result.titleBG = wikidata.titleBG;
-            // Only update description if it's actually useful (not just "movie" or "film")
+
+            // If the name from Wikidata is Cyrillic, use it for titleBG
+            const isWikiCyrillic = /[а-яА-Я]/.test(wikidata.titleBG);
+            if (isWikiCyrillic) {
+                result.titleBG = wikidata.titleBG;
+            }
+
             if (wikidata.descriptionBG && wikidata.descriptionBG.length > 10) {
                 result.description = wikidata.descriptionBG;
             }
@@ -227,6 +256,7 @@ export async function scrapeMovieData(url: string) {
             .replace(/^-+|-+$/g, '');
     }
 
+    // Fallback logic
     if (!result.titleBG) result.titleBG = result.titleEN;
     if (!result.titleEN) result.titleEN = result.titleBG;
 
