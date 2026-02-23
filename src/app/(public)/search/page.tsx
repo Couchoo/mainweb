@@ -5,6 +5,7 @@ import { Pagination } from '@/components/ui/pagination';
 import { Suspense } from 'react';
 import { headers } from 'next/headers';
 import { getLocalizedMovie, getLocalizedCategory, Locale } from '@/lib/i18n';
+import { searchVariants } from '@/lib/transliterate';
 
 const MOVIES_PER_PAGE = 24;
 
@@ -24,16 +25,20 @@ async function getMovies(searchParams: any, locale: Locale) {
         published: true,
     };
 
-    // Search query
+    // Search query — supports Cyrillic and Latin via transliteration
     if (query) {
-        where.OR = [
-            { titleBG: { contains: query } },
-            { titleEN: { contains: query } },
-            { description: { contains: query } },
-            { descriptionEN: { contains: query } },
-            { director: { contains: query } },
-            { cast: { contains: query } },
-        ];
+        // Build all search variants: original + transliterated (BG→EN or EN→BG)
+        const variants = searchVariants(query);
+
+        // For each variant, search titleBG, titleEN, description, director, cast
+        where.OR = variants.flatMap((v) => [
+            { titleBG: { contains: v } },
+            { titleEN: { contains: v } },
+            { description: { contains: v } },
+            { descriptionEN: { contains: v } },
+            { director: { contains: v } },
+            { cast: { contains: v } },
+        ]);
     }
 
     // Cast filter (specific)
