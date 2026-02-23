@@ -92,22 +92,33 @@ export async function scrapeMovieData(url: string) {
     const isIMDB = url.includes('imdb.com');
 
     if (isTMDB) {
-        // TMDB Scraper
-        const mainTitle = $('h2 a').first().text().trim() || $('.title h2').first().text().trim() || $('title').text().split('—')[0].trim();
-        const hasCyrillic = /[а-яА-Я]/.test(mainTitle);
+        // ── TMDB Scraper: Always fetch BG locale first for titleBG ──
+        const tmdbBaseUrl = url.split('?')[0];
+        const bgUrl = `${tmdbBaseUrl}?language=bg-BG`;
+
+        const bgResponse = await fetch(bgUrl, {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                'Accept-Language': 'bg-BG,bg;q=0.9',
+            }
+        });
+
+        const bgHtml = bgResponse.ok ? await bgResponse.text() : html;
+        const $bg = cheerio.load(bgHtml);
+
+        const bgTitleFound = $bg('h2 a').first().text().trim() || $bg('.title h2').first().text().trim() || $bg('title').text().split('—')[0].trim();
+        const hasCyrillic = /[а-яА-Я]/.test(bgTitleFound);
 
         if (hasCyrillic) {
-            result.titleBG = mainTitle;
-        } else {
-            result.titleEN = mainTitle;
+            result.titleBG = bgTitleFound;
         }
 
-        result.description = $('.overview p').text().trim() || $('meta[name="description"]').attr('content')?.trim();
+        result.description = $bg('.overview p').text().trim() || $bg('meta[name="description"]').attr('content')?.trim();
 
-        const yearMatch = $('.release_date').text().match(/\d{4}/) || $('.release').text().match(/\d{4}/) || $('title').text().match(/\d{4}/);
+        const yearMatch = $bg('.release_date').text().match(/\d{4}/) || $bg('.release').text().match(/\d{4}/) || $bg('title').text().match(/\d{4}/);
         result.year = yearMatch ? yearMatch[0] : '';
 
-        const runtimeText = $('.runtime').first().text().trim() || $('.facts .runtime').text().trim();
+        const runtimeText = $bg('.runtime').first().text().trim() || $bg('.facts .runtime').text().trim();
         if (runtimeText) {
             const h = runtimeText.match(/(\d+)h/);
             const m = runtimeText.match(/(\d+)m/);
@@ -115,51 +126,35 @@ export async function scrapeMovieData(url: string) {
             result.duration = totalMins ? String(totalMins) : '';
         }
 
-        const posterPath = $('.poster img').attr('src') || $('.poster .image_content img').attr('src') || $('meta[property="og:image"]').attr('content');
+        const posterPath = $bg('.poster img').attr('src') || $bg('.poster .image_content img').attr('src');
         if (posterPath) {
             result.posterUrl = posterPath.includes('http') ? posterPath : 'https://image.tmdb.org/t/p/w500' + posterPath;
         }
 
-        const score = $('.user_score_chart').attr('data-percent') || $('.percentage').text().replace('%', '');
+        const score = $bg('.user_score_chart').attr('data-percent') || $bg('.percentage').text().replace('%', '');
         result.rating = score ? (parseFloat(score) / 10).toFixed(1) : '';
 
-        // Metadata
-        $('section.facts p, .fact').each((i, el) => {
-            const label = $(el).find('strong').text().toLowerCase();
-            const content = $(el).clone().children('strong').remove().end().text().trim();
-            if (label.includes('director') || label.includes('режисьор')) result.director = content;
-        });
-
-        // Genres
-        $('.genres a').each((i, el) => {
-            result.genres.push($(el).text().trim());
-        });
-
-        // Series check (basic)
-        if (url.includes('/tv/')) {
-            result.isSeries = true;
-        }
-
-        // Try to find IMDb ID in TMDB HTML (External Links)
-        const imdbLink = $('a[href*="imdb.com/title/tt"]').attr('href');
+        // IMDb Link lookup from External Links in TMDB
+        const imdbLink = $bg('a[href*="imdb.com/title/tt"]').attr('href');
         if (imdbLink) {
             const match = imdbLink.match(/tt\d+/);
             if (match) result.imdbId = match[0];
         }
 
-        const enUrl = url.includes('?') ? url + '&language=en-US' : url + '?language=en-US';
+        // Series check
+        if (url.includes('/tv/')) {
+            result.isSeries = true;
+        }
+
+        // ── Secondary: Fetch EN locale for titleEN ──
+        const enUrl = `${tmdbBaseUrl}?language=en-US`;
         const enResponse = await fetch(enUrl, { headers: { 'Accept-Language': 'en-US' } });
         if (enResponse.ok) {
             const enHtml = await enResponse.text();
             const $en = cheerio.load(enHtml);
             const enTitleFound = $en('h2 a').first().text().trim() || $en('.title h2').first().text().trim() || $en('title').text().split('—')[0].trim();
-            if (hasCyrillic) {
-                result.titleEN = enTitleFound;
-            } else {
-                result.titleEN = mainTitle;
-            }
+            result.titleEN = enTitleFound;
 
-            // If we didn't find IMDb ID in BG page, try EN page
             if (!result.imdbId) {
                 const enImdbLink = $en('a[href*="imdb.com/title/tt"]').attr('href');
                 if (enImdbLink) {
@@ -168,7 +163,8 @@ export async function scrapeMovieData(url: string) {
                 }
             }
         }
-    } else if (isIMDB) {
+    }
+    else if (isIMDB) {
         // Extract IMDb ID from URL if possible
         const urlMatch = url.match(/tt\d+/);
         if (urlMatch) result.imdbId = urlMatch[0];

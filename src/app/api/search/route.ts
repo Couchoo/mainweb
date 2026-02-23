@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/db';
+import { searchVariants } from '@/lib/transliterate';
 
 /**
  * SEARCH API - Movie autocomplete
@@ -14,13 +15,15 @@ export async function GET(request: NextRequest) {
             return NextResponse.json({ results: [] });
         }
 
+        const variants = searchVariants(query);
+
         // Search movies by title (both BG and EN)
         const movies = await prisma.movie.findMany({
             where: {
                 published: true,
                 OR: [
-                    { titleEN: { contains: query } },
-                    { titleBG: { contains: query } }
+                    ...variants.map(v => ({ titleEN: { contains: v } })),
+                    ...variants.map(v => ({ titleBG: { contains: v } }))
                 ]
             },
             select: {
