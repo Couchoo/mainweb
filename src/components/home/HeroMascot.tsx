@@ -12,8 +12,9 @@ export default function HeroMascot() {
             <img
                 src="/assets/couchoo-mascot-v2.svg"
                 alt="Couchoo mascot"
-                style={{ width: '100%', height: 'auto' }}
+                style={{ width: '100%', height: 'auto', pointerEvents: 'none' }}
                 draggable={false}
+                onContextMenu={(e) => e.preventDefault()}
             />
 
             {/* Projector light reflection on the "floor" */}

@@ -67,6 +67,8 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                 display: 'flex',
                 alignItems: 'center',
                 marginTop: '-72px', // Pull up under fixed header (mobile)
+                userSelect: 'none', // Prevent text selection
+                WebkitUserSelect: 'none',
             }}
             className="hero-section"
         >
@@ -132,6 +134,9 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
             {/* Scroll indicator */}
             <div
                 className="hero-scroll-hint"
+                onClick={() => {
+                    document.getElementById('recommended-movies')?.scrollIntoView({ behavior: 'smooth' });
+                }}
                 style={{
                     position: 'absolute',
                     bottom: '32px',
@@ -143,7 +148,7 @@ export function Hero({ locale = 'bg' }: { locale: string }) {
                     gap: '8px',
                     animation: 'scrollBounce 2s ease-in-out infinite',
                     zIndex: 4,
-                    cursor: 'default',
+                    cursor: 'pointer', // Changed to pointer
                 }}
             >
                 <span style={{

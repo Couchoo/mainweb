@@ -167,7 +167,7 @@ export default async function HomePage() {
 
                 {/* Recommended for You */}
                 {recommended && recommended.length > 0 && (
-                    <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
+                    <section id="recommended-movies" className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-150">
                         <div className="flex items-center gap-4 mb-8">
                             <div className="h-10 w-10 rounded-2xl bg-brand-cinemaGold/10 border border-brand-cinemaGold/20 flex items-center justify-center text-brand-cinemaGold">
                                 <Sparkles className="h-6 w-6" />
