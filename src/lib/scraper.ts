@@ -13,12 +13,18 @@ async function fetchWikidataBG(imdbId: string) {
     const id = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
 
     try {
+        // Find by IMDb ID (trying both P645 and P345 as some entities use one or the other)
         const query = `
-            SELECT ?bgLabel ?bgDesc WHERE {
-                ?item wdt:P645 "${id}".
+            SELECT ?item ?bgLabel ?bgAltLabel ?bgDesc WHERE {
+                { ?item wdt:P645 "${id}". } UNION { ?item wdt:P345 "${id}". }
+                
                 OPTIONAL { 
                     ?item rdfs:label ?bgLabel .
                     FILTER(LANG(?bgLabel) = "bg")
+                }
+                OPTIONAL { 
+                    ?item skos:altLabel ?bgAltLabel .
+                    FILTER(LANG(?bgAltLabel) = "bg")
                 }
                 OPTIONAL { 
                     ?item schema:description ?bgDesc .
@@ -32,10 +38,10 @@ async function fetchWikidataBG(imdbId: string) {
 
         const response = await fetch(url, {
             headers: {
-                'User-Agent': 'MoviePlatformScraper/1.1 (https://github.com/Couchoo/main; admin@your-domain.com)',
+                'User-Agent': 'MoviePlatformScraper/1.2 (https://github.com/Couchoo/main; admin@your-domain.com)',
                 'Accept': 'application/json'
             },
-            next: { revalidate: 86400 } // Cache for 24h
+            next: { revalidate: 86400 }
         });
 
         if (!response.ok) return null;
@@ -43,9 +49,9 @@ async function fetchWikidataBG(imdbId: string) {
         const data = await response.json();
         const result = data.results?.bindings?.[0];
 
-        if (result && result.bgLabel?.value) {
+        if (result && (result.bgLabel?.value || result.bgAltLabel?.value)) {
             return {
-                titleBG: result.bgLabel.value,
+                titleBG: result.bgLabel?.value || result.bgAltLabel?.value,
                 descriptionBG: result.bgDesc?.value || null
             };
         }
@@ -293,18 +299,21 @@ export async function scrapeMovieData(url: string) {
             const translated = await translateToBG(result.titleEN);
             const transliterated = latinToBG(result.titleEN);
 
-            // Smart choice: If translation is a common noun (likely wrong for names)
-            // or if it's "Logan" -> "Logan" (GT often keeps names), use it.
-            // But if translation result is too short/generic compared to names, we use transliteration.
-
-            const isNameOnly = !result.titleEN.includes(' ');
-            if (isNameOnly && !/[а-яА-Я]/.test(translated)) {
-                // If it's one word and translation didn't change it, transliterate it
-                result.titleBG = transliterated;
-            } else if (translated.toLowerCase() === 'журнал' && result.titleEN.toLowerCase() === 'logan') {
-                // Specific fix for the user's report
+            // 1. Specific fix for known translation errors (Logan -> Журнал)
+            if (result.titleEN.toLowerCase() === 'logan') {
                 result.titleBG = 'Логан';
-            } else {
+            }
+            // 2. Trust translation if it's multiple words (e.g., Vikram Vedha -> Викрам срещу Веда)
+            // or if the translation is clearly the localized name (e.g., Crouching Tiger -> Тигър и дракон)
+            else if (result.titleEN.trim().includes(' ') || (translated.toLowerCase() !== result.titleEN.toLowerCase())) {
+                result.titleBG = translated;
+            }
+            // 3. If translation didn't change it to Cyrillic, use transliteration
+            else if (!/[а-яА-Я]/.test(translated)) {
+                result.titleBG = transliterated;
+            }
+            // 4. Default to translated
+            else {
                 result.titleBG = translated;
             }
 
