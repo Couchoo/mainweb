@@ -45,18 +45,24 @@ export async function POST(req: NextRequest) {
         const results = [];
 
         for (const movie of movies) {
-            // Parallelize server checks for this movie for speed
-            const serverChecks = await Promise.all(
-                movie.videoserver.map(async (server: any) => {
-                    const check = await checkLink(server.url, 3000); // 3s timeout
-                    return { server, check };
-                })
-            );
+            // ── SERIALIZE: Check servers one by one with small delays ──
+            // This prevents VidSrc from flagging the server IP for bulk requests
+            const serverChecks = [];
+            for (const server of (movie.videoserver || [])) {
+                // Wait 1s between servers for the same movie (if multiple)
+                if (serverChecks.length > 0) {
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                const check = await checkLink(server.url, 4000); // 4s timeout
+                serverChecks.push({ server, check });
+            }
 
             let movieIsBroken = false;
             const brokenServers = [];
 
             for (const { server, check } of serverChecks) {
+                // Only mark as broken if NOT a proxy/WAF block
+                // (Link Checker now handles 403/429 by returning ok:true with error detail)
                 if (!check.ok) {
                     movieIsBroken = true;
                     brokenServers.push({
@@ -110,6 +116,9 @@ export async function POST(req: NextRequest) {
                 checkedAt: new Date(),
                 brokenServersCount: brokenServers.length
             });
+
+            // Wait 2s between movies to be even more stealthy
+            await new Promise(r => setTimeout(r, 2000));
         }
 
         return NextResponse.json({

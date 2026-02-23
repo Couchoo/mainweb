@@ -1,5 +1,52 @@
 import * as cheerio from 'cheerio';
 
+/**
+ * Fetch official Bulgarian metadata (title, summary) from Wikidata anonymously
+ * No API key or registration required.
+ * Uses P645 (IMDb ID) to find the entity.
+ */
+async function fetchWikidataBG(imdbId: string) {
+    if (!imdbId) return null;
+
+    // Ensure ID starts with 'tt'
+    const id = imdbId.startsWith('tt') ? imdbId : `tt${imdbId}`;
+
+    try {
+        const query = `
+            SELECT ?item ?itemLabel ?itemDescription WHERE {
+                ?item wdt:P645 "${id}".
+                SERVICE wikibase:label { bd:serviceParam wikibase:language "bg,en". }
+            }
+            LIMIT 1
+        `;
+
+        const url = `https://query.wikidata.org/sparql?query=${encodeURIComponent(query)}&format=json`;
+
+        const response = await fetch(url, {
+            headers: {
+                'User-Agent': 'MoviePlatform/1.0 (https://your-domain.com; admin@your-domain.com) fetch-bg-metadata',
+                'Accept': 'application/json'
+            },
+            next: { revalidate: 86400 } // Cache for 24h
+        });
+
+        if (!response.ok) return null;
+
+        const data = await response.json();
+        const result = data.results?.bindings?.[0];
+
+        if (result) {
+            return {
+                titleBG: result.itemLabel?.value || null,
+                descriptionBG: result.itemDescription?.value || null
+            };
+        }
+    } catch (err) {
+        console.error('[Wikidata] Error fetching BG label:', err);
+    }
+    return null;
+}
+
 export async function scrapeMovieData(url: string) {
     const response = await fetch(url, {
         headers: {
@@ -152,6 +199,20 @@ export async function scrapeMovieData(url: string) {
                 }
             } catch (jsonErr) {
                 console.error(`[Scraper] JSON-LD parse error for ${url}:`, jsonErr);
+            }
+        }
+    }
+
+    // ── NEW: Official Bulgarian Metadata Hook ──
+    const imdbIdMatch = url.match(/tt\d+/);
+    if (imdbIdMatch || result.imdbId) {
+        const id = imdbIdMatch ? imdbIdMatch[0] : result.imdbId;
+        const wikidata = await fetchWikidataBG(id);
+        if (wikidata?.titleBG && wikidata.titleBG !== result.titleEN) {
+            result.titleBG = wikidata.titleBG;
+            // Only update description if it's actually useful (not just "movie" or "film")
+            if (wikidata.descriptionBG && wikidata.descriptionBG.length > 10) {
+                result.description = wikidata.descriptionBG;
             }
         }
     }

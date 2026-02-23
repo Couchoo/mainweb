@@ -4,6 +4,18 @@
  * Used for automated validation of video server availability.
  */
 
+const USER_AGENTS = [
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Edge/120.0.0.0 Safari/537.36',
+    'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:109.0) Gecko/20100101 Firefox/121.0'
+];
+
+function getRandomUA() {
+    return USER_AGENTS[Math.floor(Math.random() * USER_AGENTS.length)];
+}
+
 export interface LinkCheckResult {
     ok: boolean;
     status?: number;
@@ -20,18 +32,37 @@ export async function checkLink(url: string, timeoutMs: number = 5000): Promise<
         const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
 
         // Try HEAD first (faster)
+        const headers = {
+            'User-Agent': getRandomUA(),
+            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,video/mp4,*/*;q=0.8',
+            'Accept-Language': 'bg-BG,bg;q=0.9,en-US;q=0.8,en;q=0.7',
+            'Referer': 'https://vidsrc.to/',
+            'Sec-Fetch-Dest': 'document',
+            'Sec-Fetch-Mode': 'navigate',
+            'Sec-Fetch-Site': 'cross-site',
+            'Upgrade-Insecure-Requests': '1'
+        };
+
         const headResponse = await fetch(url, {
             method: 'HEAD',
             signal: controller.signal,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
+            headers
         });
 
         clearTimeout(timeoutId);
 
         if (headResponse.ok) {
             return { ok: true, status: headResponse.status, url };
+        }
+
+        // If 403 or 429, we are being BLOCKED, not necessarily broken
+        if (headResponse.status === 403 || headResponse.status === 429) {
+            return {
+                ok: true, // We treat it as OK (still exists) but blocked for us
+                status: headResponse.status,
+                error: headResponse.status === 429 ? 'Rate Limited' : 'Blocked by WAF',
+                url
+            };
         }
 
         // If HEAD fails or is not supported (some players block HEAD), try GET
@@ -41,12 +72,15 @@ export async function checkLink(url: string, timeoutMs: number = 5000): Promise<
         const getResponse = await fetch(url, {
             method: 'GET',
             signal: getController.signal,
-            headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
-            }
+            headers
         });
 
         clearTimeout(getTimeoutId);
+
+        // Even with GET, if it's 403/429, it's likely still alive but we are blocked
+        if (getResponse.status === 403 || getResponse.status === 429) {
+            return { ok: true, status: getResponse.status, error: 'Proxy Blocked', url };
+        }
 
         return {
             ok: getResponse.ok,
