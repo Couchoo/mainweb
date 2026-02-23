@@ -13,9 +13,16 @@ async function fetchWikidataBG(imdbId: string) {
 
     try {
         const query = `
-            SELECT ?item ?itemLabel ?itemDescription WHERE {
+            SELECT ?bgLabel ?bgDesc WHERE {
                 ?item wdt:P645 "${id}".
-                SERVICE wikibase:label { bd:serviceParam wikibase:language "bg,en". }
+                OPTIONAL { 
+                    ?item rdfs:label ?bgLabel .
+                    FILTER(LANG(?bgLabel) = "bg")
+                }
+                OPTIONAL { 
+                    ?item schema:description ?bgDesc .
+                    FILTER(LANG(?bgDesc) = "bg")
+                }
             }
             LIMIT 1
         `;
@@ -24,7 +31,7 @@ async function fetchWikidataBG(imdbId: string) {
 
         const response = await fetch(url, {
             headers: {
-                'User-Agent': 'MoviePlatform/1.0 (https://your-domain.com; admin@your-domain.com) fetch-bg-metadata',
+                'User-Agent': 'MoviePlatformScraper/1.1 (https://github.com/Couchoo/main; admin@your-domain.com)',
                 'Accept': 'application/json'
             },
             next: { revalidate: 86400 } // Cache for 24h
@@ -35,10 +42,10 @@ async function fetchWikidataBG(imdbId: string) {
         const data = await response.json();
         const result = data.results?.bindings?.[0];
 
-        if (result) {
+        if (result && result.bgLabel?.value) {
             return {
-                titleBG: result.itemLabel?.value || null,
-                descriptionBG: result.itemDescription?.value || null
+                titleBG: result.bgLabel.value,
+                descriptionBG: result.bgDesc?.value || null
             };
         }
     } catch (err) {
@@ -232,17 +239,20 @@ export async function scrapeMovieData(url: string) {
 
         if (wikidata?.titleBG) {
             console.log(`[Scraper] Found official BG title: ${wikidata.titleBG}`);
-            result.titleBG = wikidata.titleBG;
 
-            // If the name from Wikidata is Cyrillic, use it for titleBG
             const isWikiCyrillic = /[а-яА-Я]/.test(wikidata.titleBG);
-            if (isWikiCyrillic) {
+            const hasExistingBGCyrillic = /[а-яА-Я]/.test(result.titleBG);
+
+            // Only overwrite if Wikidata gives us Cyrillic, or if we don't have Cyrillic yet
+            if (isWikiCyrillic || !hasExistingBGCyrillic) {
                 result.titleBG = wikidata.titleBG;
             }
 
             if (wikidata.descriptionBG && wikidata.descriptionBG.length > 10) {
                 result.description = wikidata.descriptionBG;
             }
+        } else {
+            console.log(`[Scraper] No Bulgarian label found in Wikidata for ${finalImdbId}`);
         }
     }
 
