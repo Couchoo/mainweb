@@ -86,7 +86,14 @@ function DirectVideoPlayer({ url, offset, isPaused = false, cinemaMode, onEnded 
 
         if (!document.fullscreenElement && !(document as any).webkitFullscreenElement &&
             !(document as any).mozFullScreenElement && !(document as any).msFullscreenElement) {
-            if (rfs) rfs.call(elem);
+            if (rfs) {
+                const promise = rfs.call(elem);
+                if (promise !== undefined) {
+                    promise.catch((err: any) => {
+                        console.error('[CINEMA] Fullscreen error:', err);
+                    });
+                }
+            }
         } else {
             const efs = document.exitFullscreen ||
                 (document as any).webkitExitFullscreen ||
@@ -346,7 +353,14 @@ export function VideoPlayer({
 
         if (!document.fullscreenElement && !(document as any).webkitFullscreenElement &&
             !(document as any).mozFullScreenElement && !(document as any).msFullscreenElement) {
-            if (rfs) rfs.call(elem);
+            if (rfs) {
+                const promise = rfs.call(elem);
+                if (promise !== undefined) {
+                    promise.catch((err: any) => {
+                        console.error('[CINEMA] Global Fullscreen error:', err);
+                    });
+                }
+            }
         } else {
             const efs = document.exitFullscreen ||
                 (document as any).webkitExitFullscreen ||
@@ -481,7 +495,7 @@ export function VideoPlayer({
                             webkitallowfullscreen="true"
                             // @ts-ignore
                             mozallowfullscreen="true"
-                            allow="autoplay; fullscreen"
+                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write;"
                         />
                     ) : (
                         // 🌐 Generic embed
@@ -495,7 +509,7 @@ export function VideoPlayer({
                             webkitallowfullscreen="true"
                             // @ts-ignore - legacy support
                             mozallowfullscreen="true"
-                            allow="autoplay; fullscreen"
+                            allow="autoplay; fullscreen; picture-in-picture; encrypted-media; gyroscope; accelerometer; clipboard-write;"
                         />
                     )}
 
